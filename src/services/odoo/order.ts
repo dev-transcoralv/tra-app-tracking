@@ -1,7 +1,7 @@
 import { Order } from "./../../shared.types";
 
 export async function getListOrders(driverId: number): Promise<Order[]> {
-  const URL = `http://192.168.100.126:4000/tra/orders?employee_id=${driverId}`;
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders?employee_id=${driverId}`;
   try {
     const response = await fetch(URL);
     const json = await response.json();
@@ -15,7 +15,7 @@ export async function getListOrders(driverId: number): Promise<Order[]> {
 }
 
 export async function getOrder(id: number): Promise<Order> {
-  const URL = `http://192.168.100.126:4000/tra/orders/${id}`;
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/order/${id}`;
   try {
     const response = await fetch(URL);
     const json = await response.json();
