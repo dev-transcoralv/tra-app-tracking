@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "app-odoo-transport",
-    "slug": "app-odoo-transport",
+    "name": "tra-app-tracking",
+    "slug": "tra-app-tracking",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "app-odoo-transport-scheme",
+    "scheme": "tra-app-tracking-scheme",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -21,7 +21,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.transcoralv.tracking",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,5 +1,5 @@
 {
-  "name": "app-odoo-transport",
+  "name": "tra-app-tracking",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
@@ -10,6 +10,8 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^22.4.0",
+    "@react-native-firebase/messaging": "^22.4.0",
     "expo": "53.0.11",
     "expo-constants": "~17.1.6",
     "expo-linking": "~7.1.5",
@@ -35,7 +37,7 @@
     "eslint-config-expo": "~9.2.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "typescript": "^5.8.3"
   },
   "private": true

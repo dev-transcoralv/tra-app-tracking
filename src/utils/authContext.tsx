@@ -23,8 +23,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const logIn = async (username: string, password: string) => {
     const data = await odooLogin(username, password);
-    console.log(data);
     setIsLoggedIn(true);
+    // TODO: setDriver(data);
     router.replace("/");
   };
 

@@ -1,3 +1,19 @@
+function validateData<T>(data: unknown): T {
+  // aquí podrías usar zod, yup, io-ts, o validar manualmente
+  return data as T; // ⚠️ unsafe cast si no validas
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  const data: unknown = await response.json();
+
+  return validateData<T>(data);
+
 export async function odooLogin(username: string, password: string) {
   const payload = {
     username: username,
@@ -15,16 +31,14 @@ export async function odooLogin(username: string, password: string) {
 
   try {
     const response = await fetch(url, options);
-    console.log(response);
     const result = await response.json();
-
     if (!response.ok) {
-      //
+      console.log(`Response 200 in Login: ${result.data}`);
     } else {
-      console.log(result.data);
+      console.log(`Response 200 in Login: ${result.data}`);
     }
   } catch (error) {
-    console.log(error);
+    console.log(`Error Login: ${error}`);
   } finally {
   }
 }

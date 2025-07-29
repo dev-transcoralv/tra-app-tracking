@@ -1,8 +1,16 @@
-import { Text, TextInput, View, Button, StyleSheet } from "react-native";
+/* eslint-disable prettier/prettier */
+import {
+  Text,
+  TextInput,
+  View,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { AuthContext } from "../utils/authContext";
 import { useContext, useState } from "react";
-import { FontAwesomeEye } from "../components/Icons";
+import { FontAwesomeEye, FontAwesomeEyeOff } from "../components/Icons";
 
 type FormData = {
   username: string;
@@ -32,19 +40,21 @@ export default function LoginForm() {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              placeholder="Username"
+              placeholder="Usuario"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               placeholderTextColor="white"
-              className="bg-transparent border-0 w-full outline-none text-sm md:text-base"
+              className="color-white bg-transparent border-0 w-full outline-none text-sm md:text-base"
             />
           )}
           name="username"
         />
       </View>
-      {errors.username && <Text style={styles.error}>This is required.</Text>}
-      <View className="w-full flex items-center gap-2 bg-gray-800 p-2 rounded-xl relative">
+      {errors.username && (
+        <Text style={styles.error}>Este campo es requerido.</Text>
+      )}
+      <View className="w-full flex-row items-center gap-2 bg-gray-800 p-2 rounded-xl relative">
         <Controller
           control={control}
           rules={{
@@ -52,20 +62,33 @@ export default function LoginForm() {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              placeholder="Password"
+              placeholder="Contraseña"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              secureTextEntry
+              secureTextEntry={!showPassword}
               placeholderTextColor="white"
-              className="bg-transparent border-0 w-full outline-none text-sm md:text-base"
+              className="color-white flex-1 bg-transparent border-0 w-full outline-none text-sm md:text-base"
             />
           )}
           name="password"
         />
+        <TouchableOpacity onPress={() => togglePasswordView()}>
+          {showPassword ? (
+            <FontAwesomeEyeOff props={{ size: 10 }} />
+          ) : (
+            <FontAwesomeEye />
+          )}
+        </TouchableOpacity>
       </View>
-      {errors.password && <Text style={styles.error}>This is required.</Text>}
-      <Button title="Login" color="#e10718" onPress={handleSubmit(onSubmit)} />
+      {errors.password && (
+        <Text style={styles.error}>Este campo es requerido.</Text>
+      )}
+      <Button
+        title="Ingresar"
+        color="#e10718"
+        onPress={handleSubmit(onSubmit)}
+      />
     </View>
   );
 }

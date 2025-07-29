@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "238643289392",
+    "project_id": "tra-app-tracking-63abf",
+    "storage_bucket": "tra-app-tracking-63abf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238643289392:android:73f0708ed0610adb233cf5",
+        "android_client_info": {
+          "package_name": "com.transcoralv.tracking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnWLO5qJTrwpDF3ijW54WplXc6_l3sa2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
