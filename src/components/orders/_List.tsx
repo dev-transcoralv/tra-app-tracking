@@ -1,24 +1,30 @@
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 import { OrderCard } from "./_Card";
 import { Order } from "../../shared.types";
 
-export function ListOrders({ orders }: { orders: Order[] }) {
+interface Props {
+  isLoading: boolean;
+  orders: Order[];
+  onEndReached: () => void;
+}
+
+export function ListOrders({ isLoading, orders, onEndReached }: Props) {
   const renderItem = ({ item }: { item: Order }) => {
     return <OrderCard order={item} />;
   };
 
   return (
     <View>
-      <Text>Ordenes de Transporte</Text>
-      {orders.length === 0 ? (
-        <ActivityIndicator color={"#fff"} size={"large"} />
-      ) : (
-        <FlatList
-          data={orders}
-          keyExtractor={(order: Order) => order.id.toString()}
-          renderItem={renderItem}
-        />
-      )}
+      <FlatList
+        data={orders}
+        keyExtractor={(order: Order) => order.id.toString()}
+        renderItem={renderItem}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.4}
+        ListFooterComponent={
+          isLoading ? <ActivityIndicator className="my-4" /> : null
+        }
+      />
     </View>
   );
 }

@@ -1,8 +1,8 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import { getOrder } from "../../../services/odoo/order";
-import { Order } from "../../../shared.types";
+import { getOrder } from "../../../../services/odoo/order";
+import { Order } from "../../../../shared.types";
 
 type SearchParamsType = {
   id: string;

@@ -1,20 +1,9 @@
-function validateData<T>(data: unknown): T {
-  // aquí podrías usar zod, yup, io-ts, o validar manualmente
-  return data as T; // ⚠️ unsafe cast si no validas
-}
+import { ResponseLogin } from "../../shared.types";
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
-  }
-
-  const data: unknown = await response.json();
-
-  return validateData<T>(data);
-
-export async function odooLogin(username: string, password: string) {
+export async function odooLogin(
+  username: string,
+  password: string,
+): Promise<ResponseLogin> {
   const payload = {
     username: username,
     password: password,
@@ -31,14 +20,17 @@ export async function odooLogin(username: string, password: string) {
 
   try {
     const response = await fetch(url, options);
-    const result = await response.json();
+    console.log(`Login with Response ${response.ok}`);
+    const json = await response.json();
+    const result = (json as { result: any }).result;
     if (!response.ok) {
-      console.log(`Response 200 in Login: ${result.data}`);
+      throw result;
     } else {
-      console.log(`Response 200 in Login: ${result.data}`);
+      const data = (result as { data: any }).data;
+      return data as ResponseLogin;
     }
   } catch (error) {
-    console.log(`Error Login: ${error}`);
-  } finally {
+    // Throw error
+    throw error;
   }
 }

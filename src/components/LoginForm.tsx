@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
   Text,
   TextInput,
@@ -21,18 +20,24 @@ export default function LoginForm() {
   const authContext = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const togglePasswordView = () => setShowPassword(!showPassword);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  const onSubmit: any = handleSubmit((data) =>
-    authContext.logIn(data.username, data.password)
-  );
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      await authContext.logIn(data.username, data.password);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <View className="w-full flex flex-col gap-3">
-      <View className="w-full flex items-center gap-2 bg-gray-800 p-2 rounded-xl">
+    <View className="w-full flex flex-col gap-4">
+      <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
         <Controller
           control={control}
           rules={{
@@ -44,17 +49,19 @@ export default function LoginForm() {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              placeholderTextColor="white"
-              className="color-white bg-transparent border-0 w-full outline-none text-sm md:text-base"
+              placeholderTextColor="#211915"
+              className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
             />
           )}
           name="username"
         />
       </View>
       {errors.username && (
-        <Text style={styles.error}>Este campo es requerido.</Text>
+        <Text className="font-bold" style={styles.error}>
+          Este campo es requerido.
+        </Text>
       )}
-      <View className="w-full flex-row items-center gap-2 bg-gray-800 p-2 rounded-xl relative">
+      <View className="w-full flex-row items-center gap-2 bg-secondary-complementary p-2 rounded-xl relative">
         <Controller
           control={control}
           rules={{
@@ -67,22 +74,24 @@ export default function LoginForm() {
               onChangeText={onChange}
               value={value}
               secureTextEntry={!showPassword}
-              placeholderTextColor="white"
-              className="color-white flex-1 bg-transparent border-0 w-full outline-none text-sm md:text-base"
+              placeholderTextColor="#211915"
+              className="color-secondary flex-1 bg-transparent border-0 w-full outline-none text-sm md:text-base"
             />
           )}
           name="password"
         />
         <TouchableOpacity onPress={() => togglePasswordView()}>
           {showPassword ? (
-            <FontAwesomeEyeOff props={{ size: 10 }} />
+            <FontAwesomeEyeOff props={{ size: 10, color: "#211915" }} />
           ) : (
-            <FontAwesomeEye />
+            <FontAwesomeEye props={{ size: 10, color: "#211915" }} />
           )}
         </TouchableOpacity>
       </View>
       {errors.password && (
-        <Text style={styles.error}>Este campo es requerido.</Text>
+        <Text className="font-bold" style={styles.error}>
+          Este campo es requerido.
+        </Text>
       )}
       <Button
         title="Ingresar"
@@ -95,6 +104,6 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   error: {
-    color: "red",
+    color: "#e10718",
   },
 });
