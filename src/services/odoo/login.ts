@@ -20,14 +20,12 @@ export async function odooLogin(
 
   try {
     const response = await fetch(url, options);
-    console.log(`Login with Response ${response.ok}`);
     const json = await response.json();
-    const result = (json as { result: any }).result;
     if (!response.ok) {
-      throw result;
+      const error = (json as { error: string }).error;
+      throw error;
     } else {
-      const data = (result as { data: any }).data;
-      return data as ResponseLogin;
+      return json as ResponseLogin;
     }
   } catch (error) {
     // Throw error

@@ -38,17 +38,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const logIn = async (username: string, password: string) => {
     try {
       const data: ResponseLogin = await odooLogin(username, password);
-      console.log("Sucess Login");
       setIsLoggedIn(true);
       await AsyncStorage.setItem("token", data.token);
       await AsyncStorage.setItem("driver", JSON.stringify(data.employee));
       setDriver(data.employee);
-      router.replace("/orders");
+      router.replace("/dashboard");
     } catch (error: any) {
-      console.log("Error Login");
       Toast.show({
         type: "error",
-        text1: "Ocurrió un error inesperado",
+        text1: error,
       });
       throw error;
     }

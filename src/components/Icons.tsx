@@ -16,13 +16,17 @@ export const FontAwesome5Route = (props: { props?: any }): ReactNode => {
 };
 
 export const FontAwesomeDashboard = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="dashboard" color="black" size={24} {...props} />;
+  return <FontAwesome name="dashboard" color="#e10718" size={24} {...props} />;
 };
 
 export const FontAwesomeList = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="list" color="black" size={24} {...props} />;
+  return <FontAwesome name="list" color="#e10718" size={24} {...props} />;
 };
 
 export const FontAwesomeUser = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="user" color="black" size={24} {...props} />;
+  return <FontAwesome name="user" color="#e10718" size={24} {...props} />;
+};
+
+export const FontAwesomeCamera = (props: { props?: any }): ReactNode => {
+  return <FontAwesome name="camera" color="#white" size={24} {...props} />;
 };

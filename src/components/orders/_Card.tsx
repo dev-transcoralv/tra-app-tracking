@@ -16,8 +16,12 @@ const StyledText = cssInterop(Text, {
 
 export function OrderCard({ order }: { order: Order }) {
   return (
-    <Link href={`orders/${order.id}`} asChild>
-      <StyledPressable className="active: opacity-50 border border-black p-4">
+    <Link
+      className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4"
+      href={`orders/${order.id}`}
+      asChild
+    >
+      <StyledPressable>
         {/* Referencia */}
         <StyledText className="text-sm text-gray-500 mb-1 font-bold">
           {order.name}

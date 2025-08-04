@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { View, Button } from "react-native";
 import { AuthContext } from "../../../utils/authContext";
-import { ProfileForm } from "../../../components/profile/_Form";
 import { Driver } from "../../../shared.types";
 
 export default function Profile() {
@@ -10,7 +9,6 @@ export default function Profile() {
   console.log(driver);
   return (
     <View>
-      {/*<ProfileForm props={{ driver: driver }} />*/}
       <Button
         color="red"
         onPress={() => authContext.logOut()}

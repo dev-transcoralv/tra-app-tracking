@@ -29,9 +29,10 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await authContext.logIn(data.username, data.password);
+      authContext.logIn(data.username, data.password);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.log(error);
+      // Capture in notification
     }
   };
 

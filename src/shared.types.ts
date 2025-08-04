@@ -13,13 +13,27 @@ export const ResponseLoginSchema = z.object({
 });
 
 // Order
+export const GeolocationSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+});
+
+export const GuideSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  file: z.string(),
+});
+
 export const OrderSchema = z.object({
   id: z.number(),
   name: z.string(),
   service_code: z.string(),
   route_name: z.string(),
+  route_geolocation_origin: GeolocationSchema,
+  route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
   eta_charge: z.string(),
+  guides: [GuideSchema],
 });
 
 // Response List Order
@@ -28,7 +42,16 @@ export const ResponseListOrderSchema = z.object({
   results: z.array(OrderSchema),
 });
 
+// Dashboard
+export const DashboardSchema = z.object({
+  pending_trips: z.number(),
+  finished_trips: z.number(),
+});
+
 export type Driver = z.infer<typeof DriverSchema>;
 export type ResponseLogin = z.infer<typeof ResponseLoginSchema>;
+export type Dashboard = z.infer<typeof DashboardSchema>;
 export type Order = z.infer<typeof OrderSchema>;
+export type Geolocation = z.infer<typeof GeolocationSchema>;
 export type ResponseListOrder = z.infer<typeof ResponseListOrderSchema>;
+export type Guide = z.infer<typeof GuideSchema>;

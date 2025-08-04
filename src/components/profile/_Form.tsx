@@ -1,7 +1,7 @@
 import { Text, View, TextInput } from "react-native";
 import { Driver } from "../../shared.types";
 
-export function ProfileForm(driver: Driver) {
+export function ProfileForm({ driver }: { driver: Driver }) {
   return (
     <View className="">
       <Text className="font-bold">Nombre:</Text>

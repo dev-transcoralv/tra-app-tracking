@@ -40,7 +40,7 @@ export default function IndexScreen() {
   };
 
   return (
-    <View>
+    <View className="bg-secondary h-screen flex p-2">
       <ListOrders
         orders={orders}
         isLoading={isLoading}
