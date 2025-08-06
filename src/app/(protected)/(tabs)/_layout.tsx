@@ -7,13 +7,13 @@ import {
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "red" }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: "#e10718" }}>
       <Tabs.Screen
         name="dashboard"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color }) => (
-            <FontAwesomeDashboard props={{ color: "red" }} />
+            <FontAwesomeDashboard props={{ color: "#e10718" }} />
           ),
         }}
       />
@@ -21,7 +21,9 @@ export default function TabsLayout() {
         name="orders/index"
         options={{
           title: "Ordenes",
-          tabBarIcon: ({ color }) => <FontAwesomeList />,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesomeList props={{ color: color, size: size }} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -29,6 +31,13 @@ export default function TabsLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ color }) => <FontAwesomeUser />,
+        }}
+      />
+      {/*Review this TAB*/}
+      <Tabs.Screen
+        name="orders/[id]"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

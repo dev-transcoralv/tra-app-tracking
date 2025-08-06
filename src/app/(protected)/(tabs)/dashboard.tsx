@@ -11,14 +11,14 @@ export default function DashboardScreen() {
 
   const driver: Driver | null = authContext.driver;
 
-  const loadDashboard = async () => {
-    const data = await getDashboard(driver?.id);
+  const loadDashboard = async (driverId: number | undefined) => {
+    const data = await getDashboard(driverId);
     setDashboard(data);
   };
 
   useEffect(() => {
-    loadDashboard();
-  });
+    loadDashboard(driver?.id);
+  }, [driver?.id]);
 
   return (
     <View className="bg-secondary h-screen flex p-2">

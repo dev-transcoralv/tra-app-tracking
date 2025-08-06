@@ -21,7 +21,8 @@ export const GeolocationSchema = z.object({
 export const GuideSchema = z.object({
   id: z.number(),
   name: z.string(),
-  file: z.string(),
+  comment: z.string().optional(),
+  image: z.string().optional(),
 });
 
 export const OrderSchema = z.object({

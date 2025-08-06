@@ -30,3 +30,13 @@ export const FontAwesomeUser = (props: { props?: any }): ReactNode => {
 export const FontAwesomeCamera = (props: { props?: any }): ReactNode => {
   return <FontAwesome name="camera" color="#white" size={24} {...props} />;
 };
+
+export const FontAwesomePlus = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="plus" color={color} size={size} />;
+};

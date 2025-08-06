@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { createContext, PropsWithChildren, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { odooLogin } from "../services/odoo/login";
+import { login } from "../services/odoo/login";
 import { ResponseLogin, Driver } from "../shared.types";
 import Toast from "react-native-toast-message";
 
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const logIn = async (username: string, password: string) => {
     try {
-      const data: ResponseLogin = await odooLogin(username, password);
+      const data: ResponseLogin = await login(username, password);
       setIsLoggedIn(true);
       await AsyncStorage.setItem("token", data.token);
       await AsyncStorage.setItem("driver", JSON.stringify(data.employee));

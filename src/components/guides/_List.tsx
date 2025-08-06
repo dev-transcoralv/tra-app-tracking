@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { Guide } from "../../shared.types";
-import { FontAwesomeCamera } from "../Icons";
+import { FontAwesomePlus } from "../Icons";
+import { GuideModalForm } from "./_ModalForm";
 
 export function ListGuides({ guides }: { guides: Guide[] }) {
-  const takePhoto = () => {};
+  const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null);
+
+  const openModal = (item: Guide) => setSelectedGuide(item);
+  const closeModal = () => setSelectedGuide(null);
 
   const renderItem = ({ item }: { item: Guide }) => {
     return (
@@ -11,13 +16,16 @@ export function ListGuides({ guides }: { guides: Guide[] }) {
         <View className="flex-row justify-between items-center">
           <Text className="text-lg font-bold text-gray-800">{item.name}</Text>
           <TouchableOpacity
-            className="flex-row items-center justify-center bg-indigo-600 px-4 py-3 rounded-lg"
-            onPress={takePhoto}
+            className="flex-row items-center justify-center bg-primary px-4 py-3 rounded-lg"
+            onPress={() => openModal(item)}
           >
-            <FontAwesomeCamera props={{ color: "white" }} />
-            <Text className="text-white ml-2 font-semibold">Tomar Foto</Text>
+            <FontAwesomePlus color="white" size={16} />
           </TouchableOpacity>
         </View>
+
+        {selectedGuide && (
+          <GuideModalForm guide={selectedGuide} onClose={closeModal} />
+        )}
       </View>
     );
   };

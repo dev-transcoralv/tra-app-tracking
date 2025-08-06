@@ -22,11 +22,9 @@ export function OrderCard({ order }: { order: Order }) {
       asChild
     >
       <StyledPressable>
-        {/* Referencia */}
         <StyledText className="text-sm text-gray-500 mb-1 font-bold">
           {order.name}
         </StyledText>
-        {/* Origen - Destino */}
         <StyledView className="flex-row items-center mb-2">
           <FontAwesome5Route props={{ size: 2 }} />
           <StyledText className="ml-2 text-gray-800 font-semibold text-sm">

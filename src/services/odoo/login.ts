@@ -1,6 +1,6 @@
 import { ResponseLogin } from "../../shared.types";
 
-export async function odooLogin(
+export async function login(
   username: string,
   password: string,
 ): Promise<ResponseLogin> {
