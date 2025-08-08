@@ -16,7 +16,7 @@ export function ListGuides({ guides }: { guides: Guide[] }) {
         <View className="flex-row justify-between items-center">
           <Text className="text-lg font-bold text-gray-800">{item.name}</Text>
           <TouchableOpacity
-            className="flex-row items-center justify-center bg-primary px-4 py-3 rounded-lg"
+            className="justify-center bg-primary px-4 py-3 rounded-lg"
             onPress={() => openModal(item)}
           >
             <FontAwesomePlus color="white" size={16} />

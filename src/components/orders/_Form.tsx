@@ -1,14 +1,27 @@
 import { useEffect, useState } from "react";
-import { Text, View, TextInput } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { Order, Geolocation } from "../../shared.types";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { ListGuides } from "../../components/guides/_List";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FontAwesomePlay, FontAwesomeStop } from "../Icons";
+import Toast from "react-native-toast-message";
+import { startTrip } from "../../services/odoo/order";
 
 export function OrderForm({ order }: { order: Order }) {
   const ORIGIN: Geolocation = order.route_geolocation_origin;
   const DESTINATION: Geolocation = order.route_geolocation_origin;
 
   const [route, setRoute] = useState([]);
+  const [initiated, setInitiated] = useState(false);
+  const [orderIdStarted, setOrderIdStarted] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getRoute();
@@ -68,14 +81,83 @@ export function OrderForm({ order }: { order: Order }) {
     }
   };
 
+  useEffect(() => {
+    const loadSaveOrderIdStarted = async () => {
+      try {
+        const saveOrderIdStarted = await AsyncStorage.getItem("orderIdStarted");
+        if (saveOrderIdStarted !== null) {
+          setOrderIdStarted(parseInt(saveOrderIdStarted));
+        }
+      } catch (e) {
+        console.error("Error cargando nombre", e);
+      }
+    };
+    loadSaveOrderIdStarted();
+  }, []);
+
+  useEffect(() => {
+    const saveOrderIdStarted = async () => {
+      try {
+        await AsyncStorage.setItem("orderIdStarted", orderIdStarted);
+      } catch (error) {
+        throw error;
+      }
+    };
+    if (orderIdStarted) {
+      saveOrderIdStarted();
+    }
+  }, [orderIdStarted]);
+
+  const changeInitiated = async (flag: boolean) => {
+    setInitiated(flag);
+    try {
+      setLoading(true);
+      await startTrip(order.id);
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error,
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
-      <Text className="font-bold">Referencia:</Text>
-      <TextInput readOnly value={order.name} />
+      <View className="flex-row">
+        <View className="flex-1">
+          <Text className="font-bold">Referencia:</Text>
+          <TextInput readOnly value={order.name} />
+        </View>
+        <View className="flex-1">
+          <TouchableOpacity
+            className={`flex-1 px-5 py-3 items-center rounded-full ${
+              initiated ? "bg-primary" : "bg-green-500"
+            }`}
+            onPress={() => changeInitiated(!initiated)}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <View className="items-center">
+                {initiated ? <FontAwesomeStop /> : <FontAwesomePlay />}
+                <Text
+                  className={`items-center font-extrabold ${initiated ? "color-white" : ""}`}
+                >
+                  {initiated ? "Detener" : "Iniciar"}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
       <Text className="font-bold">Cliente:</Text>
       <TextInput readOnly value={order.partner_name} />
       <Text className="font-bold">Ruta:</Text>
       <TextInput readOnly value={order.route_name} />
+
       <View className="flex items-center">
         <MapView
           provider={PROVIDER_GOOGLE}
@@ -97,7 +179,7 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </MapView>
       </View>
-      {order.guides && <ListGuides guides={order.guides} />}
+      {order.guides.length > 1 && <ListGuides guides={order.guides} />}
     </View>
   );
 }

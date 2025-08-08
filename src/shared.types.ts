@@ -28,13 +28,14 @@ export const GuideSchema = z.object({
 export const OrderSchema = z.object({
   id: z.number(),
   name: z.string(),
+  trip_status: z.enum(["initiated", "finished"]).nullable(),
   service_code: z.string(),
   route_name: z.string(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
   eta_charge: z.string(),
-  guides: [GuideSchema],
+  guides: z.array(GuideSchema),
 });
 
 // Response List Order

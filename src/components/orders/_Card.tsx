@@ -17,11 +17,18 @@ const StyledText = cssInterop(Text, {
 export function OrderCard({ order }: { order: Order }) {
   return (
     <Link
-      className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4"
+      className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative"
       href={`orders/${order.id}`}
       asChild
     >
       <StyledPressable>
+        {/* Badge Start Trip */}
+        {order.trip_status === "initiated" && (
+          <View className="absolute top-2 right-2 bg-blue-500 px-2 py-0.5 rounded-full z-10">
+            <Text className="text-white text-s font-bold">Iniciado</Text>
+          </View>
+        )}
+
         <StyledText className="text-sm text-gray-500 mb-1 font-bold">
           {order.name}
         </StyledText>
