@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { FontAwesomeFilter } from "./Icons";
+import { cssInterop } from "nativewind";
 
 type OptionValue = {
   label: string;
@@ -11,29 +14,39 @@ type Props = {
   onSelect: (value: string) => void;
 };
 
-export default function FilterSelection({ options, onSelect }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
+const StyledPicker = cssInterop(Picker, {
+  className: "style",
+});
 
-  function handleSelect(value: string) {
+export default function FilterSelection({ options, onSelect }: Props) {
+  const [selected, setSelected] = useState("pending");
+
+  const handleValueChange = (itemValue: unknown, itemIndex: number) => {
+    const value = itemValue as string;
     setSelected(value);
     if (onSelect) onSelect(value);
-  }
+  };
 
   return (
-    <View className="flex-row justify-around my-3">
-      {options.map((option) => (
-        <TouchableOpacity
-          key={option.value}
-          className={`px-5 py-3 items-center rounded-sm ${selected === option.value ? "bg-primary" : "bg-white"}`}
-          onPress={() => handleSelect(option.value)}
+    <View className="bg-gray-200 flex-row mb-2 py-2 px-2 rounded-xl">
+      <View className="flex w-1/12 justify-center items-center">
+        <FontAwesomeFilter color="#1c3b8a" />
+      </View>
+      <View className="flex w-11/12">
+        <StyledPicker
+          selectedValue={selected}
+          onValueChange={handleValueChange}
+          className="bg-blue-900 text-white"
         >
-          <Text
-            className={`${selected === option.value ? "color-white font-extrabold" : ""}`}
-          >
-            {option.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
+          {options.map((option) => (
+            <Picker.Item
+              label={option.label}
+              value={option.value}
+              key={option.value}
+            />
+          ))}
+        </StyledPicker>
+      </View>
     </View>
   );
 }

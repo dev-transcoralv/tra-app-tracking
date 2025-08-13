@@ -23,9 +23,9 @@ export default function DashboardCard({ count, status }: Props) {
   return (
     <View className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4">
       <View className="flex-row justify-between items-center">
-        <Text className="text-lg font-bold text-gray-800">{count}</Text>
+        <Text className="text-2xl font-bold text-gray-800">{count}</Text>
         <View className={`px-3 py-1 rounded-full ${statusData.color}`}>
-          <Text className="text-white text-xs font-semibold">
+          <Text className="text-white text-l font-semibold">
             {statusData.label}
           </Text>
         </View>

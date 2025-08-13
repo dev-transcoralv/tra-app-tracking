@@ -4,6 +4,9 @@ import { z } from "zod/v4";
 export const DriverSchema = z.object({
   id: z.number(),
   name: z.string(),
+  vat: z.string(),
+  street: z.string(),
+  license_type: z.string(),
 });
 
 // Response Login
@@ -52,6 +55,8 @@ export const ResponseListOrderSchema = z.object({
 export const DashboardSchema = z.object({
   pending_trips: z.number(),
   finished_trips: z.number(),
+  kilometers_traveled: z.number(),
+  hours_worked: z.string(),
 });
 
 export type Driver = z.infer<typeof DriverSchema>;

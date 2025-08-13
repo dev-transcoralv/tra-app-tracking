@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { getOrder } from "../../../../services/odoo/order";
 import { Order } from "../../../../shared.types";
 import { OrderForm } from "../../../../components/orders/_Form";
@@ -32,12 +32,12 @@ export default function OrderId() {
   }, [id]);
 
   return (
-    <ScrollView className="bg-secondary h-screen flex p-2">
+    <View className="bg-secondary h-screen flex p-2">
       {order === null ? (
         <ActivityIndicator color={"#fff"} size={"large"} />
       ) : (
         <OrderForm order={order} />
       )}
-    </ScrollView>
+    </View>
   );
 }

@@ -54,3 +54,13 @@ export const FontAwesomeStop = ({
 }): ReactNode => {
   return <FontAwesome name="stop" color={color} size={size} />;
 };
+
+export const FontAwesomeFilter = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="filter" color={color} size={size} />;
+};

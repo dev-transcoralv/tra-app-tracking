@@ -3,7 +3,7 @@ import { Order, ResponseListOrder } from "./../../shared.types";
 interface Props {
   driverId: number | undefined;
   page: number;
-  status?: string | undefined;
+  status: string;
 }
 
 export async function getListOrders({
@@ -11,8 +11,7 @@ export async function getListOrders({
   driverId,
   status,
 }: Props): Promise<ResponseListOrder> {
-  console.log(`Call endpoint /tra/orders?page=${page}&employee_id=${driverId}`);
-  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders?page=${page}&employee_id=${driverId}`;
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders?page=${page}&employee_id=${driverId}&status=${status}`;
   try {
     const response = await fetch(URL);
     const json = await response.json();
@@ -36,7 +35,6 @@ export async function getOrder(id: number): Promise<Order> {
 }
 
 export async function startTrip(id: number): Promise<Order> {
-  console.log(`Call endpoint /tra/orders/${id}/start_trip`);
   const options = {
     method: "PUT",
     headers: {
@@ -55,7 +53,6 @@ export async function startTrip(id: number): Promise<Order> {
 }
 
 export async function updateHours(id: number, field: string): Promise<Order> {
-  console.log(`Call endpoint /tra/orders/${id}/update_hours`);
   const options = {
     method: "PUT",
     headers: {

@@ -47,6 +47,7 @@ export default function LoginForm() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               placeholder="Usuario"
+              autoFocus
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}

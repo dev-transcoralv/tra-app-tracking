@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { View } from "react-native";
 import { ListOrders } from "../../../../components/orders/_List";
 import { getListOrders } from "../../../../services/odoo/order";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "../../../../utils/authContext";
 import { Driver, Order } from "../../../../shared.types";
 import FilterSelection from "../../../../components/FilterSelection";
@@ -14,38 +15,40 @@ export default function IndexScreen() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [filter, setFilter] = useState(null);
+  const [status, setStatus] = useState("pending");
 
   const options = [
-    { label: "Todos", value: null },
-    { label: "Pendientes", value: "active" },
-    { label: "Finalizados", value: "inactive" },
+    { label: "Pendientes", value: "pending" },
+    { label: "Finalizados", value: "finished" },
+    { label: "Todos", value: "all" },
   ];
 
   const driver: Driver | null = authContext.driver;
 
-  const loadOrders = async () => {
-    if (isLoading || !hasMore) return;
-    setIsLoading(true);
-    const data = await getListOrders({
-      page: page,
-      driverId: driver?.id,
-      status: filter || undefined,
-    });
-    const orders = data.results;
-    setOrders((previousPage) =>
-      page === 1 ? orders : [...previousPage, ...orders],
-    );
-    setHasMore(data.total === PAGE_SIZE);
-    setIsLoading(false);
-  };
+  const loadOrders = useCallback(
+    async (pageNumber: number, filterStatus: string) => {
+      if (isLoading || !hasMore) return;
+      setIsLoading(true);
+      const data = await getListOrders({
+        page: pageNumber,
+        driverId: driver?.id,
+        status: filterStatus,
+      });
+      const orders = data.results;
+      setOrders((previousPage) =>
+        page === 1 ? orders : [...previousPage, ...orders],
+      );
+      setHasMore(data.total === PAGE_SIZE);
+      setIsLoading(false);
+    },
+    [driver?.id],
+  );
 
-  // TODO: Review multiple useEffect
   useEffect(() => {
-    loadOrders();
-  });
+    loadOrders(page, status);
+  }, [page, status]);
 
-  const handleEndReached = () => {
+  const handleLoadMore = () => {
     if (!isLoading && hasMore) {
       setPage((previousPage) => previousPage + 1);
     }
@@ -53,11 +56,14 @@ export default function IndexScreen() {
 
   return (
     <View className="bg-secondary h-screen flex p-2">
-      <FilterSelection options={options} onSelect={setFilter} />
+      <FilterSelection
+        options={options}
+        onSelect={(value) => setStatus(value)}
+      />
       <ListOrders
         orders={orders}
         isLoading={isLoading}
-        onEndReached={handleEndReached}
+        handleLoadMore={handleLoadMore}
       />
     </View>
   );

@@ -2,8 +2,9 @@ import { Dashboard } from "../../shared.types";
 
 export async function getDashboard(
   driverId: number | undefined,
+  rangeDate: string,
 ): Promise<Dashboard> {
-  const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/dashboard?employee_id=${driverId}`;
+  const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/dashboard?employee_id=${driverId}&range_date=${rangeDate}`;
 
   try {
     const response = await fetch(url);
