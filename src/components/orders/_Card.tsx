@@ -18,14 +18,23 @@ export function OrderCard({ order }: { order: Order }) {
   return (
     <Link
       className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative"
-      href={`orders/${order.id}`}
+      href={{
+        pathname: `orders/${order.id}`,
+        params: { reference: order.name },
+      }}
       asChild
     >
       <StyledPressable>
-        {/* Badge Start Trip */}
+        {/* Badges */}
         {order.trip_status === "initiated" && (
-          <View className="absolute top-2 right-2 bg-blue-500 px-2 py-0.5 rounded-full z-10">
+          <View className="absolute top-2 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
             <Text className="text-white text-s font-bold">Iniciado</Text>
+          </View>
+        )}
+
+        {order.trip_status === "finished" && (
+          <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
+            <Text className="text-white text-s font-bold">Finalizado</Text>
           </View>
         )}
 

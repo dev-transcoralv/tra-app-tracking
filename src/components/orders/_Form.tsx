@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomePlay, FontAwesomeStop } from "../Icons";
 import Toast from "react-native-toast-message";
 import { startTrip } from "../../services/odoo/order";
+import { DatetimeButton } from "./_DatetimeButton";
 
 export function OrderForm({ order }: { order: Order }) {
   const ORIGIN: Geolocation = order.route_geolocation_origin;
@@ -128,8 +129,8 @@ export function OrderForm({ order }: { order: Order }) {
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
       <View className="flex-row">
         <View className="flex-1">
-          <Text className="font-bold">Referencia:</Text>
-          <TextInput readOnly value={order.name} />
+          <Text className="font-bold">Cliente:</Text>
+          <TextInput readOnly value={order.partner_name} />
         </View>
         <View className="flex-1">
           <TouchableOpacity
@@ -153,8 +154,6 @@ export function OrderForm({ order }: { order: Order }) {
           </TouchableOpacity>
         </View>
       </View>
-      <Text className="font-bold">Cliente:</Text>
-      <TextInput readOnly value={order.partner_name} />
       <Text className="font-bold">Ruta:</Text>
       <TextInput readOnly value={order.route_name} />
 
@@ -178,6 +177,33 @@ export function OrderForm({ order }: { order: Order }) {
             <Polyline coordinates={route} strokeWidth={4} strokeColor="blue" />
           )}
         </MapView>
+      </View>
+      {/*Buttons*/}
+      <View className="flex">
+        <DatetimeButton
+          orderId={order.id}
+          field="arrival_charge_time"
+          datetime={order.arrival_charge_time}
+          title="Llegada Carga"
+        />
+        <DatetimeButton
+          orderId={order.id}
+          field="arrival_charge_time"
+          datetime={order.arrival_download_time}
+          title="Salida Carga"
+        />
+        <DatetimeButton
+          orderId={order.id}
+          field="departure_charge_time"
+          datetime={order.departure_charge_time}
+          title="Llegada Descarga"
+        />
+        <DatetimeButton
+          orderId={order.id}
+          field="departure_download_time"
+          datetime={order.departure_download_time}
+          title="Salida Descarga"
+        />
       </View>
       {order.guides.length > 1 && <ListGuides guides={order.guides} />}
     </View>

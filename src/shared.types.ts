@@ -35,6 +35,10 @@ export const OrderSchema = z.object({
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
   eta_charge: z.string(),
+  arrival_charge_time: z.string().nullable(),
+  departure_charge_time: z.string().nullable(),
+  arrival_download_time: z.string().nullable(),
+  departure_download_time: z.string().nullable(),
   guides: z.array(GuideSchema),
 });
 

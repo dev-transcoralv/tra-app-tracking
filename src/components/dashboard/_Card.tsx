@@ -13,7 +13,7 @@ export default function DashboardCard({ count, status }: Props) {
       color: "bg-blue-500",
     },
     finished: {
-      label: "Terminados",
+      label: "Finalizados",
       color: "bg-green-500",
     },
   };

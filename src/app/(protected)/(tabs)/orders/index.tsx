@@ -4,6 +4,7 @@ import { getListOrders } from "../../../../services/odoo/order";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../../utils/authContext";
 import { Driver, Order } from "../../../../shared.types";
+import FilterSelection from "../../../../components/FilterSelection";
 
 const PAGE_SIZE = 5;
 
@@ -13,13 +14,24 @@ export default function IndexScreen() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [filter, setFilter] = useState(null);
+
+  const options = [
+    { label: "Todos", value: null },
+    { label: "Pendientes", value: "active" },
+    { label: "Finalizados", value: "inactive" },
+  ];
 
   const driver: Driver | null = authContext.driver;
 
   const loadOrders = async () => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
-    const data = await getListOrders({ page: page, driverId: driver?.id });
+    const data = await getListOrders({
+      page: page,
+      driverId: driver?.id,
+      status: filter || undefined,
+    });
     const orders = data.results;
     setOrders((previousPage) =>
       page === 1 ? orders : [...previousPage, ...orders],
@@ -41,6 +53,7 @@ export default function IndexScreen() {
 
   return (
     <View className="bg-secondary h-screen flex p-2">
+      <FilterSelection options={options} onSelect={setFilter} />
       <ListOrders
         orders={orders}
         isLoading={isLoading}
