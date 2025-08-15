@@ -6,13 +6,14 @@ import {
   ScrollView,
 } from "react-native";
 import { getDashboard } from "../../../services/odoo/dasbhoard";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "../../../utils/authContext";
 import { Dashboard, Driver } from "../../../shared.types";
 import DashboardCard from "../../../components/dashboard/_Card";
 import DashboardCardInformation from "../../../components/dashboard/_CardInformation";
 import FilterSelection from "../../../components/FilterSelection";
 import { BarChart } from "react-native-chart-kit";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function DashboardScreen() {
   const authContext = useContext(AuthContext);
@@ -30,15 +31,6 @@ export default function DashboardScreen() {
     { label: "Mes", value: "month" },
   ];
 
-  const data = {
-    labels: ["Pendientes", "Realizadas"],
-    datasets: [
-      {
-        data: [20, 40],
-      },
-    ],
-  };
-
   const chartConfig = {
     backgroundGradientFrom: "#1c3b8a",
     backgroundGradientTo: "#1c3b8a",
@@ -50,24 +42,35 @@ export default function DashboardScreen() {
     },
   };
 
-  const loadDashboard = async (
-    driverId: number | undefined,
-    rangeDate: string,
-  ) => {
-    try {
-      setLoading(true);
-      const data = await getDashboard(driverId, rangeDate);
-      setDashboard(data);
-    } catch (error: any) {
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      const loadDashboard = async (
+        driverId: number | undefined,
+        rangeDate: string,
+      ) => {
+        try {
+          setLoading(true);
+          const data = await getDashboard(driverId, rangeDate);
+          if (isActive) setDashboard(data);
+        } catch (error: any) {
+          throw error;
+        } finally {
+          if (isActive) setLoading(false);
+        }
+      };
+      loadDashboard(driver?.id, rangeDate);
+      return () => {
+        isActive = false;
+      };
+    }, [driver?.id, rangeDate]),
+  );
 
   useEffect(() => {
-    loadDashboard(driver?.id, rangeDate);
-  }, [driver?.id, rangeDate]);
+    return () => {
+      setDashboard(null);
+    };
+  }, []);
 
   return (
     <View className="bg-secondary h-screen flex p-2">
@@ -98,12 +101,19 @@ export default function DashboardScreen() {
             Productividad
           </Text>
 
-          <View className="px-4 items-center">
+          <View className="px-2 items-center">
             <BarChart
               yAxisSuffix=""
-              data={data}
+              data={{
+                labels: dashboard?.road_trips.route || [],
+                datasets: [
+                  {
+                    data: dashboard?.road_trips.count || [],
+                  },
+                ],
+              }}
               width={screenWidth - 32}
-              height={250}
+              height={225}
               yAxisLabel={""}
               chartConfig={chartConfig}
             />

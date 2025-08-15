@@ -1,33 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from "react";
+import { useEffect, useState, useRef } from "react";
 import { Text, Animated, StyleSheet } from "react-native";
 import { useInternetStatus } from "../utils/useInternetStatus";
 
 export default function BannerGlobalWithoutInternet() {
   const isConnected = useInternetStatus();
-  const slideAnim = React.useRef(new Animated.Value(-50)).current;
-  const [bannerColor, setBannerColor] = React.useState("red");
-  const [bannerText, setBannerText] = React.useState("");
+  const slideAnim = useRef(new Animated.Value(-50)).current;
+  const [bannerColor, setBannerColor] = useState("red");
+  const [bannerText, setBannerText] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isConnected === false) {
-      // Sin conexión → Banner rojo fijo
       setBannerColor("red");
-      setBannerText("❌ Sin conexión a internet");
+      setBannerText("Sin conexión a internet");
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 300,
+        duration: 350,
         useNativeDriver: true,
       }).start();
     }
 
     if (isConnected === true) {
-      // Conexión restaurada → Banner verde temporal
       setBannerColor("green");
-      setBannerText("✅ Conexión restaurada");
+      setBannerText("Conexión a internet restaurada");
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 300,
+        duration: 350,
         useNativeDriver: true,
       }).start();
 
@@ -43,7 +41,7 @@ export default function BannerGlobalWithoutInternet() {
     }
   }, [isConnected]);
 
-  if (isConnected === null) return null; // Cargando estado inicial
+  if (isConnected === null) return null;
 
   return (
     <Animated.View

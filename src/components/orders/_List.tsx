@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import { OrderCard } from "./_Card";
 import { Order } from "../../shared.types";
 

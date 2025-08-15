@@ -12,7 +12,7 @@ import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomePlay, FontAwesomeStop } from "../Icons";
 import Toast from "react-native-toast-message";
-import { startTrip } from "../../services/odoo/order";
+import { startTrip, tripFinished } from "../../services/odoo/order";
 import { DatetimeButton } from "./_DatetimeButton";
 
 export function OrderForm({ order }: { order: Order }) {
@@ -28,6 +28,42 @@ export function OrderForm({ order }: { order: Order }) {
     getRoute();
   });
 
+  const loadSaveOrderIdStarted = async () => {
+    try {
+      const saveOrderIdStarted = await AsyncStorage.getItem("orderIdStarted");
+      if (saveOrderIdStarted !== null) {
+        setOrderIdStarted(parseInt(saveOrderIdStarted));
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    loadSaveOrderIdStarted();
+  }, []);
+
+  const saveOrderIdStarted = async (orderId: string) => {
+    try {
+      await AsyncStorage.setItem("orderIdStarted", orderId);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const removeOrderIdStarted = async () => {
+    try {
+      await AsyncStorage.removeItem("orderIdStarted");
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    if (orderIdStarted) {
+      saveOrderIdStarted(String(orderIdStarted));
+    }
+  }, [orderIdStarted]);
   const decodePolyline = (
     t: string,
   ): { latitude: number; longitude: number }[] => {
@@ -82,34 +118,14 @@ export function OrderForm({ order }: { order: Order }) {
     }
   };
 
-  useEffect(() => {
-    const loadSaveOrderIdStarted = async () => {
-      try {
-        const saveOrderIdStarted = await AsyncStorage.getItem("orderIdStarted");
-        if (saveOrderIdStarted !== null) {
-          setOrderIdStarted(parseInt(saveOrderIdStarted));
-        }
-      } catch (e) {
-        console.error("Error cargando nombre", e);
-      }
-    };
-    loadSaveOrderIdStarted();
-  }, []);
-
-  useEffect(() => {
-    const saveOrderIdStarted = async () => {
-      try {
-        await AsyncStorage.setItem("orderIdStarted", orderIdStarted);
-      } catch (error) {
-        throw error;
-      }
-    };
-    if (orderIdStarted) {
-      saveOrderIdStarted();
-    }
-  }, [orderIdStarted]);
-
   const changeInitiated = async (flag: boolean) => {
+    if (flag && order.id !== orderIdStarted) {
+      Toast.show({
+        type: "error",
+        text1: "No puede tener dos ordenes iniciadas.",
+      });
+      return;
+    }
     setInitiated(flag);
     try {
       setLoading(true);
@@ -122,40 +138,108 @@ export function OrderForm({ order }: { order: Order }) {
       throw error;
     } finally {
       setLoading(false);
+      saveOrderIdStarted(String(order.id));
+    }
+  };
+
+  const validateFieldsTripCompleted = () => {
+    if (
+      !order.arrival_charge_time ||
+      !order.arrival_download_time ||
+      !order.departure_charge_time ||
+      !order.departure_download_time
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Se deben registrar fechas/horas para finalizar.",
+      });
+      return;
+    }
+
+    if (!order.guides) {
+      Toast.show({
+        type: "error",
+        text1: "Se deben registrar guías para finalizar.",
+      });
+      return;
+    }
+  };
+
+  const handleTripFinished = async () => {
+    validateFieldsTripCompleted();
+    try {
+      setLoading(true);
+      await tripFinished(order.id);
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error,
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+      removeOrderIdStarted();
     }
   };
 
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
+      {order.trip_status !== "finished" && (
+        <TouchableOpacity
+          className={`flex-1 px-5 py-2 items-center ${
+            initiated ? "bg-primary" : "bg-green-500"
+          }`}
+          onPress={() => changeInitiated(!initiated)}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <View className="items-center">
+              {initiated ? <FontAwesomeStop /> : <FontAwesomePlay />}
+              <Text
+                className={`items-center font-extrabold ${initiated ? "color-white" : ""}`}
+              >
+                {initiated ? "Detener" : "Iniciar"}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
       <View className="flex-row">
-        <View className="flex-1">
-          <Text className="font-bold">Cliente:</Text>
-          <TextInput readOnly value={order.partner_name} />
-        </View>
-        <View className="flex-1">
-          <TouchableOpacity
-            className={`flex-1 px-5 py-3 items-center rounded-full ${
-              initiated ? "bg-primary" : "bg-green-500"
-            }`}
-            onPress={() => changeInitiated(!initiated)}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <View className="items-center">
-                {initiated ? <FontAwesomeStop /> : <FontAwesomePlay />}
-                <Text
-                  className={`items-center font-extrabold ${initiated ? "color-white" : ""}`}
-                >
-                  {initiated ? "Detener" : "Iniciar"}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
+        <Text className="font-bold">Cliente:</Text>
+        <TextInput
+          className="py-0"
+          multiline
+          numberOfLines={4}
+          readOnly
+          value={order.partner_name}
+        />
       </View>
-      <Text className="font-bold">Ruta:</Text>
-      <TextInput readOnly value={order.route_name} />
+
+      <View className="flex-row">
+        <Text className="font-bold">Coordinador:</Text>
+        <TextInput
+          className="py-0"
+          multiline
+          numberOfLines={4}
+          readOnly
+          value={order.coordinator_name}
+        />
+      </View>
+      <View className="flex-row">
+        <Text className="font-bold">Placa:</Text>
+        <TextInput className="py-0" readOnly value={order.vehicle_name} />
+      </View>
+      <View className="flex-row">
+        <Text className="font-bold">Ruta:</Text>
+        <TextInput
+          className="py-0"
+          multiline
+          numberOfLines={4}
+          readOnly
+          value={order.route_name}
+        />
+      </View>
 
       <View className="flex items-center">
         <MapView
@@ -178,34 +262,82 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </MapView>
       </View>
+      {/*Data by business*/}
+      {order.child_business_code === "containers_import_immediate_loading" && (
+        <View>
+          <View className="flex-row">
+            <Text className="font-bold">Puerto:</Text>
+            <TextInput className="py-0" readOnly value={order.port_name} />
+          </View>
+          <View className="flex-row">
+            <Text className="font-bold">Clase de Contenedor:</Text>
+            <TextInput
+              className="py-0"
+              readOnly
+              value={order.kind_container_name}
+            />
+          </View>
+          <View className="flex-row">
+            <Text className="font-bold">Tipo de Chasis:</Text>
+            <TextInput className="py-0" readOnly value={order.chassis_type} />
+          </View>
+        </View>
+      )}
+
       {/*Buttons*/}
-      <View className="flex">
-        <DatetimeButton
-          orderId={order.id}
-          field="arrival_charge_time"
-          datetime={order.arrival_charge_time}
-          title="Llegada Carga"
-        />
-        <DatetimeButton
-          orderId={order.id}
-          field="arrival_charge_time"
-          datetime={order.arrival_download_time}
-          title="Salida Carga"
-        />
-        <DatetimeButton
-          orderId={order.id}
-          field="departure_charge_time"
-          datetime={order.departure_charge_time}
-          title="Llegada Descarga"
-        />
-        <DatetimeButton
-          orderId={order.id}
-          field="departure_download_time"
-          datetime={order.departure_download_time}
-          title="Salida Descarga"
-        />
-      </View>
+      {order.trip_status && (
+        <View className="flex">
+          <Text className="font-extrabold text-lg color-primary underline mb-2">
+            Registrar Fechas/Horas:
+          </Text>
+          <DatetimeButton
+            orderId={order.id}
+            field="arrival_charge_time"
+            datetime={order.arrival_charge_time}
+            title="Llegada Carga"
+            showButton={order.trip_status !== "finished"}
+          />
+          <DatetimeButton
+            orderId={order.id}
+            field="arrival_charge_time"
+            datetime={order.arrival_download_time}
+            title="Salida Carga"
+            showButton={order.trip_status !== "finished"}
+          />
+          <DatetimeButton
+            orderId={order.id}
+            field="departure_charge_time"
+            datetime={order.departure_charge_time}
+            title="Llegada Descarga"
+            showButton={order.trip_status !== "finished"}
+          />
+          <DatetimeButton
+            orderId={order.id}
+            field="departure_download_time"
+            datetime={order.departure_download_time}
+            title="Salida Descarga"
+            showButton={order.trip_status !== "finished"}
+          />
+        </View>
+      )}
       {order.guides.length > 1 && <ListGuides guides={order.guides} />}
+      {["initiated", null].includes(order.trip_status) && (
+        <TouchableOpacity
+          className="flex-1 mb-2 px-5 py-2 items-center bg-blue-900"
+          onPress={() => handleTripFinished()}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <View className="items-center">
+              <FontAwesomeStop />
+              <Text className="items-center font-extrabold color-white">
+                Finalizar
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

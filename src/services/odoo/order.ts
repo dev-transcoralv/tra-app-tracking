@@ -70,3 +70,21 @@ export async function updateHours(id: number, field: string): Promise<Order> {
     throw error;
   }
 }
+
+export async function tripFinished(id: number): Promise<Order> {
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/trip_finished`;
+  try {
+    const response = await fetch(URL, options);
+    const json = await response.json();
+    return json as Order;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}

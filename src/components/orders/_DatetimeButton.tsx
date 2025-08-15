@@ -8,9 +8,16 @@ type Props = {
   title: string;
   orderId: number;
   field: string;
+  showButton: boolean;
 };
 
-export function DatetimeButton({ orderId, datetime, title, field }: Props) {
+export function DatetimeButton({
+  orderId,
+  datetime,
+  title,
+  field,
+  showButton,
+}: Props) {
   const [loading, setLoading] = useState(false);
   const update = async () => {
     try {
@@ -31,20 +38,22 @@ export function DatetimeButton({ orderId, datetime, title, field }: Props) {
     <View>
       <Text className="font-bold">{`Fecha/Hora ${title}`}</Text>
       <View className="flex-row justify-between">
-        <Text className="py-3">{datetime}</Text>
-        <TouchableOpacity
-          style={{ width: 150 }}
-          className={`px-5 py-3 items-center rounded-full bg-sky-500`}
-          onPress={() => update()}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <View className="items-center">
-              <Text className="text-white font-extrabold">{title}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        <Text className="py-1">{datetime || "00/00/0000 00:00:00"}</Text>
+        {showButton && (
+          <TouchableOpacity
+            style={{ width: 150 }}
+            className={`px-4 py-2 items-center rounded-full bg-blue-900`}
+            onPress={() => update()}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <View className="items-center">
+                <Text className="text-white font-extrabold">{title}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

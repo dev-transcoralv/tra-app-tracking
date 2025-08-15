@@ -7,6 +7,7 @@ export const DriverSchema = z.object({
   vat: z.string(),
   street: z.string(),
   license_type: z.string(),
+  fcm_token: z.string().nullable(),
 });
 
 // Response Login
@@ -33,7 +34,9 @@ export const OrderSchema = z.object({
   name: z.string(),
   trip_status: z.enum(["initiated", "finished"]).nullable(),
   service_code: z.string(),
+  coordinator_name: z.string(),
   route_name: z.string(),
+  vehicle_name: z.string(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
@@ -43,6 +46,12 @@ export const OrderSchema = z.object({
   arrival_download_time: z.string().nullable(),
   departure_download_time: z.string().nullable(),
   guides: z.array(GuideSchema),
+  child_business_code: z
+    .enum(["containers_import_immediate_loading"])
+    .nullable(),
+  port_name: z.string(),
+  kind_container_name: z.string(),
+  chassis_type: z.string(),
 });
 
 // Response List Order
@@ -52,11 +61,18 @@ export const ResponseListOrderSchema = z.object({
 });
 
 // Dashboard
+const roadTripsSchema = z.object({
+  route: z.array(z.string()).nullable(),
+  count: z.array(z.number()).nullable(),
+});
+
 export const DashboardSchema = z.object({
   pending_trips: z.number(),
   finished_trips: z.number(),
   kilometers_traveled: z.number(),
   hours_worked: z.string(),
+  trip_in_progress: OrderSchema.nullable(),
+  road_trips: roadTripsSchema,
 });
 
 export type Driver = z.infer<typeof DriverSchema>;

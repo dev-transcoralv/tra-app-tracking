@@ -38,26 +38,32 @@ export function OrderCard({ order }: { order: Order }) {
           </View>
         )}
 
-        <StyledText className="text-sm text-gray-500 mb-1 font-bold">
+        <StyledText className="text-l text-primary font-bold">
           {order.name}
         </StyledText>
-        <StyledView className="flex-row items-center mb-2">
+        <StyledView className="flex-row items-center my-1">
           <FontAwesome5Route props={{ size: 2 }} />
           <StyledText className="ml-2 text-gray-800 font-semibold text-sm">
             {order.route_name}
           </StyledText>
         </StyledView>
-        <StyledView className="flex-row items-center mb-2">
-          <StyledText className="ml-2 font-bold text-sm">Cliente:</StyledText>
-          <StyledText className="ml-2 text-gray-800 font-semibold text-sm">
+        <StyledView className="flex-row items-center">
+          <StyledText className="ml-1 font-bold text-sm">Cliente:</StyledText>
+          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.partner_name}
           </StyledText>
         </StyledView>
-        <StyledView className="flex-row items-center mb-2">
-          <StyledText className="ml-2 font-bold text-sm">
+        <StyledView className="flex-row items-center">
+          <StyledText className="ml-1 font-bold text-sm">Placa:</StyledText>
+          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
+            {order.vehicle_name}
+          </StyledText>
+        </StyledView>
+        <StyledView className="flex-row items-center">
+          <StyledText className="ml-1 font-bold text-sm">
             Fecha/Hora:
           </StyledText>
-          <StyledText className="ml-2 text-gray-800 font-semibold text-sm">
+          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.eta_charge}
           </StyledText>
         </StyledView>
