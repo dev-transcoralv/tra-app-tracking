@@ -1,4 +1,10 @@
-import { View, ActivityIndicator, Text, Dimensions } from "react-native";
+import {
+  View,
+  ActivityIndicator,
+  Text,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import { getDashboard } from "../../../services/odoo/dasbhoard";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../utils/authContext";
@@ -72,7 +78,7 @@ export default function DashboardScreen() {
       {loading ? (
         <ActivityIndicator color="#fff" />
       ) : (
-        <View>
+        <ScrollView>
           <DashboardCard count={dashboard?.finished_trips} status="finished" />
           <DashboardCard count={dashboard?.pending_trips} status="pending" />
           <View className="flex-row justify-between gap-x-2">
@@ -102,7 +108,7 @@ export default function DashboardScreen() {
               chartConfig={chartConfig}
             />
           </View>
-        </View>
+        </ScrollView>
       )}
     </View>
   );

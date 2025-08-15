@@ -7,14 +7,11 @@ import { AuthContext } from "../../../../utils/authContext";
 import { Driver, Order } from "../../../../shared.types";
 import FilterSelection from "../../../../components/FilterSelection";
 
-const PAGE_SIZE = 5;
-
 export default function IndexScreen() {
   const authContext = useContext(AuthContext);
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const [status, setStatus] = useState("pending");
 
   const options = [
@@ -27,7 +24,6 @@ export default function IndexScreen() {
 
   const loadOrders = useCallback(
     async (pageNumber: number, filterStatus: string) => {
-      if (isLoading || !hasMore) return;
       setIsLoading(true);
       const data = await getListOrders({
         page: pageNumber,
@@ -36,9 +32,8 @@ export default function IndexScreen() {
       });
       const orders = data.results;
       setOrders((previousPage) =>
-        page === 1 ? orders : [...previousPage, ...orders],
+        pageNumber === 1 ? orders : [...previousPage, ...orders],
       );
-      setHasMore(data.total === PAGE_SIZE);
       setIsLoading(false);
     },
     [driver?.id],
@@ -49,7 +44,7 @@ export default function IndexScreen() {
   }, [page, status]);
 
   const handleLoadMore = () => {
-    if (!isLoading && hasMore) {
+    if (!isLoading) {
       setPage((previousPage) => previousPage + 1);
     }
   };
@@ -58,7 +53,10 @@ export default function IndexScreen() {
     <View className="bg-secondary h-screen flex p-2">
       <FilterSelection
         options={options}
-        onSelect={(value) => setStatus(value)}
+        onSelect={(value) => {
+          setStatus(value);
+          setPage(1);
+        }}
       />
       <ListOrders
         orders={orders}

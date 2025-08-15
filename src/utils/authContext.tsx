@@ -4,6 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/odoo/login";
 import { ResponseLogin, Driver } from "../shared.types";
 import Toast from "react-native-toast-message";
+import messaging from "@react-native-firebase/messaging";
+import { Alert } from "react-native";
 
 type AuthState = {
   driver: Driver | null;
@@ -23,16 +25,44 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const setupNotifications = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      const token = await messaging().getToken();
+      console.log("FCM Token:", token);
+      // TODO: send token to your backend
+    }
+
+    // Listen to foreground messages
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      Alert.alert("Notification", remoteMessage.notification?.body || "");
+    });
+
+    return unsubscribe;
+  };
+
   useEffect(() => {
+    let unsubscribeMessaging: any;
     const loadDriver = async () => {
       const token = await AsyncStorage.getItem("token");
       const user = await AsyncStorage.getItem("driver");
       if (token && user) {
         setDriver(JSON.parse(user));
+        // Setup notifications only when user is logged in
+        setupNotifications().then((unsubscribe) => {
+          unsubscribeMessaging = unsubscribe;
+        });
       }
       setIsLoggedIn(false);
     };
     loadDriver();
+    return () => {
+      unsubscribeMessaging && unsubscribeMessaging();
+    };
   }, []);
 
   const logIn = async (username: string, password: string) => {

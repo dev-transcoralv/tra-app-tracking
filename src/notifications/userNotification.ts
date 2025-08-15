@@ -8,9 +8,9 @@ const requestUserPermission = async () => {
     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
   );
   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-    console.log("Notification  permission granted");
+    console.log("Notification permission granted");
   } else {
-    console.log("Notification  permission denied");
+    console.log("Notification permission denied");
   }
 };
 

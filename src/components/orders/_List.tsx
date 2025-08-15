@@ -14,17 +14,15 @@ export function ListOrders({ isLoading, orders, handleLoadMore }: Props) {
   };
 
   return (
-    <View>
-      <FlatList
-        data={orders}
-        keyExtractor={(order: Order) => order.id.toString()}
-        renderItem={renderItem}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isLoading ? <ActivityIndicator className="my-4" /> : null
-        }
-      />
-    </View>
+    <FlatList
+      data={orders}
+      keyExtractor={(order: Order) => order.id.toString()}
+      renderItem={renderItem}
+      onEndReached={handleLoadMore}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        isLoading ? <ActivityIndicator className="my-4" /> : null
+      }
+    />
   );
 }
