@@ -12,7 +12,7 @@ import { Dashboard, Driver } from "../../../shared.types";
 import DashboardCard from "../../../components/dashboard/_Card";
 import DashboardCardInformation from "../../../components/dashboard/_CardInformation";
 import FilterSelection from "../../../components/FilterSelection";
-import { BarChart } from "react-native-chart-kit";
+import { CartesianChart, Bar } from "victory-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function DashboardScreen() {
@@ -23,24 +23,13 @@ export default function DashboardScreen() {
 
   const driver: Driver | null = authContext.driver;
 
-  const screenWidth = Dimensions.get("window").width;
+  // const screenWidth = Dimensions.get("window").width;
 
   const options = [
     { label: "Hoy", value: "today" },
     { label: "Semana", value: "week" },
     { label: "Mes", value: "month" },
   ];
-
-  const chartConfig = {
-    backgroundGradientFrom: "#1c3b8a",
-    backgroundGradientTo: "#1c3b8a",
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -102,21 +91,20 @@ export default function DashboardScreen() {
           </Text>
 
           <View className="px-2 items-center">
-            <BarChart
-              yAxisSuffix=""
-              data={{
-                labels: dashboard?.road_trips.route || [],
-                datasets: [
-                  {
-                    data: dashboard?.road_trips.count || [],
-                  },
-                ],
-              }}
-              width={screenWidth - 32}
-              height={225}
-              yAxisLabel={""}
-              chartConfig={chartConfig}
-            />
+            <CartesianChart
+              data={dashboard?.road_trips || []}
+              xKey="route"
+              yKeys={["count"]}
+            >
+              {({ points, chartBounds }) => (
+                <Bar
+                  points={points.count}
+                  chartBounds={chartBounds}
+                  color="white"
+                  roundedCorners={{ topLeft: 10, topRight: 10 }}
+                />
+              )}
+            </CartesianChart>
           </View>
         </ScrollView>
       )}

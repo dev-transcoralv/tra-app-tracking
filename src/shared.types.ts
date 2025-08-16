@@ -62,8 +62,8 @@ export const ResponseListOrderSchema = z.object({
 
 // Dashboard
 const roadTripsSchema = z.object({
-  route: z.array(z.string()).nullable(),
-  count: z.array(z.number()).nullable(),
+  route: z.string(),
+  count: z.number(),
 });
 
 export const DashboardSchema = z.object({
@@ -72,7 +72,7 @@ export const DashboardSchema = z.object({
   kilometers_traveled: z.number(),
   hours_worked: z.string(),
   trip_in_progress: OrderSchema.nullable(),
-  road_trips: roadTripsSchema,
+  road_trips: z.array(roadTripsSchema),
 });
 
 export type Driver = z.infer<typeof DriverSchema>;

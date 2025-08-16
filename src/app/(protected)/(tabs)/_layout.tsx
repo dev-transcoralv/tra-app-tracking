@@ -4,8 +4,10 @@ import {
   FontAwesomeList,
   FontAwesomeUser,
 } from "../../../components/Icons";
+import { useExpoPushNotifications } from "../../../notifications/useExpoPushNotifications";
 
 export default function TabsLayout() {
+  // useExpoPushNotifications();
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "#e10718" }}>
       <Tabs.Screen
