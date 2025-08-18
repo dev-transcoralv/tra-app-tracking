@@ -4,8 +4,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/odoo/login";
 import { ResponseLogin, Driver } from "../shared.types";
 import Toast from "react-native-toast-message";
-import messaging from "@react-native-firebase/messaging";
-import { Alert } from "react-native";
 
 type AuthState = {
   driver: Driver | null;

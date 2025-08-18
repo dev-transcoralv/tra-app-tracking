@@ -1,10 +1,4 @@
-import {
-  View,
-  ActivityIndicator,
-  Text,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { View, ActivityIndicator, Text, ScrollView } from "react-native";
 import { getDashboard } from "../../../services/odoo/dasbhoard";
 import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "../../../utils/authContext";
@@ -12,7 +6,6 @@ import { Dashboard, Driver } from "../../../shared.types";
 import DashboardCard from "../../../components/dashboard/_Card";
 import DashboardCardInformation from "../../../components/dashboard/_CardInformation";
 import FilterSelection from "../../../components/FilterSelection";
-import { CartesianChart, Bar } from "victory-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function DashboardScreen() {
@@ -22,8 +15,6 @@ export default function DashboardScreen() {
   const [rangeDate, setRangeDate] = useState("today");
 
   const driver: Driver | null = authContext.driver;
-
-  // const screenWidth = Dimensions.get("window").width;
 
   const options = [
     { label: "Hoy", value: "today" },
@@ -90,22 +81,7 @@ export default function DashboardScreen() {
             Productividad
           </Text>
 
-          <View className="px-2 items-center">
-            <CartesianChart
-              data={dashboard?.road_trips || []}
-              xKey="route"
-              yKeys={["count"]}
-            >
-              {({ points, chartBounds }) => (
-                <Bar
-                  points={points.count}
-                  chartBounds={chartBounds}
-                  color="white"
-                  roundedCorners={{ topLeft: 10, topRight: 10 }}
-                />
-              )}
-            </CartesianChart>
-          </View>
+          <View className="px-2 items-center"></View>
         </ScrollView>
       )}
     </View>

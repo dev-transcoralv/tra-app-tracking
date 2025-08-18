@@ -3,6 +3,15 @@ import { Platform, Alert } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
+import { useRouter } from "expo-router";
+import { useContext } from "react";
+import { AuthContext } from "../utils/authContext"; // adjust path
+import { updatePushToken } from "../services/odoo/driver";
+
+type NotificationData = {
+  order_id: number;
+  order_name: string;
+};
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -66,19 +75,30 @@ async function registerForPushNotificationsAsync() {
 }
 
 export function useExpoPushNotifications() {
+  const router = useRouter();
   const [expoPushToken, setExpoPushToken] = useState<string>("");
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
-
+  const { driver } = useContext(AuthContext);
   const notificationListener = useRef<Notifications.Subscription | null>(null);
   const responseListener = useRef<Notifications.Subscription | null>(null);
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => {
-        if (token) setExpoPushToken(token);
-      })
-      .catch((error) => setExpoPushToken(String(error)));
+    const registerAndSaveToken = async () => {
+      try {
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+          setExpoPushToken(token);
+          if (driver?.id) {
+            await updatePushToken(driver.id, token);
+          }
+        }
+      } catch (error) {
+        console.error("Push registration error:", error);
+      }
+    };
+
+    registerAndSaveToken();
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -88,13 +108,20 @@ export function useExpoPushNotifications() {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("Notification tapped:", response);
+        const data = response.notification.request.content
+          .data as NotificationData;
+        router.push(`/orders/${data.order_id}`);
+        router.push({
+          pathname: `orders/${data.order_id}`,
+          params: { reference: data.order_name },
+        });
       });
 
     return () => {
       notificationListener.current?.remove();
       responseListener.current?.remove();
     };
-  }, []);
+  }, [router, driver?.id]);
 
   return { expoPushToken, notification };
 }

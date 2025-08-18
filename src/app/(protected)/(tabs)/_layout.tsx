@@ -7,7 +7,7 @@ import {
 import { useExpoPushNotifications } from "../../../notifications/useExpoPushNotifications";
 
 export default function TabsLayout() {
-  // useExpoPushNotifications();
+  useExpoPushNotifications();
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "#e10718" }}>
       <Tabs.Screen

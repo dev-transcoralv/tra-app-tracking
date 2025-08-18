@@ -17,9 +17,11 @@ import { DatetimeButton } from "./_DatetimeButton";
 
 export function OrderForm({ order }: { order: Order }) {
   const ORIGIN: Geolocation = order.route_geolocation_origin;
-  const DESTINATION: Geolocation = order.route_geolocation_origin;
+  const DESTINATION: Geolocation = order.route_geolocation_destination;
 
-  const [route, setRoute] = useState([]);
+  const [route, setRoute] = useState<{ latitude: number; longitude: number }[]>(
+    [],
+  );
   const [initiated, setInitiated] = useState(false);
   const [orderIdStarted, setOrderIdStarted] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -64,6 +66,7 @@ export function OrderForm({ order }: { order: Order }) {
       saveOrderIdStarted(String(orderIdStarted));
     }
   }, [orderIdStarted]);
+
   const decodePolyline = (
     t: string,
   ): { latitude: number; longitude: number }[] => {
@@ -107,12 +110,12 @@ export function OrderForm({ order }: { order: Order }) {
 
     const response = await fetch(url);
     const json = await response.json();
-    const data = (json as { data: any }).data;
 
-    console.log(data.routes);
+    const routes = (json as { routes: any }).routes;
 
-    if (data.routes.length > 0) {
-      const codedPoints = data.routes[0].overview_polyline.points;
+    if (routes.length > 0) {
+      const codedPoints = routes[0].overview_polyline.points;
+
       const decodedPoints = decodePolyline(codedPoints);
       setRoute(decodedPoints);
     }
@@ -245,14 +248,15 @@ export function OrderForm({ order }: { order: Order }) {
         <MapView
           provider={PROVIDER_GOOGLE}
           style={{
+            flex: 1,
             width: 300,
             height: 200,
           }}
           initialRegion={{
             latitude: ORIGIN.latitude,
             longitude: ORIGIN.longitude,
-            latitudeDelta: 2,
-            longitudeDelta: 2,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
           }}
         >
           <Marker coordinate={ORIGIN} title="Origen" />

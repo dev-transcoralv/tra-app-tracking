@@ -7,7 +7,7 @@ export const DriverSchema = z.object({
   vat: z.string(),
   street: z.string(),
   license_type: z.string(),
-  fcm_token: z.string().nullable(),
+  push_token: z.string().nullable(),
 });
 
 // Response Login
