@@ -6,6 +6,13 @@ interface Props {
   status: string;
 }
 
+type BusinessGrainData = {
+  burden_kg: number;
+  tara_kg: number;
+  final_burden_kg: number;
+  final_tara_kg: number;
+};
+
 export async function getListOrders({
   page,
   driverId,
@@ -61,6 +68,28 @@ export async function updateHours(id: number, field: string): Promise<Order> {
     body: JSON.stringify({ field: field }),
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_hours`;
+  try {
+    const response = await fetch(URL, options);
+    const json = await response.json();
+    return json as Order;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+export async function updateBusinessGrain(
+  id: number,
+  data: BusinessGrainData,
+): Promise<Order> {
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  };
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_business_grain`;
   try {
     const response = await fetch(URL, options);
     const json = await response.json();

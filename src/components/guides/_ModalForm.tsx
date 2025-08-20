@@ -94,7 +94,7 @@ export function GuideModalForm({ guide, onClose }: Props) {
       <View style={{ padding: 20, flex: 1 }}>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
-          <View className="flex-row justify-between mb-10">
+          <View className="flex-row justify-between">
             <TouchableOpacity
               style={{
                 backgroundColor: "#007AFF",

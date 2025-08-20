@@ -55,6 +55,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const logOut = async () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("driver");
+    await AsyncStorage.removeItem("orderIdStarted");
     setDriver(null);
     setIsLoggedIn(false);
   };

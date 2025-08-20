@@ -4,12 +4,12 @@ import { Order } from "../../shared.types";
 import { useCallback } from "react";
 
 interface Props {
-  isLoading: boolean;
+  loading: boolean;
   orders: Order[];
   handleLoadMore: () => void;
 }
 
-export function ListOrders({ isLoading, orders, handleLoadMore }: Props) {
+export function ListOrders({ loading, orders, handleLoadMore }: Props) {
   const renderItem = useCallback(({ item }: { item: Order }) => {
     return <OrderCard order={item} />;
   }, []);
@@ -26,16 +26,16 @@ export function ListOrders({ isLoading, orders, handleLoadMore }: Props) {
       windowSize={5}
       maxToRenderPerBatch={10}
       ListEmptyComponent={
-        !isLoading ? (
+        !loading ? (
           <View className="py-8 items-center">
-            <Text className="text-gray-500">No se encontraron ordenes.</Text>
+            <Text className="text-white">No se encontraron ordenes.</Text>
           </View>
         ) : null
       }
       ListFooterComponent={
-        isLoading ? (
+        loading ? (
           <View className="my-4 items-center">
-            <ActivityIndicator size="small" />
+            <ActivityIndicator color={"#fff"} size={"large"} />
           </View>
         ) : null
       }

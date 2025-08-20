@@ -7,6 +7,7 @@ import DashboardCard from "../../../components/dashboard/_Card";
 import DashboardCardInformation from "../../../components/dashboard/_CardInformation";
 import FilterSelection from "../../../components/FilterSelection";
 import { useFocusEffect } from "@react-navigation/native";
+import { LineChart } from "react-native-charts-wrapper";
 
 export default function DashboardScreen() {
   const authContext = useContext(AuthContext);
@@ -59,7 +60,7 @@ export default function DashboardScreen() {
         onSelect={(value) => setRangeDate(value)}
       />
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={"#fff"} size={"large"} />
       ) : (
         <ScrollView>
           <DashboardCard count={dashboard?.finished_trips} status="finished" />
@@ -71,7 +72,7 @@ export default function DashboardScreen() {
               icon="route"
             />
             <DashboardCardInformation
-              label="Horas Trabajadas"
+              label="Tiempo de Manejo"
               title={`${dashboard?.hours_worked}`}
               icon="hours"
             />
@@ -80,7 +81,6 @@ export default function DashboardScreen() {
           <Text className="font-extrabold mb-2 text-2xl color-white">
             Productividad
           </Text>
-
           <View className="px-2 items-center"></View>
         </ScrollView>
       )}

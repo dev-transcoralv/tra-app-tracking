@@ -33,8 +33,9 @@ export const OrderSchema = z.object({
   id: z.number(),
   name: z.string(),
   trip_status: z.enum(["initiated", "finished"]).nullable(),
-  service_code: z.string(),
+  business_code: z.enum(["containers", "grain"]),
   coordinator_name: z.string(),
+  coordinator_mobile: z.string().nullable(),
   route_name: z.string(),
   vehicle_name: z.string(),
   route_geolocation_origin: GeolocationSchema,
@@ -52,6 +53,11 @@ export const OrderSchema = z.object({
   port_name: z.string(),
   kind_container_name: z.string(),
   chassis_type: z.string(),
+  material_name: z.string(),
+  burden_kg: z.number(),
+  tara_kg: z.number(),
+  final_burden_kg: z.number(),
+  final_tara_kg: z.number(),
 });
 
 // Response List Order
