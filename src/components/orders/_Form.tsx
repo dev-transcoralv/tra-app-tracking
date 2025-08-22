@@ -16,12 +16,25 @@ import { DatetimeButton } from "./_DatetimeButton";
 import WhatsAppButton from "../WhatsappButton";
 import { GrainForm } from "./_GrainForm";
 import { RouteMapView } from "../../components/RouteMapView";
+import { ListObservations } from "../observations/_List";
 
 export function OrderForm({ order }: { order: Order }) {
+  const [currentOrder, setCurrentOrder] = useState<Order>(order);
   const [initiated, setInitiated] = useState(false);
   const [orderIdStarted, setOrderIdStarted] = useState<number | null>(null);
   const [loadingChangeInitiated, setLoadingChangeInitiated] = useState(false);
   const [loadingTripFinished, setLoadingTripFinished] = useState(false);
+
+  useEffect(() => {
+    setCurrentOrder(order); // si viene un order nuevo desde arriba
+  }, [order]);
+
+  const updateOrderField = (field: keyof Order, value: any) => {
+    setCurrentOrder((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const loadSaveOrderIdStarted = async () => {
     try {
@@ -61,7 +74,7 @@ export function OrderForm({ order }: { order: Order }) {
   }, [orderIdStarted]);
 
   const changeInitiated = async (flag: boolean) => {
-    if (flag && orderIdStarted && order.id !== orderIdStarted) {
+    if (flag && orderIdStarted && currentOrder.id !== orderIdStarted) {
       Toast.show({
         type: "error",
         text1: "No puede tener dos ordenes iniciadas.",
@@ -71,7 +84,7 @@ export function OrderForm({ order }: { order: Order }) {
     setInitiated(flag);
     try {
       setLoadingChangeInitiated(true);
-      await startTrip(order.id);
+      await startTrip(currentOrder.id);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -80,16 +93,16 @@ export function OrderForm({ order }: { order: Order }) {
       throw error;
     } finally {
       setLoadingChangeInitiated(false);
-      saveOrderIdStarted(String(order.id));
+      saveOrderIdStarted(String(currentOrder.id));
     }
   };
 
   const validateFieldsTripCompleted = () => {
     if (
-      !order.arrival_charge_time ||
-      !order.arrival_download_time ||
-      !order.departure_charge_time ||
-      !order.departure_download_time
+      !currentOrder.arrival_charge_time ||
+      !currentOrder.arrival_download_time ||
+      !currentOrder.departure_charge_time ||
+      !currentOrder.departure_download_time
     ) {
       Toast.show({
         type: "error",
@@ -98,7 +111,7 @@ export function OrderForm({ order }: { order: Order }) {
       return;
     }
 
-    if (!order.guides) {
+    if (!currentOrder.guides) {
       Toast.show({
         type: "error",
         text1: "Se deben registrar guías para finalizar.",
@@ -106,12 +119,12 @@ export function OrderForm({ order }: { order: Order }) {
       return;
     }
     /*Validate by business*/
-    if (order.business_code === "grain") {
+    if (currentOrder.business_code === "grain") {
       if (
-        !order.burden_kg ||
-        !order.tara_kg ||
-        !order.final_burden_kg ||
-        !order.final_tara_kg
+        !currentOrder.burden_kg ||
+        !currentOrder.tara_kg ||
+        !currentOrder.final_burden_kg ||
+        !currentOrder.final_tara_kg
       ) {
         Toast.show({
           type: "error",
@@ -126,7 +139,7 @@ export function OrderForm({ order }: { order: Order }) {
     validateFieldsTripCompleted();
     try {
       setLoadingTripFinished(true);
-      await tripFinished(order.id);
+      await tripFinished(currentOrder.id);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -141,10 +154,10 @@ export function OrderForm({ order }: { order: Order }) {
 
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
-      {order.trip_status !== "finished" && (
+      {currentOrder.trip_status === "finished" && (
         <TouchableOpacity
           className={`flex-1 px-5 py-2 items-center ${
-            initiated || order.trip_status === "initiated"
+            initiated || (currentOrder.trip_status as string) === "initiated"
               ? "bg-primary"
               : "bg-green-500"
           }`}
@@ -154,15 +167,17 @@ export function OrderForm({ order }: { order: Order }) {
             <ActivityIndicator color="#fff" />
           ) : (
             <View className="items-center">
-              {initiated || order.trip_status === "initiated" ? (
+              {initiated ||
+              (currentOrder.trip_status as string) === "initiated" ? (
                 <FontAwesomeStop />
               ) : (
                 <FontAwesomePlay />
               )}
               <Text
-                className={`items-center font-extrabold ${initiated || order.trip_status === "initiated" ? "color-white" : ""}`}
+                className={`items-center font-extrabold ${initiated || (currentOrder.trip_status as string) === "initiated" ? "color-white" : ""}`}
               >
-                {initiated || order.trip_status === "initiated"
+                {initiated ||
+                (currentOrder.trip_status as string) === "initiated"
                   ? "Detener"
                   : "Iniciar"}
               </Text>
@@ -177,7 +192,7 @@ export function OrderForm({ order }: { order: Order }) {
           multiline
           numberOfLines={4}
           editable={false}
-          value={order.partner_name}
+          value={currentOrder.partner_name}
         />
       </View>
 
@@ -186,13 +201,13 @@ export function OrderForm({ order }: { order: Order }) {
         <TextInput
           className="w-7/12 align-middle"
           editable={false}
-          value={order.coordinator_name}
+          value={currentOrder.coordinator_name}
         />
-        {order.coordinator_mobile && (
+        {currentOrder.coordinator_mobile && (
           <View className="w-1/6">
             <WhatsAppButton
-              phone={order.coordinator_mobile}
-              message={`Tengo una duda sobre la orden no. ${order.name}`}
+              phone={currentOrder.coordinator_mobile}
+              message={`Tengo una duda sobre la orden no. ${currentOrder.name}`}
             />
           </View>
         )}
@@ -202,7 +217,7 @@ export function OrderForm({ order }: { order: Order }) {
         <TextInput
           className="py-0"
           editable={false}
-          value={order.vehicle_name}
+          value={currentOrder.vehicle_name}
         />
       </View>
       <View className="flex-row">
@@ -212,27 +227,28 @@ export function OrderForm({ order }: { order: Order }) {
           multiline
           numberOfLines={4}
           editable={false}
-          value={order.route_name}
+          value={currentOrder.route_name}
         />
       </View>
 
       <View className="flex items-center">
         <RouteMapView
-          origin={order.route_geolocation_origin}
-          destination={order.route_geolocation_destination}
+          origin={currentOrder.route_geolocation_origin}
+          destination={currentOrder.route_geolocation_destination}
           width={300}
           height={200}
         />
       </View>
       {/*Data by business*/}
-      {order.child_business_code === "containers_import_immediate_loading" && (
+      {currentOrder.child_business_code ===
+        "containers_import_immediate_loading" && (
         <View>
           <View className="flex-row">
             <Text className="font-bold">Puerto:</Text>
             <TextInput
               className="py-0"
               editable={false}
-              value={order.port_name}
+              value={currentOrder.port_name}
             />
           </View>
           <View className="flex-row">
@@ -240,7 +256,7 @@ export function OrderForm({ order }: { order: Order }) {
             <TextInput
               className="py-0"
               editable={false}
-              value={order.kind_container_name}
+              value={currentOrder.kind_container_name}
             />
           </View>
           <View className="flex-row">
@@ -248,66 +264,88 @@ export function OrderForm({ order }: { order: Order }) {
             <TextInput
               className="py-0"
               editable={false}
-              value={order.chassis_type}
+              value={currentOrder.chassis_type}
             />
           </View>
         </View>
       )}
-      {order.business_code === "grain" && (
+      {currentOrder.business_code === "grain" && (
         <View>
           <View className="flex-row">
             <Text className="font-bold">Material:</Text>
             <TextInput
               className="py-0"
               editable={false}
-              value={order.material_name}
+              value={currentOrder.material_name}
             />
           </View>
           <Text className="font-extrabold text-lg color-primary underline mb-2">
             Registrar Pesos
           </Text>
-          <GrainForm order={order} />
+          <GrainForm order={currentOrder} />
         </View>
       )}
 
       {/*Buttons*/}
-      {order.trip_status && (
+      {currentOrder.trip_status && (
         <View className="flex">
           <Text className="font-extrabold text-lg color-primary underline mb-2">
             Registrar Fechas/Horas:
           </Text>
           <DatetimeButton
-            orderId={order.id}
+            orderId={currentOrder.id}
             field="arrival_charge_time"
-            datetime={order.arrival_charge_time}
+            datetime={currentOrder.arrival_charge_time}
             title="Llegada Carga"
-            showButton={order.trip_status !== "finished"}
+            orderFinished={currentOrder.trip_status === "finished"}
+            onChange={(value) => updateOrderField("arrival_charge_time", value)}
           />
           <DatetimeButton
-            orderId={order.id}
+            orderId={currentOrder.id}
             field="arrival_charge_time"
-            datetime={order.arrival_download_time}
+            datetime={currentOrder.arrival_download_time}
             title="Salida Carga"
-            showButton={order.trip_status !== "finished"}
+            orderFinished={currentOrder.trip_status === "finished"}
+            onChange={(value) =>
+              updateOrderField("arrival_download_time", value)
+            }
           />
           <DatetimeButton
-            orderId={order.id}
+            orderId={currentOrder.id}
             field="departure_charge_time"
-            datetime={order.departure_charge_time}
+            datetime={currentOrder.departure_charge_time}
             title="Llegada Descarga"
-            showButton={order.trip_status !== "finished"}
+            orderFinished={currentOrder.trip_status === "finished"}
+            onChange={(value) =>
+              updateOrderField("departure_charge_time", value)
+            }
           />
           <DatetimeButton
-            orderId={order.id}
+            orderId={currentOrder.id}
             field="departure_download_time"
-            datetime={order.departure_download_time}
+            datetime={currentOrder.departure_download_time}
             title="Salida Descarga"
-            showButton={order.trip_status !== "finished"}
+            orderFinished={currentOrder.trip_status === "finished"}
+            onChange={(value) =>
+              updateOrderField("departure_download_time", value)
+            }
           />
         </View>
       )}
-      {order.guides?.length >= 1 && <ListGuides guides={order.guides} />}
-      {["initiated", null].includes(order.trip_status) && (
+      {/*Buttons*/}
+      {currentOrder.guides?.length >= 1 && (
+        <ListGuides guides={currentOrder.guides} />
+      )}
+      {/*Observations*/}
+      <ListObservations
+        observations={currentOrder.observations}
+        order={currentOrder}
+        onUpdate={(newObservations) =>
+          updateOrderField("observations", newObservations)
+        }
+        orderFinished={currentOrder.trip_status === "finished"}
+      />
+      {["initiated", null].includes(currentOrder.trip_status) && (
         <TouchableOpacity
           className="flex-1 mb-2 px-5 py-2 items-center bg-blue-900"
           onPress={() => handleTripFinished()}

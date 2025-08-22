@@ -1,4 +1,5 @@
 import { Redirect, Stack } from "expo-router";
+import { NotificationProvider } from "../../utils/NotificationProvider";
 import { AuthContext } from "../../utils/authContext";
 import { useContext } from "react";
 import { View } from "react-native";
@@ -10,12 +11,14 @@ export default function ProtectedLayout() {
   }
   return (
     <View className="flex-1 bg-black">
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: "black" },
-          headerTitle: "",
-        }}
-      />
+      <NotificationProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: "black" },
+            headerTitle: "",
+          }}
+        />
+      </NotificationProvider>
     </View>
   );
 }

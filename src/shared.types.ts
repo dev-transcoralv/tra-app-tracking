@@ -29,6 +29,12 @@ export const GuideSchema = z.object({
   image: z.string().optional(),
 });
 
+export const ObservationSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  order_id: z.number(),
+});
+
 export const OrderSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -47,6 +53,7 @@ export const OrderSchema = z.object({
   arrival_download_time: z.string().nullable(),
   departure_download_time: z.string().nullable(),
   guides: z.array(GuideSchema),
+  observations: z.array(ObservationSchema),
   child_business_code: z
     .enum(["containers_import_immediate_loading"])
     .nullable(),
@@ -66,19 +73,16 @@ export const ResponseListOrderSchema = z.object({
   results: z.array(OrderSchema),
 });
 
-// Dashboard
-const roadTripsSchema = z.object({
-  route: z.string(),
-  count: z.number(),
-});
-
 export const DashboardSchema = z.object({
   pending_trips: z.number(),
   finished_trips: z.number(),
   kilometers_traveled: z.number(),
   hours_worked: z.string(),
   trip_in_progress: OrderSchema.nullable(),
-  road_trips: z.array(roadTripsSchema),
+  road_trips: z.object({
+    route: z.array(z.string()),
+    count: z.array(z.number()),
+  }),
 });
 
 export type Driver = z.infer<typeof DriverSchema>;
@@ -88,3 +92,4 @@ export type Order = z.infer<typeof OrderSchema>;
 export type Geolocation = z.infer<typeof GeolocationSchema>;
 export type ResponseListOrder = z.infer<typeof ResponseListOrderSchema>;
 export type Guide = z.infer<typeof GuideSchema>;
+export type Observation = z.infer<typeof ObservationSchema>;

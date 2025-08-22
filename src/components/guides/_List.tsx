@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Guide } from "../../shared.types";
-import { FontAwesomePlus } from "../Icons";
+import { FontAwesomeEdit } from "../Icons";
 import { GuideModalForm } from "./_ModalForm";
 
 export function ListGuides({ guides }: { guides: Guide[] }) {
@@ -20,10 +20,10 @@ export function ListGuides({ guides }: { guides: Guide[] }) {
           <View className="flex-row justify-between items-center">
             <Text className="text-lg font-bold">{item.name}</Text>
             <TouchableOpacity
-              className="justify-center bg-primary px-4 py-3 rounded-lg"
+              className="justify-center bg-secondary px-5 py-4 rounded-lg"
               onPress={() => openModal(item)}
             >
-              <FontAwesomePlus color="white" size={16} />
+              <FontAwesomeEdit color="white" size={16} />
             </TouchableOpacity>
           </View>
 

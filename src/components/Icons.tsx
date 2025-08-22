@@ -64,3 +64,23 @@ export const FontAwesomeFilter = ({
 }): ReactNode => {
   return <FontAwesome name="filter" color={color} size={size} />;
 };
+
+export const FontAwesomeEdit = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="edit" color={color} size={size} />;
+};
+
+export const FontAwesomeTrash = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="trash" color={color} size={size} />;
+};
