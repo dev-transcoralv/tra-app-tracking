@@ -48,6 +48,14 @@ export function OrderCard({ order }: { order: Order }) {
           </StyledText>
         </StyledView>
         <StyledView className="flex-row items-center">
+          <StyledText className="ml-1 font-bold text-sm">
+            Tipo de Negocio:
+          </StyledText>
+          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
+            {order.business_name}
+          </StyledText>
+        </StyledView>
+        <StyledView className="flex-row items-center">
           <StyledText className="ml-1 font-bold text-sm">Cliente:</StyledText>
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.partner_name}
@@ -58,6 +66,16 @@ export function OrderCard({ order }: { order: Order }) {
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.vehicle_name}
           </StyledText>
+          {order.chassis_name && (
+            <View className="flex-row">
+              <Text className="mx-1 font-bold text-sm color-blue-500">
+                con acople
+              </Text>
+              <StyledText className="text-gray-800 font-semibold text-sm">
+                {order.chassis_name}
+              </StyledText>
+            </View>
+          )}
         </StyledView>
         <StyledView className="flex-row items-center">
           <StyledText className="ml-1 font-bold text-sm">

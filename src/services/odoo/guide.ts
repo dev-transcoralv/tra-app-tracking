@@ -5,7 +5,6 @@ export async function updateGuide(
   comment?: string,
   image?: string | null,
 ): Promise<Guide> {
-  console.log(`Call endpoint /tra/guides/${guideId}`);
   const payload = {
     comment: comment,
     image: image,
@@ -23,9 +22,6 @@ export async function updateGuide(
   try {
     const response = await fetch(url, options);
     const json = await response.json();
-    console.log(
-      `JSON from Call endpoint /tra/guides/${guideId}: ${JSON.stringify(json, null, 2)}`,
-    );
     if (!response.ok) {
       const error = (json as { error: string }).error;
       throw error;

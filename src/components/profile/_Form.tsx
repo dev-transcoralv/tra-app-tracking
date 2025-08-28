@@ -1,20 +1,27 @@
-import { Text, View, TextInput, Button } from "react-native";
+import { Text, View, Button } from "react-native";
 import { Driver } from "../../shared.types";
 import { useContext } from "react";
 import { AuthContext } from "../../utils/authContext";
 
 export function ProfileForm({ driver }: { driver: Driver | null }) {
   const authContext = useContext(AuthContext);
+
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
       <Text className="font-bold">Nombre:</Text>
-      <TextInput readOnly value={driver?.name} />
+      <Text className="p-2 bg-white rounded-xl">{driver?.name}</Text>
+
       <Text className="font-bold">Cédula:</Text>
-      <TextInput readOnly value={driver?.vat} />
+      <Text className="p-2 bg-white rounded-xl">{driver?.vat}</Text>
+
       <Text className="font-bold">Dirección:</Text>
-      <TextInput readOnly value={driver?.street} />
+      <Text className="p-2 bg-white rounded-xl">{driver?.street}</Text>
+
       <Text className="font-bold">Tipo de Licencia:</Text>
-      <TextInput readOnly value={driver?.license_type} />
+      <Text className="mb-2 p-2 bg-white rounded-xl">
+        {driver?.license_type}
+      </Text>
+
       <Button
         color="red"
         onPress={() => authContext.logOut()}

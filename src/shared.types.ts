@@ -39,11 +39,13 @@ export const OrderSchema = z.object({
   id: z.number(),
   name: z.string(),
   trip_status: z.enum(["initiated", "finished"]).nullable(),
-  business_code: z.enum(["containers", "grain"]),
+  business_name: z.string(),
+  business_code: z.enum(["containers", "grain", "palletizing"]),
   coordinator_name: z.string(),
   coordinator_mobile: z.string().nullable(),
   route_name: z.string(),
   vehicle_name: z.string(),
+  chassis_name: z.string().nullable(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
@@ -52,6 +54,8 @@ export const OrderSchema = z.object({
   departure_charge_time: z.string().nullable(),
   arrival_download_time: z.string().nullable(),
   departure_download_time: z.string().nullable(),
+  start_of_trip: z.string().nullable(),
+  start_of_trip_iso_format: z.string().nullable(),
   guides: z.array(GuideSchema),
   observations: z.array(ObservationSchema),
   child_business_code: z
@@ -65,6 +69,7 @@ export const OrderSchema = z.object({
   tara_kg: z.number(),
   final_burden_kg: z.number(),
   final_tara_kg: z.number(),
+  sacks_information: z.string().nullable(),
 });
 
 // Response List Order
@@ -77,7 +82,7 @@ export const DashboardSchema = z.object({
   pending_trips: z.number(),
   finished_trips: z.number(),
   kilometers_traveled: z.number(),
-  hours_worked: z.string(),
+  handling_time: z.string(),
   trip_in_progress: OrderSchema.nullable(),
   road_trips: z.object({
     route: z.array(z.string()),

@@ -80,7 +80,7 @@ export function ListObservations({
                   {loadingById === item.id ? (
                     <ActivityIndicator color="#fff" size={"small"} />
                   ) : (
-                    <FontAwesomeTrash color="white" size={20} />
+                    <FontAwesomeTrash color="white" size={16} />
                   )}
                 </TouchableOpacity>
               </View>

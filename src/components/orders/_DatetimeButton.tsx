@@ -49,10 +49,10 @@ export function DatetimeButton({
       <Text className="font-bold">{`Fecha/Hora ${title}`}</Text>
       <View className="flex-row justify-between">
         <Text className="py-1">{datetime || "00/00/0000 00:00:00"}</Text>
-        {!orderFinished && (
+        {!orderFinished && !datetime && (
           <TouchableOpacity
             style={{ width: 150 }}
-            className={`px-4 py-2 items-center rounded-full bg-blue-900`}
+            className={`px-4 py-2 items-center bg-blue-900`}
             onPress={() => update()}
           >
             {loading ? (

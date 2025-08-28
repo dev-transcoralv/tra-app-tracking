@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Text,
   View,
@@ -18,7 +18,13 @@ type FormData = {
   final_tara_kg: number;
 };
 
-export function GrainForm({ order }: { order: Order }) {
+export function GrainForm({
+  order,
+  onSave,
+}: {
+  order: Order;
+  onSave: (data: FormData) => void;
+}) {
   const [loading, setLoading] = useState(false);
 
   // ✅ react-hook-form con valores por defecto
@@ -53,6 +59,7 @@ export function GrainForm({ order }: { order: Order }) {
             inputMode="decimal"
             keyboardType="numeric"
             onBlur={onBlur}
+            readOnly={order.trip_status === "finished"}
             onChangeText={(val) => onChange(Number(val))}
             className="mx-2 w-7/12 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
             value={value?.toString() ?? ""}
@@ -67,6 +74,7 @@ export function GrainForm({ order }: { order: Order }) {
     try {
       setLoading(true);
       await updateBusinessGrain(order.id, data);
+      onSave(data);
     } catch (error: any) {
       Toast.show({
         type: "error",

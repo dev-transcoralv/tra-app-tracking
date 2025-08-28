@@ -4,6 +4,7 @@ import {
   Text,
   ScrollView,
   Dimensions,
+  Button,
 } from "react-native";
 import { getDashboard } from "../../../services/odoo/dasbhoard";
 import { useContext, useEffect, useState, useCallback } from "react";
@@ -14,6 +15,8 @@ import DashboardCardInformation from "../../../components/dashboard/_CardInforma
 import FilterSelection from "../../../components/FilterSelection";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarChart } from "react-native-chart-kit";
+import { OrderCardSummary } from "../../../components/orders/_CardSummary";
+import * as Notifications from "expo-notifications";
 
 export default function DashboardScreen() {
   const authContext = useContext(AuthContext);
@@ -79,6 +82,18 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView className="bg-secondary h-screen flex p-2">
+      <Button
+        title="Send Local Notification"
+        onPress={async () => {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Hello 👋",
+              body: "This is a local notification",
+            },
+            trigger: { seconds: 2 },
+          });
+        }}
+      />
       <FilterSelection
         options={options}
         onSelect={(value) => setRangeDate(value)}
@@ -90,19 +105,24 @@ export default function DashboardScreen() {
           <DashboardCard count={dashboard?.finished_trips} status="finished" />
           <DashboardCard count={dashboard?.pending_trips} status="pending" />
           <View className="flex-row justify-between gap-x-2">
-            <DashboardCardInformation
-              label="Distancia Recorrida"
-              title={`${dashboard?.kilometers_traveled} Kms`}
-              icon="route"
-            />
-            <DashboardCardInformation
-              label="Tiempo de Manejo"
-              title={`${dashboard?.hours_worked}`}
-              icon="hours"
-            />
+            <View className="gap-2">
+              <DashboardCardInformation
+                label="Distancia Recorrida"
+                title={`${dashboard?.kilometers_traveled} Kms`}
+                icon="route"
+              />
+              <DashboardCardInformation
+                label="Tiempo de Manejo"
+                title={`${dashboard?.handling_time}`}
+                icon="hours"
+              />
+            </View>
+            {dashboard?.trip_in_progress && (
+              <OrderCardSummary order={dashboard.trip_in_progress} />
+            )}
           </View>
 
-          <Text className="font-extrabold mb-2 text-2xl color-white">
+          <Text className="font-extrabold my-2 text-2xl color-white">
             Productividad
           </Text>
           <View className="mb-4 items-center">

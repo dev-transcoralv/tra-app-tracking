@@ -13,7 +13,7 @@ export default function DashboardCardInformation({
   icon,
 }: Props) {
   return (
-    <View className="flex-1 bg-white rounded-xl p-4 shadow-md mb-4">
+    <View className="flex-1 bg-white rounded-xl p-4 shadow-md">
       <View className="flex-row justify-between items-center">
         <View>
           {icon === "route" && (
@@ -23,11 +23,9 @@ export default function DashboardCardInformation({
             <Image source={require(`../../../assets/hours.png`)}></Image>
           )}
         </View>
-        <View className="items-center">
+        <View className="ml-1 items-center">
           <Text className="text-2xl font-bold color-primary">{title}</Text>
-          <View className="px-3 py-1 rounded-full">
-            <Text className="text-l font-semibold">{label}</Text>
-          </View>
+          <Text className="text-sm font-semibold">{label}</Text>
         </View>
       </View>
     </View>

@@ -52,6 +52,28 @@ export async function startTrip(id: number): Promise<Order> {
   try {
     const response = await fetch(URL, options);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
+    return json as Order;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+export async function stopTrip(id: number): Promise<Order> {
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/stop_trip`;
+  try {
+    const response = await fetch(URL, options);
+    const json = await response.json();
     return json as Order;
   } catch (error) {
     // Throw error

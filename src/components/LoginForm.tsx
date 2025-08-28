@@ -5,6 +5,7 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { AuthContext } from "../utils/authContext";
@@ -18,6 +19,7 @@ type FormData = {
 
 export default function LoginForm() {
   const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const togglePasswordView = () => setShowPassword(!showPassword);
 
@@ -29,16 +31,19 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      setLoading(true);
       authContext.logIn(data.username, data.password);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // Capture in notification
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View className="w-full flex flex-col gap-4">
-      <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
+      <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2">
         <Controller
           control={control}
           rules={{
@@ -63,7 +68,7 @@ export default function LoginForm() {
           Este campo es requerido.
         </Text>
       )}
-      <View className="w-full flex-row items-center gap-2 bg-secondary-complementary p-2 rounded-xl relative">
+      <View className="w-full flex-row items-center gap-2 bg-secondary-complementary p-2 relative">
         <Controller
           control={control}
           rules={{
@@ -95,11 +100,18 @@ export default function LoginForm() {
           Este campo es requerido.
         </Text>
       )}
-      <Button
-        title="Ingresar"
-        color="#e10718"
+      <TouchableOpacity
+        className="mb-2 px-5 py-3 items-center bg-primary"
         onPress={handleSubmit(onSubmit)}
-      />
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text className="items-center font-bold color-white text-lg">
+            Ingresar
+          </Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
