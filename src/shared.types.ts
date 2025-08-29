@@ -1,5 +1,10 @@
 import { z } from "zod/v4";
 
+export const PortSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
 // Driver
 export const DriverSchema = z.object({
   id: z.number(),
@@ -7,6 +12,11 @@ export const DriverSchema = z.object({
   vat: z.string(),
   street: z.string(),
   license_type: z.string(),
+  expiration_date: z.string(),
+  image_1920: z.string().nullable(),
+  port_permit: z.array(PortSchema),
+  assigned_plate: z.string().nullable(),
+  assigned_plate_port_permit: z.array(PortSchema),
   push_token: z.string().nullable(),
 });
 

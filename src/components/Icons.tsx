@@ -84,3 +84,13 @@ export const FontAwesomeTrash = ({
 }): ReactNode => {
   return <FontAwesome name="trash" color={color} size={size} />;
 };
+
+export const FontAwesomeUserCircle = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="user-circle" color={color} size={size} />;
+};
