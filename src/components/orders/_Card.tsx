@@ -3,6 +3,7 @@ import { Order } from "../../shared.types";
 import { Link } from "expo-router";
 import { cssInterop } from "nativewind";
 import { FontAwesome5Route } from "../Icons";
+import StatusCircle from "../StatusCircle";
 
 const StyledPressable = cssInterop(Pressable, {
   className: "style",
@@ -27,14 +28,23 @@ export function OrderCard({ order }: { order: Order }) {
       <StyledPressable>
         {/* Badges */}
         {order.trip_status === "initiated" && (
-          <View className="absolute top-2 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
-            <Text className="text-white text-s font-bold">Iniciado</Text>
+          <View>
+            <View className="absolute top-2 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
+              <Text className="text-white text-m font-bold">Iniciado</Text>
+            </View>
+            <View className="absolute top-12 right-2 z-10">
+              {order.status_arrival === "done" ? (
+                <StatusCircle type="success" size={6} />
+              ) : (
+                <StatusCircle type="error" size={6} />
+              )}
+            </View>
           </View>
         )}
 
         {order.trip_status === "finished" && (
           <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
-            <Text className="text-white text-s font-bold">Finalizado</Text>
+            <Text className="text-white text-m font-bold">Finalizado</Text>
           </View>
         )}
 

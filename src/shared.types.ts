@@ -41,6 +41,7 @@ export const OrderSchema = z.object({
   trip_status: z.enum(["initiated", "finished"]).nullable(),
   business_name: z.string(),
   business_code: z.enum(["containers", "grain", "palletizing"]),
+  status_arrival: z.enum(["done", "blocked"]),
   coordinator_name: z.string(),
   coordinator_mobile: z.string().nullable(),
   route_name: z.string(),

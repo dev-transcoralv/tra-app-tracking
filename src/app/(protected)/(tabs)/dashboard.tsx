@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   View,
   ActivityIndicator,
@@ -82,18 +83,25 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView className="bg-secondary h-screen flex p-2">
+      {/*Testing
       <Button
         title="Send Local Notification"
         onPress={async () => {
           await Notifications.scheduleNotificationAsync({
             content: {
-              title: "Hello 👋",
-              body: "This is a local notification",
+              title: "Orden No. OT/2025/08/000070",
+              body: "Cliente: ADITIVOS Y ALIMENTOS S.A. ADILISA",
+              data: { order_id: 117, order_name: "OT/2025/08/000070" },
             },
-            trigger: { seconds: 2 },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, // 👈 required
+              seconds: 2,
+              repeats: false, // optional
+            },
           });
         }}
       />
+      */}
       <FilterSelection
         options={options}
         onSelect={(value) => setRangeDate(value)}

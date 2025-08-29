@@ -43,12 +43,13 @@
             "./assets/notification.wav"
           ]
         }
-      ]
+      ],
+      "expo-router"
     ],
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "efa961ae-d219-4963-997b-a070bd49a67d"
+        "projectId": "cb2f2148-228f-4ddf-804a-d20f140cae05"
       }
     },
     "owner": "devtranscoralv"
