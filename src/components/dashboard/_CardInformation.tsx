@@ -22,6 +22,9 @@ export default function DashboardCardInformation({
           {icon === "hours" && (
             <Image source={require(`../../../assets/hours.png`)}></Image>
           )}
+          {icon === "maintenance" && (
+            <Image source={require(`../../../assets/maintenance.png`)}></Image>
+          )}
         </View>
         <View className="ml-1 items-center">
           <Text className="text-2xl font-bold color-primary">{title}</Text>

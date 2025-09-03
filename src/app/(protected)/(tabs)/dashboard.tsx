@@ -17,7 +17,6 @@ import FilterSelection from "../../../components/FilterSelection";
 import { useFocusEffect } from "@react-navigation/native";
 import { BarChart } from "react-native-chart-kit";
 import { OrderCardSummary } from "../../../components/orders/_CardSummary";
-import * as Notifications from "expo-notifications";
 
 export default function DashboardScreen() {
   const authContext = useContext(AuthContext);
@@ -83,25 +82,6 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView className="bg-secondary h-screen flex p-2">
-      {/*Testing
-      <Button
-        title="Send Local Notification"
-        onPress={async () => {
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: "Orden No. OT/2025/08/000070",
-              body: "Cliente: ADITIVOS Y ALIMENTOS S.A. ADILISA",
-              data: { order_id: 117, order_name: "OT/2025/08/000070" },
-            },
-            trigger: {
-              type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, // 👈 required
-              seconds: 2,
-              repeats: false, // optional
-            },
-          });
-        }}
-      />
-      */}
       <FilterSelection
         options={options}
         onSelect={(value) => setRangeDate(value)}
@@ -120,9 +100,9 @@ export default function DashboardScreen() {
                 icon="route"
               />
               <DashboardCardInformation
-                label="Tiempo de Manejo"
-                title={`${dashboard?.handling_time}`}
-                icon="hours"
+                label="Mantenimientos"
+                title={`1`}
+                icon="maintenance"
               />
             </View>
             {dashboard?.trip_in_progress && (

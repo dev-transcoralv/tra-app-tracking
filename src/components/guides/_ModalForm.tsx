@@ -163,7 +163,7 @@ export function GuideModalForm({ guide, onClose }: Props) {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-semibold">ENVIAR</Text>
+              <Text className="text-white font-semibold">Enviar</Text>
             )}
           </TouchableOpacity>
 

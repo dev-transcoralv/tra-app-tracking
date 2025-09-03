@@ -10,7 +10,7 @@ import { DatetimeButton } from "./_DatetimeButton";
 import { GrainForm } from "./_GrainForm";
 import { ListObservations } from "../observations/_List";
 import WhatsAppButton from "../WhatsappButton";
-import WialonLiveMap from "../WialonLiveMap";
+// import WialonLiveMap from "../WialonLiveMap";
 import { ConfirmModal } from "../ConfirmModal";
 import { RouteMapView } from "../RouteMapView";
 // import { AppleMaps, GoogleMaps } from "expo-maps";

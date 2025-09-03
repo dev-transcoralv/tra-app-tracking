@@ -50,6 +50,20 @@ export function ProfileForm({ driver }: { driver: Driver | null }) {
           </Text>
         </View>
       )}
+      {driver?.assigned_plate_port_permit && (
+        <View>
+          <Text className="font-extrabold text-lg color-blue-900 underline mb-2">
+            Puertos Permitidos
+          </Text>
+          {driver.assigned_plate_port_permit.map((port) => (
+            <View key={port.id} className="bg-white border rounded-xl p-2 mb-2">
+              <View className="flex-row">
+                <Text className="text-lg font-bold">{port.name}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
 
       <Button
         color="red"

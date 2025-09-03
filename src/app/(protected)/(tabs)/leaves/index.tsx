@@ -6,15 +6,16 @@ import { AuthContext } from "../../../../utils/authContext";
 import { Leave } from "../../../../shared.types";
 import FilterSelection from "../../../../components/FilterSelection";
 import { ListLeaves } from "../../../../components/leaves/_List";
-import { FontAwesomePlus } from "../../../../components/Icons";
+import { LeaveModalForm } from "../../../../components/leaves/_ModalForm";
 
 export default function IndexScreen() {
   const { driver } = useContext(AuthContext);
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [state, setState] = useState("pending");
+  const [state, setState] = useState("confirm");
   const [hasMore, setHasMore] = useState(true); // track if more pages exist
+  const [visible, setVisible] = useState(false);
 
   const options = [
     { label: "Por aprobar", value: "confirm" },
@@ -72,7 +73,8 @@ export default function IndexScreen() {
     }
   };
 
-  const openModal = () => {};
+  const openModal = () => setVisible(true);
+  const closeModal = () => setVisible(false);
 
   return (
     <View className="bg-secondary h-full flex p-2">
@@ -92,6 +94,8 @@ export default function IndexScreen() {
         loading={loading}
         handleLoadMore={handleLoadMore}
       />
+
+      <LeaveModalForm visible={visible} leave={null} onClose={closeModal} />
     </View>
   );
 }

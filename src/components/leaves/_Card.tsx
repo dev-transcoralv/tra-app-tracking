@@ -1,7 +1,8 @@
 import { Pressable, Text, View } from "react-native";
+import { useState } from "react";
 import { Leave } from "../../shared.types";
-import { Link } from "expo-router";
 import { cssInterop } from "nativewind";
+import { LeaveModalForm } from "./_ModalForm";
 
 const StyledPressable = cssInterop(Pressable, {
   className: "style",
@@ -14,16 +15,21 @@ const StyledText = cssInterop(Text, {
 });
 
 export function LeaveCard({ leave }: { leave: Leave }) {
+  const [visible, setVisible] = useState(false);
+  const [selectedLeave, setSelectedLeave] = useState<Leave | null>(null);
+
+  const openModal = (item: Leave) => {
+    setSelectedLeave(item);
+    setVisible(true);
+  };
+  const closeModal = () => {
+    setSelectedLeave(null);
+    setVisible(false);
+  };
+
   return (
-    <Link
-      className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative"
-      href={{
-        pathname: `orders/${leave.id}`,
-        params: { reference: leave.name },
-      }}
-      asChild
-    >
-      <StyledPressable>
+    <View className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative">
+      <StyledPressable onPress={() => openModal(leave)}>
         {/* Badges */}
         {leave.state === "confirm" && (
           <View>
@@ -78,7 +84,19 @@ export function LeaveCard({ leave }: { leave: Leave }) {
             {leave.request_date_to}
           </StyledText>
         </StyledView>
+        <StyledView className="flex-row items-center">
+          <StyledText className="font-bold text-sm">Descripción:</StyledText>
+          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
+            {leave.name}
+          </StyledText>
+        </StyledView>
       </StyledPressable>
-    </Link>
+
+      <LeaveModalForm
+        visible={visible}
+        leave={selectedLeave}
+        onClose={closeModal}
+      />
+    </View>
   );
 }

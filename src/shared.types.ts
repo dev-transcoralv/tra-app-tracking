@@ -108,7 +108,7 @@ export const LeaveTypeSchema = z.object({
 });
 
 export const LeaveSchema = z.object({
-  id: z.number(),
+  id: z.number().nullable(),
   name: z.string(),
   create_date: z.string(),
   holiday_status: LeaveTypeSchema,
