@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import {
   FontAwesomeDashboard,
   FontAwesomeList,
+  FontAwesomeUmbrellaBeach,
   FontAwesomeUser,
 } from "../../../components/Icons";
 
@@ -23,6 +24,15 @@ export default function TabsLayout() {
           title: "Ordenes",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeList props={{ color: color, size: size }} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="leaves/index"
+        options={{
+          title: "Ausencias",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesomeUmbrellaBeach props={{ color: color, size: size }} />
           ),
         }}
       />

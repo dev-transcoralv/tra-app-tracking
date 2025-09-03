@@ -23,6 +23,12 @@ export const FontAwesomeList = (props: { props?: any }): ReactNode => {
   return <FontAwesome name="list" color="#e10718" size={24} {...props} />;
 };
 
+export const FontAwesomeUmbrellaBeach = (props: { props?: any }): ReactNode => {
+  return (
+    <FontAwesome5 name="umbrella-beach" color="#e10718" size={24} {...props} />
+  );
+};
+
 export const FontAwesomeUser = (props: { props?: any }): ReactNode => {
   return <FontAwesome name="user" color="#e10718" size={24} {...props} />;
 };

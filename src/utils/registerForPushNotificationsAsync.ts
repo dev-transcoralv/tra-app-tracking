@@ -11,6 +11,33 @@ export async function registerForPushNotificationsAsync() {
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#FF231F7C",
     });
+
+    // Define multiple categories with actions
+    const categories = [
+      {
+        identifier: "link_actions",
+        actions: [
+          {
+            identifier: "open_link",
+            buttonTitle: "Abrir",
+            options: { opensAppToForeground: true },
+          },
+          {
+            identifier: "dismiss",
+            buttonTitle: "Descartar",
+            options: { isDestructive: true },
+          },
+        ],
+      },
+    ];
+
+    // Register each category
+    for (const category of categories) {
+      await Notifications.setNotificationCategoryAsync(
+        category.identifier,
+        category.actions,
+      );
+    }
   }
 
   if (Device.isDevice) {

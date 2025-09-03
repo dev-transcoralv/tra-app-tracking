@@ -101,6 +101,31 @@ export const DashboardSchema = z.object({
   }),
 });
 
+// Leave
+export const LeaveTypeSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const LeaveSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  create_date: z.string(),
+  holiday_status: LeaveTypeSchema,
+  request_date_from: z.string(),
+  request_date_to: z.string(),
+  state: z.enum(["confirm", "refuse", "validate1", "validate"]),
+});
+
+export const ResponseListLeaveTypeSchema = z.object({
+  results: z.array(LeaveTypeSchema),
+});
+
+export const ResponseListLeaveSchema = z.object({
+  total: z.number(),
+  results: z.array(LeaveSchema),
+});
+
 export type Driver = z.infer<typeof DriverSchema>;
 export type ResponseLogin = z.infer<typeof ResponseLoginSchema>;
 export type Dashboard = z.infer<typeof DashboardSchema>;
@@ -109,3 +134,7 @@ export type Geolocation = z.infer<typeof GeolocationSchema>;
 export type ResponseListOrder = z.infer<typeof ResponseListOrderSchema>;
 export type Guide = z.infer<typeof GuideSchema>;
 export type Observation = z.infer<typeof ObservationSchema>;
+export type LeaveType = z.infer<typeof LeaveTypeSchema>;
+export type Leave = z.infer<typeof LeaveSchema>;
+export type ResponseListLeaveType = z.infer<typeof ResponseListLeaveTypeSchema>;
+export type ResponseListLeave = z.infer<typeof ResponseListLeaveSchema>;

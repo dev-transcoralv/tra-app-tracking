@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
 import { Order } from "../../shared.types";
 import { Link } from "expo-router";
 import { cssInterop } from "nativewind";
