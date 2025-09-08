@@ -1,38 +1,41 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   Modal,
-  TextInput,
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { Observation, Order } from "../../shared.types";
+import { Dropdown } from "react-native-element-dropdown";
+import { GrainOperation, Order } from "../../shared.types";
 import Toast from "react-native-toast-message";
-import { createOrUpdateObservation } from "../../services/odoo/observation";
+import {
+  getListGrainOperations,
+  processGrainOperation,
+} from "../../services/odoo/operation";
+import { cssInterop } from "nativewind";
+import { AuthContext } from "../../utils/authContext";
+import { useRouter } from "expo-router";
+
+const StyledDropdown = cssInterop(Dropdown, {
+  className: "style",
+});
 
 type Props = {
   visible: boolean;
-  observation: Observation | null;
   onClose: () => void;
-  order: Order;
-  onSave: (observation: Observation) => void;
 };
 
 type FormData = {
-  id: number | null;
-  name: string;
+  grain_operation_id: number | null;
 };
 
-export function ObservationModalForm({
-  visible,
-  observation,
-  order,
-  onClose,
-  onSave,
-}: Props) {
+export function GrainOperationModalForm({ visible, onClose }: Props) {
+  const router = useRouter();
+  const { driver } = useContext(AuthContext);
+  const [grainOperations, setGrainOperations] = useState<GrainOperation[]>([]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -42,20 +45,21 @@ export function ObservationModalForm({
     reset,
   } = useForm<FormData>({
     defaultValues: {
-      id: null,
-      name: "",
+      grain_operation_id: null,
     },
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log(data?.grain_operation_id);
     try {
       setLoading(true);
-      const observation = await createOrUpdateObservation(
-        data?.id,
-        data.name,
-        order.id,
+      const order: Order = await processGrainOperation(
+        data?.grain_operation_id,
       );
-      onSave(observation);
+      router.push({
+        pathname: `orders/${order.id}`,
+        params: { reference: order.name },
+      } as any);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -70,13 +74,23 @@ export function ObservationModalForm({
   };
 
   useEffect(() => {
-    if (observation) {
-      reset({
-        id: observation.id,
-        name: observation.name,
-      });
-    }
-  }, [observation, reset]);
+    const getGrainOperations = async () => {
+      try {
+        const data = await getListGrainOperations({
+          page: 1,
+          driverId: driver?.id,
+          state: "enabled",
+        });
+        const fetchgrainOperations = data.results ?? [];
+        setGrainOperations(fetchgrainOperations);
+      } catch (err) {
+        console.error(err);
+      } finally {
+      }
+    };
+
+    getGrainOperations();
+  }, [driver?.id]);
 
   useEffect(() => {
     return () => {
@@ -88,25 +102,25 @@ export function ObservationModalForm({
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={{ padding: 20, flex: 1 }}>
         <View className="w-full flex flex-col gap-4">
-          <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
+          <View className="w-full flex items-center gap-2">
             <Controller
               control={control}
+              name="grain_operation_id"
               rules={{ required: true }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="p.e. Todo correcto"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
+              render={({ field: { value, onChange } }) => (
+                <StyledDropdown
+                  data={grainOperations}
+                  labelField="name"
+                  valueField="id"
                   value={value}
-                  placeholderTextColor="#211915"
-                  className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
-                  multiline
+                  onChange={(item) => onChange(item.id)}
+                  className="w-full h-12 bg-secondary-complementary border border-gray-300 rounded-lg px-3"
+                  placeholderStyle={{ color: "#999" }}
                 />
               )}
-              name="name"
             />
           </View>
-          {errors.name && (
+          {errors.grain_operation_id && (
             <Text className="font-bold" style={styles.error}>
               Este campo es requerido.
             </Text>
@@ -135,7 +149,6 @@ export function ObservationModalForm({
     </Modal>
   );
 }
-
 const styles = StyleSheet.create({
   error: {
     color: "#e10718",

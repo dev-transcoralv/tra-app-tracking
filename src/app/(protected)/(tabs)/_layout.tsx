@@ -1,20 +1,41 @@
 import { Tabs } from "expo-router";
+import { Text } from "react-native";
 import {
   FontAwesomeDashboard,
   FontAwesomeList,
+  FontAwesomeOperative,
   FontAwesomeUmbrellaBeach,
   FontAwesomeUser,
 } from "../../../components/Icons";
+import { cssInterop } from "nativewind";
+
+const StyledText = cssInterop(Text, {
+  className: "style",
+});
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#e10718" }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveBackgroundColor: "#e10718",
+        tabBarActiveTintColor: "white",
+        headerTitleAlign: "center",
+      }}
+    >
       <Tabs.Screen
         name="dashboard"
         options={{
           title: "Dashboard",
-          tabBarIcon: ({ color }) => (
-            <FontAwesomeDashboard props={{ color: "#e10718" }} />
+          tabBarIcon: ({ focused }) => (
+            <FontAwesomeDashboard color={focused ? "white" : "#211915"} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <StyledText
+              className="text-xs font-bold"
+              style={{ color: focused ? "white" : "#211915" }}
+            >
+              Dashboard
+            </StyledText>
           ),
         }}
       />
@@ -22,8 +43,33 @@ export default function TabsLayout() {
         name="orders/index"
         options={{
           title: "Ordenes",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesomeList props={{ color: color, size: size }} />
+          tabBarIcon: ({ focused }) => (
+            <FontAwesomeList color={focused ? "white" : "#211915"} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <StyledText
+              className="text-xs font-bold"
+              style={{ color: focused ? "white" : "#211915" }}
+            >
+              Ordenes
+            </StyledText>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="operations/index"
+        options={{
+          title: "Operativos",
+          tabBarIcon: ({ focused }) => (
+            <FontAwesomeOperative color={focused ? "white" : "#211915"} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <StyledText
+              className="text-xs font-bold"
+              style={{ color: focused ? "white" : "#211915" }}
+            >
+              Operativos
+            </StyledText>
           ),
         }}
       />
@@ -31,8 +77,16 @@ export default function TabsLayout() {
         name="leaves/index"
         options={{
           title: "Ausencias",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesomeUmbrellaBeach props={{ color: color, size: size }} />
+          tabBarIcon: ({ focused }) => (
+            <FontAwesomeUmbrellaBeach color={focused ? "white" : "#211915"} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <StyledText
+              className="text-xs font-bold"
+              style={{ color: focused ? "white" : "#211915" }}
+            >
+              Ausencias
+            </StyledText>
           ),
         }}
       />
@@ -40,7 +94,17 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "Perfil",
-          tabBarIcon: ({ color }) => <FontAwesomeUser />,
+          tabBarIcon: ({ focused }) => (
+            <FontAwesomeUser color={focused ? "white" : "#211915"} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <StyledText
+              className="text-xs font-bold"
+              style={{ color: focused ? "white" : "#211915" }}
+            >
+              Perfil
+            </StyledText>
+          ),
         }}
       />
       {/*Review this TAB*/}

@@ -1,18 +1,23 @@
 import { Guide } from "../../shared.types";
 
-export async function updateGuide(
-  guideId: number,
+export async function createOrUpdateGuide(
+  orderId: number,
+  guideId: number | null | undefined,
+  name: string,
   comment?: string,
   image?: string | null,
 ): Promise<Guide> {
   const payload = {
+    id: guideId,
+    name: name,
     comment: comment,
     image: image,
+    order_id: orderId,
   };
 
-  const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/guides/${guideId}`;
+  const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/guides`;
   const options = {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },

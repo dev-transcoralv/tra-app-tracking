@@ -4,10 +4,14 @@ import Toast from "react-native-toast-message";
 import { updateHours } from "../../services/odoo/order";
 
 type DatetimeField =
+  | "arrival_point_charge_time"
   | "arrival_charge_time"
-  | "arrival_download_time"
   | "departure_charge_time"
-  | "departure_download_time";
+  | "departure_point_charge_time"
+  | "arrival_point_download_time"
+  | "arrival_download_time"
+  | "departure_download_time"
+  | "departure_point_download_time";
 
 type Props = {
   datetime: string | null;

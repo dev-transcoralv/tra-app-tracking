@@ -61,10 +61,14 @@ export const OrderSchema = z.object({
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
   eta_charge: z.string(),
+  arrival_point_charge_time: z.string().nullable(),
   arrival_charge_time: z.string().nullable(),
   departure_charge_time: z.string().nullable(),
+  departure_point_charge_time: z.string().nullable(),
+  arrival_point_download_time: z.string().nullable(),
   arrival_download_time: z.string().nullable(),
   departure_download_time: z.string().nullable(),
+  departure_point_download_time: z.string().nullable(),
   start_of_trip: z.string().nullable(),
   start_of_trip_iso_format: z.string().nullable(),
   guides: z.array(GuideSchema),
@@ -87,6 +91,17 @@ export const OrderSchema = z.object({
 export const ResponseListOrderSchema = z.object({
   total: z.number(),
   results: z.array(OrderSchema),
+});
+
+export const GrainOperationSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+// Response List Grain Operation
+export const ResponseListGrainOperationSchema = z.object({
+  total: z.number(),
+  results: z.array(GrainOperationSchema),
 });
 
 export const DashboardSchema = z.object({
@@ -130,8 +145,12 @@ export type Driver = z.infer<typeof DriverSchema>;
 export type ResponseLogin = z.infer<typeof ResponseLoginSchema>;
 export type Dashboard = z.infer<typeof DashboardSchema>;
 export type Order = z.infer<typeof OrderSchema>;
+export type GrainOperation = z.infer<typeof GrainOperationSchema>;
 export type Geolocation = z.infer<typeof GeolocationSchema>;
 export type ResponseListOrder = z.infer<typeof ResponseListOrderSchema>;
+export type ResponseListGrainOperation = z.infer<
+  typeof ResponseListGrainOperationSchema
+>;
 export type Guide = z.infer<typeof GuideSchema>;
 export type Observation = z.infer<typeof ObservationSchema>;
 export type LeaveType = z.infer<typeof LeaveTypeSchema>;

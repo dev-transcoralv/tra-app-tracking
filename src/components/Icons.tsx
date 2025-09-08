@@ -15,22 +15,54 @@ export const FontAwesome5Route = (props: { props?: any }): ReactNode => {
   return <FontAwesome5 name="route" color="black" size={24} {...props} />;
 };
 
-export const FontAwesomeDashboard = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="dashboard" color="#e10718" size={24} {...props} />;
+export const FontAwesomeDashboard = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="dashboard" color={color} size={size} />;
 };
 
-export const FontAwesomeList = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="list" color="#e10718" size={24} {...props} />;
+export const FontAwesomeList = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="list" color={color} size={size} />;
 };
 
-export const FontAwesomeUmbrellaBeach = (props: { props?: any }): ReactNode => {
-  return (
-    <FontAwesome5 name="umbrella-beach" color="#e10718" size={24} {...props} />
-  );
+export const FontAwesomeOperative = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome5 name="truck" color={color} size={size} />;
 };
 
-export const FontAwesomeUser = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="user" color="#e10718" size={24} {...props} />;
+export const FontAwesomeUmbrellaBeach = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome5 name="umbrella-beach" color={color} size={size} />;
+};
+
+export const FontAwesomeUser = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="user" color={color} size={size} />;
 };
 
 export const FontAwesomeCamera = (props: { props?: any }): ReactNode => {

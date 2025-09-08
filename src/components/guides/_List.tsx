@@ -1,20 +1,44 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Guide } from "../../shared.types";
+import { Guide, Order } from "../../shared.types";
 import { FontAwesomeEdit } from "../Icons";
 import { GuideModalForm } from "./_ModalForm";
 
-export function ListGuides({ guides }: { guides: Guide[] }) {
-  const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null);
+interface Props {
+  order: Order;
+  guides: Guide[];
+  onUpdate: (newGuides: Guide[]) => void;
+  orderFinished: boolean;
+}
 
-  const openModal = (item: Guide) => setSelectedGuide(item);
-  const closeModal = () => setSelectedGuide(null);
+export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
+  const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  const openModal = (item: Guide | null) => {
+    setSelectedGuide(item);
+    setVisible(true);
+  };
+  const closeModal = () => {
+    setSelectedGuide(null);
+    setVisible(false);
+  };
 
   return (
     <View>
-      <Text className="font-extrabold text-lg color-primary underline mb-2">
-        Guías:
-      </Text>
+      <View className="flex-row justify-between mb-2">
+        <Text className="font-extrabold text-lg color-primary underline align-middle">
+          Guías:
+        </Text>
+        {!orderFinished && (
+          <TouchableOpacity
+            className="justify-center px-4 py-3 bg-secondary rounded-lg"
+            onPress={() => openModal(null)}
+          >
+            <Text className="color-white font">Añadir</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       {guides.map((item) => (
         <View key={item.id} className="bg-white border rounded-xl p-2 mb-2">
           <View className="flex-row justify-between items-center">
@@ -26,12 +50,25 @@ export function ListGuides({ guides }: { guides: Guide[] }) {
               <FontAwesomeEdit color="white" size={16} />
             </TouchableOpacity>
           </View>
-
-          {selectedGuide && (
-            <GuideModalForm guide={selectedGuide} onClose={closeModal} />
-          )}
         </View>
       ))}
+
+      <GuideModalForm
+        visible={visible}
+        guide={selectedGuide}
+        order={order}
+        onClose={closeModal}
+        onSave={(updatedGuide) => {
+          const observation = guides.find((o) => o.id === updatedGuide.id);
+          if (observation) {
+            onUpdate(
+              guides.map((o) => (o.id === updatedGuide.id ? updatedGuide : o)),
+            );
+          } else {
+            onUpdate([...guides, updatedGuide]);
+          }
+        }}
+      />
     </View>
   );
 }

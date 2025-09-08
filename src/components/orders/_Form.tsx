@@ -287,6 +287,18 @@ export function OrderForm({ order }: { order: Order }) {
           <Text className="font-extrabold text-lg color-primary underline mb-2">
             Registrar Fechas/Horas:
           </Text>
+          {currentOrder.business_code === "grain" && (
+            <DatetimeButton
+              orderId={currentOrder.id}
+              field="arrival_point_download_time"
+              datetime={currentOrder.arrival_point_download_time}
+              title="Llegada Punto C."
+              orderFinished={currentOrder.trip_status === "finished"}
+              onChange={(value) =>
+                updateOrderField("arrival_point_download_time", value)
+              }
+            />
+          )}
           <DatetimeButton
             orderId={currentOrder.id}
             field="arrival_charge_time"
@@ -305,6 +317,30 @@ export function OrderForm({ order }: { order: Order }) {
               updateOrderField("arrival_download_time", value)
             }
           />
+          {currentOrder.business_code === "grain" && (
+            <DatetimeButton
+              orderId={currentOrder.id}
+              field="departure_point_charge_time"
+              datetime={currentOrder.departure_point_charge_time}
+              title="Salida Punto C."
+              orderFinished={currentOrder.trip_status === "finished"}
+              onChange={(value) =>
+                updateOrderField("departure_point_charge_time", value)
+              }
+            />
+          )}
+          {currentOrder.business_code === "grain" && (
+            <DatetimeButton
+              orderId={currentOrder.id}
+              field="arrival_point_download_time"
+              datetime={currentOrder.arrival_point_download_time}
+              title="Llegada Punto D."
+              orderFinished={currentOrder.trip_status === "finished"}
+              onChange={(value) =>
+                updateOrderField("arrival_point_download_time", value)
+              }
+            />
+          )}
           <DatetimeButton
             orderId={currentOrder.id}
             field="departure_charge_time"
@@ -325,12 +361,27 @@ export function OrderForm({ order }: { order: Order }) {
               updateOrderField("departure_download_time", value)
             }
           />
+          {currentOrder.business_code === "grain" && (
+            <DatetimeButton
+              orderId={currentOrder.id}
+              field="departure_point_download_time"
+              datetime={currentOrder.departure_point_download_time}
+              title="Salida Punto D."
+              orderFinished={currentOrder.trip_status === "finished"}
+              onChange={(value) =>
+                updateOrderField("departure_point_download_time", value)
+              }
+            />
+          )}
         </View>
       )}
       {/*Guides*/}
-      {currentOrder.guides?.length >= 1 && (
-        <ListGuides guides={currentOrder.guides} />
-      )}
+      <ListGuides
+        guides={currentOrder.guides}
+        order={currentOrder}
+        onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
+        orderFinished={currentOrder.trip_status === "finished"}
+      />
       {/*Observations*/}
       <ListObservations
         observations={currentOrder.observations}
