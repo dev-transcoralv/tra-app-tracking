@@ -42,7 +42,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       await AsyncStorage.setItem("token", data.token);
       await AsyncStorage.setItem("driver", JSON.stringify(data.employee));
       setDriver(data.employee);
-      router.replace("/dashboard");
+      router.replace("/");
     } catch (error: any) {
       Toast.show({
         type: "error",

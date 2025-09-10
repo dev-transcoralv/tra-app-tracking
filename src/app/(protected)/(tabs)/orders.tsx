@@ -1,11 +1,11 @@
 import { View } from "react-native";
-import { ListOrders } from "../../../../components/orders/_List";
-import { getListOrders } from "../../../../services/odoo/order";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { ListOrders } from "../../../components/orders/_List";
+import { getListOrders } from "../../../services/odoo/order";
+import { useContext, useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { AuthContext } from "../../../../utils/authContext";
-import { Order } from "../../../../shared.types";
-import FilterSelection from "../../../../components/FilterSelection";
+import { AuthContext } from "../../../utils/authContext";
+import { Order } from "../../../shared.types";
+import FilterSelection from "../../../components/FilterSelection";
 
 export default function IndexScreen() {
   const { driver } = useContext(AuthContext);

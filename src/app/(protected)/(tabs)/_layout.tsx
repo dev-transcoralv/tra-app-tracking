@@ -23,7 +23,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="dashboard"
+        name="index"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ focused }) => (
@@ -40,7 +40,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="orders/index"
+        name="orders"
         options={{
           title: "Ordenes",
           tabBarIcon: ({ focused }) => (
@@ -111,7 +111,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="orders/[id]"
         options={{
-          href: null,
+          // Optionally hide the header if you don't want it
+          headerShown: true,
+          href: null, // prevents automatic link generation in Expo Router
         }}
       />
     </Tabs>

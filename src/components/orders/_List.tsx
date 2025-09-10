@@ -17,7 +17,7 @@ export function ListOrders({ loading, orders, handleLoadMore }: Props) {
   return (
     <FlatList
       data={orders}
-      keyExtractor={(order) => String(order.id)}
+      keyExtractor={(order, index) => `${order.id}-${index}`}
       renderItem={renderItem}
       onEndReached={handleLoadMore}
       onEndReachedThreshold={0.5}

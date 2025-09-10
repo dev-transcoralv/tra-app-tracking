@@ -35,6 +35,7 @@ export const GeolocationSchema = z.object({
 export const GuideSchema = z.object({
   id: z.number(),
   name: z.string(),
+  type: z.enum(["own", "third"]),
   comment: z.string().optional(),
   image: z.string().optional(),
 });
@@ -51,11 +52,13 @@ export const OrderSchema = z.object({
   trip_status: z.enum(["initiated", "finished"]).nullable(),
   business_name: z.string(),
   business_code: z.enum(["containers", "grain", "palletizing"]),
+  type_delivery_note: z.enum(["customer", "own", "both"]),
   status_arrival: z.enum(["done", "blocked"]),
   coordinator_name: z.string(),
   coordinator_mobile: z.string().nullable(),
   route_name: z.string(),
   vehicle_name: z.string(),
+  type_property: z.enum(["own", "third"]),
   chassis_name: z.string().nullable(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,
@@ -84,6 +87,8 @@ export const OrderSchema = z.object({
   tara_kg: z.number(),
   final_burden_kg: z.number(),
   final_tara_kg: z.number(),
+  image_scale_ticket: z.string().nullable(),
+  final_image_scale_ticket: z.string().nullable(),
   sacks_information: z.string().nullable(),
 });
 
@@ -96,6 +101,14 @@ export const ResponseListOrderSchema = z.object({
 export const GrainOperationSchema = z.object({
   id: z.number(),
   name: z.string(),
+  partner_name: z.string(),
+  ship_name: z.string(),
+  recipient_name: z.string(),
+  vehicle_name: z.string(),
+  type_property: z.enum(["own", "third"]),
+  supplier_name: z.string().nullable(),
+  material_name: z.string(),
+  operation_name: z.string(),
 });
 
 // Response List Grain Operation
@@ -130,6 +143,7 @@ export const LeaveSchema = z.object({
   request_date_from: z.string(),
   request_date_to: z.string(),
   state: z.enum(["confirm", "refuse", "validate1", "validate"]),
+  image: z.string().nullable(),
 });
 
 export const ResponseListLeaveTypeSchema = z.object({

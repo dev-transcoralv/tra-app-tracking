@@ -45,6 +45,7 @@ export async function createOrUpdateLeave(
   request_date_from: string,
   request_date_to: string,
   name: string,
+  image: string | null,
 ): Promise<Leave> {
   const payload = {
     employee_id: employee_id,
@@ -53,6 +54,7 @@ export async function createOrUpdateLeave(
     holiday_status_id: holiday_status_id,
     request_date_from: request_date_from,
     request_date_to: request_date_to,
+    image: image,
   };
 
   const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/holidays/leave`;

@@ -21,7 +21,7 @@ export function ListGrainOperations({
   return (
     <FlatList
       data={grainOperations}
-      keyExtractor={(grainOperation) => String(grainOperation.id)}
+      keyExtractor={(grainOperation, index) => `${grainOperation.id}-${index}`}
       renderItem={renderItem}
       onEndReached={handleLoadMore}
       onEndReachedThreshold={0.5}

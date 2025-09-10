@@ -10,6 +10,7 @@ import { Order } from "../../shared.types";
 import Toast from "react-native-toast-message";
 import { useForm, Controller } from "react-hook-form";
 import { updateBusinessGrain } from "../../services/odoo/order";
+import { ImagePickerField } from "../ImagePickerField";
 
 type FormData = {
   burden_kg: number;
@@ -90,8 +91,18 @@ export function GrainForm({
     <View>
       <ControlledDecimalInput name="burden_kg" label="Origen Bruto" />
       <ControlledDecimalInput name="tara_kg" label="Origen TARA" />
+      <ImagePickerField
+        control={control}
+        name="image"
+        label="Foto de Ticket de Báscula Carga"
+      />
       <ControlledDecimalInput name="final_burden_kg" label="Destino Bruto" />
       <ControlledDecimalInput name="final_tara_kg" label="Destino TARA" />
+      <ImagePickerField
+        control={control}
+        name="image"
+        label="Foto de Ticket de Báscula Descarga"
+      />
       {order.trip_status !== "finished" && (
         <TouchableOpacity
           className="flex-1 my-2 px-5 py-2 items-center bg-blue-900"

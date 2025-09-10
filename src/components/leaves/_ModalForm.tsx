@@ -8,6 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
   StyleSheet,
+  Image,
 } from "react-native";
 import { InputDatePicker } from "../../components/InputDatePicker";
 import { Dropdown } from "react-native-element-dropdown";
@@ -22,6 +23,7 @@ import { parse, format } from "date-fns";
 import { cssInterop } from "nativewind";
 import { AuthContext } from "../../utils/authContext";
 import { useRouter } from "expo-router";
+import { ImagePickerField } from "../ImagePickerField";
 
 const StyledDropdown = cssInterop(Dropdown, {
   className: "style",
@@ -39,6 +41,7 @@ type FormData = {
   holiday_status_id: number | null;
   request_date_from: Date;
   request_date_to: Date;
+  image: string | null;
 };
 
 export function LeaveModalForm({ leave, visible, onClose }: Props) {
@@ -46,6 +49,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
   const {
     control,
@@ -60,6 +64,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
       holiday_status_id: null,
       request_date_from: new Date(),
       request_date_to: new Date(),
+      image: "",
     },
   });
   const onSubmit = async (data: FormData) => {
@@ -72,7 +77,9 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
         format(data.request_date_from, "yyyy-MM-dd"),
         format(data.request_date_to, "yyyy-MM-dd"),
         data.name,
+        data.image,
       );
+      setImageUri(null);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -85,7 +92,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
       onClose();
       setTimeout(() => {
         router.replace({
-          pathname: "/leaves/index",
+          pathname: "leaves",
           params: { refresh: Date.now() },
         });
       }, 300);
@@ -119,6 +126,10 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
           new Date(),
         ),
         request_date_to: parse(leave.request_date_to, "dd/MM/yyyy", new Date()),
+        image:
+          (leave.image &&
+            setImageUri(`data:image/png;base64,${leave.image}`)) ||
+          null,
       });
     }
   }, [leave, reset]);
@@ -137,6 +148,25 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={{ padding: 20, flex: 1 }}>
         <View className="w-full flex flex-col gap-4">
+          {/* Image */}
+          {!canEdit && (
+            <ImagePickerField
+              control={control}
+              name="image"
+              label="Foto de Ausencia"
+            />
+          )}
+          {imageUri && (
+            <Image
+              style={{
+                width: "100%",
+                height: 200,
+                marginBottom: 10,
+                borderRadius: 10,
+              }}
+              source={{ uri: imageUri }}
+            />
+          )}
           <View className="w-full flex items-center gap-2">
             <Controller
               control={control}

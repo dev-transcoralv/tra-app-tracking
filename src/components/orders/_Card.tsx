@@ -57,22 +57,22 @@ export function OrderCard({ order }: { order: Order }) {
             {order.route_name}
           </StyledText>
         </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="ml-1 font-bold text-sm">
+        <StyledView className="flex-row">
+          <StyledText className="font-bold text-sm">
             Tipo de Negocio:
           </StyledText>
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.business_name}
           </StyledText>
         </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="ml-1 font-bold text-sm">Cliente:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
+        <StyledView className="flex-row flex-wrap">
+          <StyledText className="font-bold text-sm">Cliente:</StyledText>
+          <StyledText className="ml-1 text-gray-800 font-semibold text-sm text-wrap">
             {order.partner_name}
           </StyledText>
         </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="ml-1 font-bold text-sm">Placa:</StyledText>
+        <StyledView className="flex-row">
+          <StyledText className="font-bold text-sm">Placa:</StyledText>
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.vehicle_name}
           </StyledText>
@@ -87,10 +87,8 @@ export function OrderCard({ order }: { order: Order }) {
             </View>
           )}
         </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="ml-1 font-bold text-sm">
-            Fecha/Hora:
-          </StyledText>
+        <StyledView className="flex-row">
+          <StyledText className="font-bold text-sm">Fecha/Hora:</StyledText>
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.eta_charge}
           </StyledText>

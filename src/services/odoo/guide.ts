@@ -1,17 +1,22 @@
 import { Guide } from "../../shared.types";
 
+type FormData = {
+  id: number | null;
+  type: "own" | "third";
+  name: string;
+  comment: string;
+  image: string;
+};
+
 export async function createOrUpdateGuide(
   orderId: number,
-  guideId: number | null | undefined,
-  name: string,
-  comment?: string,
-  image?: string | null,
+  data: FormData,
 ): Promise<Guide> {
   const payload = {
-    id: guideId,
-    name: name,
-    comment: comment,
-    image: image,
+    id: data.id,
+    name: data.name,
+    comment: data.comment,
+    image: data.image,
     order_id: orderId,
   };
 

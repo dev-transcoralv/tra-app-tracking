@@ -10,18 +10,18 @@ export default function Avatar({ uri, size }: Props) {
     <View className="flex items-center">
       {uri ? (
         <View
-          className="rounded-full bg-gray-200 items-center justify-center overflow-hidden"
+          className="rounded-full bg-white items-center justify-center overflow-hidden"
           style={{ width: size, height: size }}
         >
           <Image
             source={{
               uri: `data:image/png;base64,${uri}`,
             }}
-            className="w-16 h-16 rounded-full"
+            className="w-full h-full rounded-full"
           />
         </View>
       ) : (
-        <FontAwesomeUserCircle size={size} />
+        <FontAwesomeUserCircle size={size} color="black" />
       )}
     </View>
   );

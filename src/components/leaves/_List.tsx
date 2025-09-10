@@ -17,7 +17,7 @@ export function ListLeaves({ loading, leaves, handleLoadMore }: Props) {
   return (
     <FlatList
       data={leaves}
-      keyExtractor={(order) => String(order.id)}
+      keyExtractor={(leave, index) => `${leave.id}-${index}`}
       renderItem={renderItem}
       onEndReached={handleLoadMore}
       onEndReachedThreshold={0.5}

@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  Dimensions,
+  Modal,
+} from "react-native";
 import { Order } from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -33,6 +40,10 @@ export function OrderForm({ order }: { order: Order }) {
   const [onConfirmAction, setOnConfirmAction] = useState<
     () => void | Promise<void>
   >(() => () => {});
+  const [isMapModalVisible, setIsMapModalVisible] = useState(false);
+
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   useEffect(() => {
     setCurrentOrder(order); // si viene un order nuevo desde arriba
@@ -113,11 +124,35 @@ export function OrderForm({ order }: { order: Order }) {
       throw "Se deben registrar fechas/horas para finalizar.";
     }
 
-    if (!currentOrder.guides) {
-      throw "Se deben registrar guías para finalizar.";
+    /*Guides*/
+    const guidesThird = currentOrder.guides.filter(
+      (guide) => guide.type === "third",
+    );
+    if (
+      currentOrder.type_delivery_note in ["customer", "both"] &&
+      guidesThird.length === 0
+    ) {
+      throw "Debe ingresar al menos una guía de cliente.";
+    }
+    const guidesOwn = currentOrder.guides.filter(
+      (guide) => guide.type === "own",
+    );
+    if (
+      currentOrder.type_delivery_note in ["own", "both"] &&
+      guidesOwn.length === 0
+    ) {
+      throw "Debe ingresar al menos una guía propia.";
     }
     /*Validate by business*/
     if (currentOrder.business_code === "grain") {
+      if (
+        !currentOrder.arrival_point_charge_time ||
+        !currentOrder.departure_point_charge_time ||
+        !currentOrder.arrival_point_download_time ||
+        !currentOrder.departure_point_download_time
+      ) {
+        throw "Se deben registrar fechas/horas para finalizar.";
+      }
       if (
         !currentOrder.burden_kg ||
         !currentOrder.tara_kg ||
@@ -125,6 +160,12 @@ export function OrderForm({ order }: { order: Order }) {
         !currentOrder.final_tara_kg
       ) {
         throw "Se deben registrar pesos para finalizar.";
+      }
+      if (
+        !currentOrder.image_scale_ticket ||
+        !currentOrder.final_image_scale_ticket
+      ) {
+        throw "Se deben registrar fotos de tickets de báscula.";
       }
     }
   };
@@ -181,10 +222,10 @@ export function OrderForm({ order }: { order: Order }) {
               {(currentOrder.trip_status as string) === "initiated" ? (
                 <FontAwesomeStop />
               ) : (
-                <FontAwesomePlay props={{ color: "black" }} />
+                <FontAwesomePlay color="white" />
               )}
               <Text
-                className={`items-center font-extrabold ${(currentOrder.trip_status as string) === "initiated" ? "color-white" : "color-black"}`}
+                className={`items-center font-extrabold ${(currentOrder.trip_status as string) === "finished" ? "color-black" : "color-white"}`}
               >
                 {(currentOrder.trip_status as string) === "initiated"
                   ? "Detener"
@@ -220,21 +261,22 @@ export function OrderForm({ order }: { order: Order }) {
         <Text className="ml-2">{currentOrder.route_name}</Text>
       </View>
 
-      <View className="flex items-center">
-        {/*
-        <WialonLiveMap
-          unitName={currentOrder.vehicle_name}
-          destination={order.route_geolocation_destination}
-        />
-        <GoogleMaps.View style={{ flex: 1 }} />
-        */}
-        <RouteMapView
-          origin={order.route_geolocation_origin}
-          destination={order.route_geolocation_destination}
-          width={300}
-          height={200}
-        />
+      <View>
+        <TouchableOpacity
+          className="bg-blue-900 py-3 px-4 rounded-xl items-center"
+          onPress={() => setIsMapModalVisible(true)}
+        >
+          <Text className="items-center font-extrabold color-white">
+            Ver Ruta
+          </Text>
+        </TouchableOpacity>
       </View>
+      <View
+        className="my-1 bg-secondary mx-2"
+        style={{
+          height: 2,
+        }}
+      />
       {/*Data by business*/}
       {currentOrder.child_business_code ===
         "containers_import_immediate_loading" && (
@@ -284,6 +326,12 @@ export function OrderForm({ order }: { order: Order }) {
       {/*Buttons*/}
       {currentOrder.trip_status && (
         <View className="flex">
+          <View
+            className="my-1 bg-secondary mx-2"
+            style={{
+              height: 2,
+            }}
+          />
           <Text className="font-extrabold text-lg color-primary underline mb-2">
             Registrar Fechas/Horas:
           </Text>
@@ -375,12 +423,24 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </View>
       )}
+      <View
+        className="my-1 bg-secondary mx-2"
+        style={{
+          height: 2,
+        }}
+      />
       {/*Guides*/}
       <ListGuides
         guides={currentOrder.guides}
         order={currentOrder}
         onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
         orderFinished={currentOrder.trip_status === "finished"}
+      />
+      <View
+        className="my-1 bg-secondary mx-2"
+        style={{
+          height: 2,
+        }}
       />
       {/*Observations*/}
       <ListObservations
@@ -413,6 +473,30 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </TouchableOpacity>
       )}
+
+      {/* Map Modal */}
+      <Modal
+        visible={isMapModalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setIsMapModalVisible(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+          <TouchableOpacity
+            onPress={() => setIsMapModalVisible(false)}
+            className="bg-secondary px-5 py-3 items-center"
+          >
+            <Text className="text-white font-semibold">Cerrar</Text>
+          </TouchableOpacity>
+
+          <RouteMapView
+            origin={order.route_geolocation_origin}
+            destination={order.route_geolocation_destination}
+            width={screenWidth}
+            height={screenHeight - 50} // leave space for close button
+          />
+        </View>
+      </Modal>
     </View>
   );
 }

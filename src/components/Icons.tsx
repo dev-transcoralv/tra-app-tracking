@@ -79,8 +79,14 @@ export const FontAwesomePlus = ({
   return <FontAwesome name="plus" color={color} size={size} />;
 };
 
-export const FontAwesomePlay = (props: { props?: any }): ReactNode => {
-  return <FontAwesome name="play" color="#white" size={24} {...props} />;
+export const FontAwesomePlay = ({
+  color = "white",
+  size = 24,
+}: {
+  color: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="play" color={color} size={size} />;
 };
 
 export const FontAwesomeStop = ({

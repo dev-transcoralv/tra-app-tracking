@@ -10,9 +10,15 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Guide, Order } from "../../shared.types";
-import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { createOrUpdateGuide } from "../../services/odoo/guide";
+import { ImagePickerField } from "../ImagePickerField";
+import { Picker } from "@react-native-picker/picker";
+import { cssInterop } from "nativewind";
+
+const StyledPicker = cssInterop(Picker, {
+  className: "style",
+});
 
 type Props = {
   visible: boolean;
@@ -24,6 +30,7 @@ type Props = {
 
 type FormData = {
   id: number | null;
+  type: "own" | "third";
   name: string;
   comment: string;
   image: string;
@@ -36,53 +43,27 @@ export function GuideModalForm({
   onClose,
   onSave,
 }: Props) {
-  const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
   } = useForm<FormData>({
     criteriaMode: "all",
     defaultValues: {
       comment: "",
       image: "",
+      type: "third",
     },
   });
-
-  const handlePickImage = async (fromCamera = false) => {
-    const result = fromCamera
-      ? await ImagePicker.launchCameraAsync({
-          allowsEditing: true,
-          quality: 0.5,
-          base64: true,
-        })
-      : await ImagePicker.launchImageLibraryAsync({
-          allowsEditing: true,
-          quality: 0.5,
-          base64: true,
-        });
-
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
-      setValue("image", `data:image/jpeg;base64,${result.assets[0].base64}`);
-    }
-  };
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      await createOrUpdateGuide(
-        order.id,
-        data?.id,
-        data.name,
-        data.comment,
-        data.image,
-      );
-      setImageUri(null);
+      const guide = await createOrUpdateGuide(order.id, data);
+      onSave(guide);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -100,6 +81,7 @@ export function GuideModalForm({
     if (guide) {
       reset({
         id: guide.id,
+        type: guide.type,
         name: guide.name,
         comment: guide.comment,
         image: guide.image,
@@ -118,48 +100,31 @@ export function GuideModalForm({
       <View style={{ padding: 20, flex: 1 }}>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
-          <View className="flex-row justify-between">
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#007AFF",
-                padding: 12,
-                borderRadius: 8,
-                flex: 1,
-                marginRight: 5,
-              }}
-              onPress={() => handlePickImage(true)}
-            >
-              <Text style={{ color: "white", textAlign: "center" }}>
-                📷 Tomar Foto
-              </Text>
-            </TouchableOpacity>
+          <ImagePickerField
+            control={control}
+            name="image"
+            label="Foto de Guía"
+          />
 
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#34C759",
-                padding: 12,
-                borderRadius: 8,
-                flex: 1,
-                marginLeft: 5,
+          <View>
+            <Controller
+              control={control}
+              rules={{
+                required: "Este campo es requerido.",
               }}
-              onPress={() => handlePickImage(false)}
-            >
-              <Text style={{ color: "white", textAlign: "center" }}>
-                🖼 Galería
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {imageUri && (
-            <Image
-              style={{
-                width: "100%",
-                height: 200,
-                marginBottom: 10,
-                borderRadius: 10,
-              }}
-              source={{ uri: imageUri }}
+              name="type"
+              render={({ field: { onChange, value } }) => (
+                <StyledPicker
+                  selectedValue={value}
+                  onValueChange={(itemValue) => onChange(itemValue)}
+                  className="bg-secondary-complementary"
+                >
+                  <Picker.Item label="Cliente" value="third" />
+                  <Picker.Item label="Propia" value="own" />
+                </StyledPicker>
+              )}
             />
-          )}
+          </View>
 
           <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
             <Controller

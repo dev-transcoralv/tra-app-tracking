@@ -64,7 +64,7 @@ export function ListObservations({
       {observations.map((item) => (
         <View key={item.id} className="bg-white border rounded-xl p-2 mb-2">
           <View className="flex-row justify-between items-center">
-            <Text className="text-lg font-bold">{item.name}</Text>
+            <Text className="text-sm font-bold">{item.name}</Text>
             {!orderFinished && (
               <View className="flex-row gap-x-2">
                 <TouchableOpacity

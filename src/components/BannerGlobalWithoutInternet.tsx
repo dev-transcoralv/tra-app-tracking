@@ -6,12 +6,12 @@ import { useInternetStatus } from "../utils/useInternetStatus";
 export default function BannerGlobalWithoutInternet() {
   const isConnected = useInternetStatus();
   const slideAnim = useRef(new Animated.Value(-50)).current;
-  const [bannerColor, setBannerColor] = useState("red");
+  const [bannerColor, setBannerColor] = useState("bg-primary");
   const [bannerText, setBannerText] = useState("");
 
   useEffect(() => {
     if (isConnected === false) {
-      setBannerColor("red");
+      setBannerColor("bg-primary");
       setBannerText("Sin conexión a internet");
       Animated.timing(slideAnim, {
         toValue: 0,
@@ -21,7 +21,7 @@ export default function BannerGlobalWithoutInternet() {
     }
 
     if (isConnected === true) {
-      setBannerColor("green");
+      setBannerColor("bg-green-500");
       setBannerText("Conexión a internet restaurada");
       Animated.timing(slideAnim, {
         toValue: 0,
@@ -45,10 +45,10 @@ export default function BannerGlobalWithoutInternet() {
 
   return (
     <Animated.View
+      className={bannerColor}
       style={[
         styles.banner,
         {
-          backgroundColor: bannerColor,
           transform: [{ translateY: slideAnim }],
         },
       ]}
