@@ -17,6 +17,8 @@ type FormData = {
   tara_kg: number;
   final_burden_kg: number;
   final_tara_kg: number;
+  image_scale_ticket: string | null;
+  final_image_scale_ticket: string | null;
 };
 
 export function GrainForm({
@@ -26,7 +28,7 @@ export function GrainForm({
   order: Order;
   onSave: (data: FormData) => void;
 }) {
-  const [loading, setLoading] = useState(false);
+  const [loadingGrainForm, setLoadingGrainForm] = useState(false);
 
   // ✅ react-hook-form con valores por defecto
   const {
@@ -40,6 +42,8 @@ export function GrainForm({
       tara_kg: order.tara_kg || 0,
       final_burden_kg: order.final_burden_kg || 0,
       final_tara_kg: order.final_tara_kg || 0,
+      image_scale_ticket: order.image_scale_ticket,
+      final_image_scale_ticket: order.final_image_scale_ticket,
     },
   });
 
@@ -73,7 +77,7 @@ export function GrainForm({
 
   const onSubmit = async (data: FormData) => {
     try {
-      setLoading(true);
+      setLoadingGrainForm(true);
       await updateBusinessGrain(order.id, data);
       onSave(data);
     } catch (error: any) {
@@ -83,7 +87,7 @@ export function GrainForm({
       });
       throw error;
     } finally {
-      setLoading(false);
+      setLoadingGrainForm(false);
     }
   };
 
@@ -91,24 +95,28 @@ export function GrainForm({
     <View>
       <ControlledDecimalInput name="burden_kg" label="Origen Bruto" />
       <ControlledDecimalInput name="tara_kg" label="Origen TARA" />
-      <ImagePickerField
-        control={control}
-        name="image"
-        label="Foto de Ticket de Báscula Carga"
-      />
+      <View className="mt-1">
+        <ImagePickerField
+          control={control}
+          name="image_scale_ticket"
+          label="Foto de Ticket de Báscula Carga"
+        />
+      </View>
       <ControlledDecimalInput name="final_burden_kg" label="Destino Bruto" />
       <ControlledDecimalInput name="final_tara_kg" label="Destino TARA" />
-      <ImagePickerField
-        control={control}
-        name="image"
-        label="Foto de Ticket de Báscula Descarga"
-      />
+      <View className="mt-1">
+        <ImagePickerField
+          control={control}
+          name="final_image_scale_ticket"
+          label="Foto de Ticket de Báscula Descarga"
+        />
+      </View>
       {order.trip_status !== "finished" && (
         <TouchableOpacity
           className="flex-1 my-2 px-5 py-2 items-center bg-blue-900"
           onPress={handleSubmit(onSubmit)}
         >
-          {loading ? (
+          {loadingGrainForm ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <View className="items-center">

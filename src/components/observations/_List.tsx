@@ -46,6 +46,11 @@ export function ListObservations({
     }
   };
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
   return (
     <View>
       <View className="flex-row justify-between mb-2">
@@ -62,9 +67,11 @@ export function ListObservations({
         )}
       </View>
       {observations.map((item) => (
-        <View key={item.id} className="bg-white border rounded-xl p-2 mb-2">
+        <View key={item.id} className="bg-white border rounded-xl p-1 mb-2">
           <View className="flex-row justify-between items-center">
-            <Text className="text-sm font-bold">{item.name}</Text>
+            <Text className="text-sm font-bold text">
+              {truncateText(item.name, 35)}
+            </Text>
             {!orderFinished && (
               <View className="flex-row gap-x-2">
                 <TouchableOpacity

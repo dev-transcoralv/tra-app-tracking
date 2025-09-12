@@ -43,7 +43,7 @@ export function ImagePickerField({ control, name, label }: Props) {
       render={({ field: { onChange, value } }) => (
         <View className="flex-col gap-2">
           {label && (
-            <Text className="font-semibold text-base text-gray-700">
+            <Text className="text-base bg-secondary text-white text-center py-1">
               {label}
             </Text>
           )}

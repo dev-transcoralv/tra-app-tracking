@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Image,
   ActivityIndicator,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
@@ -139,9 +138,14 @@ export function GuideModalForm({
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   placeholder="p.e 000000001"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
+                  onChangeText={(text) => onChange(text)}
+                  onBlur={() => {
+                    if (value.length !== 0) {
+                      onChange(value.padStart(9, "0"));
+                    }
+                  }}
                   value={value}
+                  maxLength={9}
                   placeholderTextColor="#211915"
                   className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
                 />

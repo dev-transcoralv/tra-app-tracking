@@ -11,7 +11,9 @@ type DatetimeField =
   | "arrival_point_download_time"
   | "arrival_download_time"
   | "departure_download_time"
-  | "departure_point_download_time";
+  | "departure_point_download_time"
+  | "arrival_empty_time"
+  | "departure_empty_time";
 
 type Props = {
   datetime: string | null;

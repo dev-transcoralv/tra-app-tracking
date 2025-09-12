@@ -79,9 +79,14 @@ export const OrderSchema = z.object({
   child_business_code: z
     .enum(["containers_import_immediate_loading"])
     .nullable(),
+  container_type: z.string().nullable(),
   port_name: z.string(),
   kind_container_name: z.string(),
   chassis_type: z.string(),
+  arrival_empty_time: z.string().nullable(),
+  departure_empty_time: z.string().nullable(),
+  image_container: z.string().nullable(),
+  operation_name: z.string(),
   material_name: z.string(),
   burden_kg: z.number(),
   tara_kg: z.number(),

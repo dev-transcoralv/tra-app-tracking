@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import {
   Text,
@@ -20,7 +21,9 @@ import WhatsAppButton from "../WhatsappButton";
 // import WialonLiveMap from "../WialonLiveMap";
 import { ConfirmModal } from "../ConfirmModal";
 import { RouteMapView } from "../RouteMapView";
-// import { AppleMaps, GoogleMaps } from "expo-maps";
+import { ImagePickerField } from "../ImagePickerField";
+// TODO: import { AppleMaps, GoogleMaps } from "expo-maps";
+import { useForm, Controller } from "react-hook-form";
 
 type GrainData = {
   burden_kg: number;
@@ -44,6 +47,13 @@ export function OrderForm({ order }: { order: Order }) {
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>();
 
   useEffect(() => {
     setCurrentOrder(order); // si viene un order nuevo desde arriba
@@ -129,7 +139,7 @@ export function OrderForm({ order }: { order: Order }) {
       (guide) => guide.type === "third",
     );
     if (
-      currentOrder.type_delivery_note in ["customer", "both"] &&
+      ["customer", "both"].includes(currentOrder.type_delivery_note) &&
       guidesThird.length === 0
     ) {
       throw "Debe ingresar al menos una guía de cliente.";
@@ -138,7 +148,7 @@ export function OrderForm({ order }: { order: Order }) {
       (guide) => guide.type === "own",
     );
     if (
-      currentOrder.type_delivery_note in ["own", "both"] &&
+      ["own", "both"].includes(currentOrder.type_delivery_note) &&
       guidesOwn.length === 0
     ) {
       throw "Debe ingresar al menos una guía propia.";
@@ -166,6 +176,14 @@ export function OrderForm({ order }: { order: Order }) {
         !currentOrder.final_image_scale_ticket
       ) {
         throw "Se deben registrar fotos de tickets de báscula.";
+      }
+    }
+    if (currentOrder.business_code === "containers") {
+      if (
+        !currentOrder.arrival_empty_time ||
+        !currentOrder.departure_empty_time
+      ) {
+        throw "Se deben registrar fechas/horas de contenedor vacío para finalizar.";
       }
     }
   };
@@ -244,14 +262,14 @@ export function OrderForm({ order }: { order: Order }) {
         <Text className="font-bold">Coordinador:</Text>
         <Text className="ml-2">{currentOrder.coordinator_name}</Text>
       </View>
-      {order.coordinator_mobile && (
+      {/*order.coordinator_mobile && (
         <View className="flex-1">
           <WhatsAppButton
             phone={order.coordinator_mobile}
             message={`Tengo una duda sobre la orden no. ${order.name}`}
           />
         </View>
-      )}
+      )*/}
       <View className="flex-row">
         <Text className="font-bold">Placa:</Text>
         <Text className="ml-2">{currentOrder.vehicle_name}</Text>
@@ -277,10 +295,13 @@ export function OrderForm({ order }: { order: Order }) {
           height: 2,
         }}
       />
-      {/*Data by business*/}
-      {currentOrder.child_business_code ===
-        "containers_import_immediate_loading" && (
+      {/*Data by business containers_import_immediate_loading */}
+      {currentOrder.business_code === "containers" && (
         <View>
+          <View className="flex-row">
+            <Text className="font-bold">Tipo de Contenedor:</Text>
+            <Text className="ml-2">{currentOrder.container_type}</Text>
+          </View>
           <View className="flex-row">
             <Text className="font-bold">Puerto:</Text>
             <Text className="ml-2">{currentOrder.port_name}</Text>
@@ -298,20 +319,30 @@ export function OrderForm({ order }: { order: Order }) {
       {currentOrder.business_code === "grain" && (
         <View>
           <View className="flex-row">
+            <Text className="font-bold">Operación:</Text>
+            <Text className="ml-2">{currentOrder.operation_name}</Text>
+          </View>
+          <View className="flex-row">
             <Text className="font-bold">Material:</Text>
             <Text className="ml-2">{currentOrder.material_name}</Text>
           </View>
-          <Text className="font-extrabold text-lg color-primary underline mb-2">
-            Registrar Pesos
-          </Text>
-          <GrainForm
-            order={currentOrder}
-            onSave={(grainData) => {
-              (Object.keys(grainData) as (keyof GrainData)[]).forEach((key) => {
-                updateOrderField(key, grainData[key]);
-              });
-            }}
-          />
+          {currentOrder.trip_status && (
+            <View>
+              <Text className="font-extrabold text-lg color-primary underline mb-2">
+                Registrar Pesos
+              </Text>
+              <GrainForm
+                order={currentOrder}
+                onSave={(grainData) => {
+                  (Object.keys(grainData) as (keyof GrainData)[]).forEach(
+                    (key) => {
+                      updateOrderField(key, grainData[key]);
+                    },
+                  );
+                }}
+              />
+            </View>
+          )}
         </View>
       )}
       {currentOrder.business_code === "palletizing" && (
@@ -336,90 +367,152 @@ export function OrderForm({ order }: { order: Order }) {
             Registrar Fechas/Horas:
           </Text>
           {currentOrder.business_code === "grain" && (
-            <DatetimeButton
-              orderId={currentOrder.id}
-              field="arrival_point_download_time"
-              datetime={currentOrder.arrival_point_download_time}
-              title="Llegada Punto C."
-              orderFinished={currentOrder.trip_status === "finished"}
-              onChange={(value) =>
-                updateOrderField("arrival_point_download_time", value)
-              }
-            />
+            <View>
+              <DatetimeButton
+                orderId={currentOrder.id}
+                field="arrival_point_download_time"
+                datetime={currentOrder.arrival_point_download_time}
+                title="Llegada Punto C."
+                orderFinished={currentOrder.trip_status === "finished"}
+                onChange={(value) =>
+                  updateOrderField("arrival_point_download_time", value)
+                }
+              />
+              {currentOrder.arrival_point_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_charge_time"
+                  datetime={currentOrder.arrival_charge_time}
+                  title="Llegada Carga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_charge_time", value)
+                  }
+                />
+              )}
+              {currentOrder.arrival_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_download_time"
+                  datetime={currentOrder.arrival_download_time}
+                  title="Salida Carga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_download_time", value)
+                  }
+                />
+              )}
+              {currentOrder.arrival_download_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="departure_point_charge_time"
+                  datetime={currentOrder.departure_point_charge_time}
+                  title="Salida Punto C."
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("departure_point_charge_time", value)
+                  }
+                />
+              )}
+              {currentOrder.departure_point_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_point_download_time"
+                  datetime={currentOrder.arrival_point_download_time}
+                  title="Llegada Punto D."
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_point_download_time", value)
+                  }
+                />
+              )}
+              {currentOrder.arrival_point_download_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="departure_charge_time"
+                  datetime={currentOrder.departure_charge_time}
+                  title="Llegada Descarga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("departure_charge_time", value)
+                  }
+                />
+              )}
+              {currentOrder.departure_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="departure_download_time"
+                  datetime={currentOrder.departure_download_time}
+                  title="Salida Descarga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("departure_download_time", value)
+                  }
+                />
+              )}
+              {currentOrder.departure_download_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="departure_point_download_time"
+                  datetime={currentOrder.departure_point_download_time}
+                  title="Salida Punto D."
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("departure_point_download_time", value)
+                  }
+                />
+              )}
+            </View>
           )}
-          <DatetimeButton
-            orderId={currentOrder.id}
-            field="arrival_charge_time"
-            datetime={currentOrder.arrival_charge_time}
-            title="Llegada Carga"
-            orderFinished={currentOrder.trip_status === "finished"}
-            onChange={(value) => updateOrderField("arrival_charge_time", value)}
-          />
-          <DatetimeButton
-            orderId={currentOrder.id}
-            field="arrival_charge_time"
-            datetime={currentOrder.arrival_download_time}
-            title="Salida Carga"
-            orderFinished={currentOrder.trip_status === "finished"}
-            onChange={(value) =>
-              updateOrderField("arrival_download_time", value)
-            }
-          />
-          {currentOrder.business_code === "grain" && (
-            <DatetimeButton
-              orderId={currentOrder.id}
-              field="departure_point_charge_time"
-              datetime={currentOrder.departure_point_charge_time}
-              title="Salida Punto C."
-              orderFinished={currentOrder.trip_status === "finished"}
-              onChange={(value) =>
-                updateOrderField("departure_point_charge_time", value)
-              }
-            />
-          )}
-          {currentOrder.business_code === "grain" && (
-            <DatetimeButton
-              orderId={currentOrder.id}
-              field="arrival_point_download_time"
-              datetime={currentOrder.arrival_point_download_time}
-              title="Llegada Punto D."
-              orderFinished={currentOrder.trip_status === "finished"}
-              onChange={(value) =>
-                updateOrderField("arrival_point_download_time", value)
-              }
-            />
-          )}
-          <DatetimeButton
-            orderId={currentOrder.id}
-            field="departure_charge_time"
-            datetime={currentOrder.departure_charge_time}
-            title="Llegada Descarga"
-            orderFinished={currentOrder.trip_status === "finished"}
-            onChange={(value) =>
-              updateOrderField("departure_charge_time", value)
-            }
-          />
-          <DatetimeButton
-            orderId={currentOrder.id}
-            field="departure_download_time"
-            datetime={currentOrder.departure_download_time}
-            title="Salida Descarga"
-            orderFinished={currentOrder.trip_status === "finished"}
-            onChange={(value) =>
-              updateOrderField("departure_download_time", value)
-            }
-          />
-          {currentOrder.business_code === "grain" && (
-            <DatetimeButton
-              orderId={currentOrder.id}
-              field="departure_point_download_time"
-              datetime={currentOrder.departure_point_download_time}
-              title="Salida Punto D."
-              orderFinished={currentOrder.trip_status === "finished"}
-              onChange={(value) =>
-                updateOrderField("departure_point_download_time", value)
-              }
-            />
+          {currentOrder.business_code !== "grain" && (
+            <View>
+              <DatetimeButton
+                orderId={currentOrder.id}
+                field="arrival_charge_time"
+                datetime={currentOrder.arrival_charge_time}
+                title="Llegada Carga"
+                orderFinished={currentOrder.trip_status === "finished"}
+                onChange={(value) =>
+                  updateOrderField("arrival_charge_time", value)
+                }
+              />
+              {currentOrder.arrival_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_download_time"
+                  datetime={currentOrder.arrival_download_time}
+                  title="Salida Carga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_download_time", value)
+                  }
+                />
+              )}
+              {currentOrder.arrival_download_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="departure_charge_time"
+                  datetime={currentOrder.departure_charge_time}
+                  title="Llegada Descarga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("departure_charge_time", value)
+                  }
+                />
+              )}
+              {currentOrder.departure_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="departure_download_time"
+                  datetime={currentOrder.departure_download_time}
+                  title="Salida Descarga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("departure_download_time", value)
+                  }
+                />
+              )}
+            </View>
           )}
         </View>
       )}
@@ -429,6 +522,52 @@ export function OrderForm({ order }: { order: Order }) {
           height: 2,
         }}
       />
+      {/*Data by business*/}
+      {currentOrder.trip_status &&
+        currentOrder.business_code === "containers" && (
+          <View>
+            <Text className="font-extrabold text-lg color-primary underline mb-2">
+              Contenedor Vacío
+            </Text>
+            <DatetimeButton
+              orderId={currentOrder.id}
+              field="arrival_empty_time"
+              datetime={currentOrder.arrival_empty_time}
+              title="Llegada Vacío"
+              orderFinished={currentOrder.trip_status === "finished"}
+              onChange={(value) =>
+                updateOrderField("arrival_empty_time", value)
+              }
+            />
+            {currentOrder.arrival_empty_time && (
+              <DatetimeButton
+                orderId={currentOrder.id}
+                field="departure_empty_time"
+                datetime={currentOrder.departure_empty_time}
+                title="Salida Vacío"
+                orderFinished={currentOrder.trip_status === "finished"}
+                onChange={(value) =>
+                  updateOrderField("departure_empty_time", value)
+                }
+              />
+            )}
+            {/* Image Container */}
+            <View className="mt-2">
+              <ImagePickerField
+                control={control}
+                name="image"
+                label="Foto de Contenedor"
+              />
+            </View>
+
+            <View
+              className="my-1 bg-secondary mx-2"
+              style={{
+                height: 2,
+              }}
+            />
+          </View>
+        )}
       {/*Guides*/}
       <ListGuides
         guides={currentOrder.guides}

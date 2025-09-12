@@ -11,6 +11,8 @@ type BusinessGrainData = {
   tara_kg: number;
   final_burden_kg: number;
   final_tara_kg: number;
+  image_scale_ticket: string | null;
+  final_image_scale_ticket: string | null;
 };
 
 export async function getListOrders({

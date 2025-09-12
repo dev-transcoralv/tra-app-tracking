@@ -24,8 +24,9 @@ export default function ProtectedLayout() {
       <NotificationProvider>
         <Stack
           screenOptions={{
-            headerStyle: { backgroundColor: "black" },
-            headerTitle: "",
+            headerShown: false,
+            animation: "fade",
+            contentStyle: { backgroundColor: "#fff" },
           }}
         />
       </NotificationProvider>
