@@ -8,7 +8,7 @@ import {
   Dimensions,
   Modal,
 } from "react-native";
-import { Order } from "../../shared.types";
+import { Order, Vehicle } from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomePlay, FontAwesomeStop } from "../Icons";
@@ -23,7 +23,10 @@ import { ConfirmModal } from "../ConfirmModal";
 import { RouteMapView } from "../RouteMapView";
 import { ImagePickerField } from "../ImagePickerField";
 // TODO: import { AppleMaps, GoogleMaps } from "expo-maps";
+import { Dropdown } from "react-native-element-dropdown";
+import { cssInterop } from "nativewind";
 import { useForm, Controller } from "react-hook-form";
+import { getListChassis } from "../../services/odoo/vehicle";
 
 type GrainData = {
   burden_kg: number;
@@ -32,11 +35,16 @@ type GrainData = {
   final_tara_kg: number;
 };
 
+const StyledDropdown = cssInterop(Dropdown, {
+  className: "style",
+});
+
 export function OrderForm({ order }: { order: Order }) {
   const [currentOrder, setCurrentOrder] = useState<Order>(order);
   const [orderIdStarted, setOrderIdStarted] = useState<number | null>(null);
   const [loadingChangeInitiated, setLoadingChangeInitiated] = useState(false);
   const [loadingTripFinished, setLoadingTripFinished] = useState(false);
+  const [chassis, setChassis] = useState<Vehicle[]>([]);
   // Confirm modal
   const [visibleConfirmModal, setVisibleConfirmModal] = useState(false);
   const [messageConfirmModal, setMessageConfirmModal] = useState("");
@@ -54,6 +62,21 @@ export function OrderForm({ order }: { order: Order }) {
     formState: { errors },
     reset,
   } = useForm<FormData>();
+
+  useEffect(() => {
+    const getChassis = async () => {
+      try {
+        const data = await getListChassis("containers");
+        const fetchChassis = data.results ?? [];
+        setChassis(fetchChassis);
+      } catch (err) {
+        console.error(err);
+      } finally {
+      }
+    };
+
+    getChassis();
+  }, []);
 
   useEffect(() => {
     setCurrentOrder(order); // si viene un order nuevo desde arriba
@@ -103,6 +126,27 @@ export function OrderForm({ order }: { order: Order }) {
     }
   }, [orderIdStarted]);
 
+  const validateGuides = () => {
+    const guidesThird = currentOrder.guides.filter(
+      (guide) => guide.type === "third",
+    );
+    if (
+      ["customer", "both"].includes(currentOrder.type_delivery_note) &&
+      guidesThird.length === 0
+    ) {
+      throw "Ingresar al menos una guía de cliente.";
+    }
+    const guidesOwn = currentOrder.guides.filter(
+      (guide) => guide.type === "own",
+    );
+    if (
+      ["own", "both"].includes(currentOrder.type_delivery_note) &&
+      guidesOwn.length === 0
+    ) {
+      throw "Ingresar al menos una guía propia.";
+    }
+  };
+
   const changeInitiated = async () => {
     try {
       setLoadingChangeInitiated(true);
@@ -126,33 +170,25 @@ export function OrderForm({ order }: { order: Order }) {
 
   const validateFieldsTripCompleted = () => {
     if (
-      !currentOrder.arrival_charge_time ||
-      !currentOrder.arrival_download_time ||
-      !currentOrder.departure_charge_time ||
-      !currentOrder.departure_download_time
+      currentOrder.business_code !== "containers" &&
+      (!currentOrder.arrival_charge_time ||
+        !currentOrder.arrival_download_time ||
+        !currentOrder.departure_charge_time ||
+        !currentOrder.departure_download_time)
     ) {
-      throw "Se deben registrar fechas/horas para finalizar.";
+      throw "Registrar fechas/horas.";
+    } else {
+      if (
+        currentOrder.container_workflow === "process" &&
+        (!currentOrder.arrival_charge_time ||
+          !currentOrder.arrival_download_time ||
+          !currentOrder.departure_charge_time ||
+          !currentOrder.departure_download_time)
+      ) {
+        throw "Registrar fechas/horas.";
+      }
     }
 
-    /*Guides*/
-    const guidesThird = currentOrder.guides.filter(
-      (guide) => guide.type === "third",
-    );
-    if (
-      ["customer", "both"].includes(currentOrder.type_delivery_note) &&
-      guidesThird.length === 0
-    ) {
-      throw "Debe ingresar al menos una guía de cliente.";
-    }
-    const guidesOwn = currentOrder.guides.filter(
-      (guide) => guide.type === "own",
-    );
-    if (
-      ["own", "both"].includes(currentOrder.type_delivery_note) &&
-      guidesOwn.length === 0
-    ) {
-      throw "Debe ingresar al menos una guía propia.";
-    }
     /*Validate by business*/
     if (currentOrder.business_code === "grain") {
       if (
@@ -161,7 +197,7 @@ export function OrderForm({ order }: { order: Order }) {
         !currentOrder.arrival_point_download_time ||
         !currentOrder.departure_point_download_time
       ) {
-        throw "Se deben registrar fechas/horas para finalizar.";
+        throw "Rgistrar fechas/horas.";
       }
       if (
         !currentOrder.burden_kg ||
@@ -169,21 +205,43 @@ export function OrderForm({ order }: { order: Order }) {
         !currentOrder.final_burden_kg ||
         !currentOrder.final_tara_kg
       ) {
-        throw "Se deben registrar pesos para finalizar.";
+        throw "Registrar pesos.";
       }
       if (
         !currentOrder.image_scale_ticket ||
         !currentOrder.final_image_scale_ticket
       ) {
-        throw "Se deben registrar fotos de tickets de báscula.";
+        throw "Registrar fotos de tickets de báscula.";
       }
     }
-    if (currentOrder.business_code === "containers") {
+    if (
+      currentOrder.business_code === "containers" &&
+      currentOrder.container_workflow === "container"
+    ) {
       if (
         !currentOrder.arrival_empty_time ||
         !currentOrder.departure_empty_time
       ) {
-        throw "Se deben registrar fechas/horas de contenedor vacío para finalizar.";
+        throw "Registrar fechas/horas de contenedor vacío.";
+      }
+      if (
+        currentOrder.has_generator &&
+        currentOrder.container_workflow === "container"
+      ) {
+        if (
+          !currentOrder.generator_supplier_removal ||
+          !currentOrder.generator_supplier_delivery
+        ) {
+          throw "Registrar fechas/horas de generador.";
+        }
+      }
+    }
+    /*Guides*/
+    if (currentOrder.business_code !== "containers") {
+      validateGuides();
+    } else {
+      if (currentOrder.container_workflow === "process") {
+        validateGuides();
       }
     }
   };
@@ -213,6 +271,19 @@ export function OrderForm({ order }: { order: Order }) {
     setMessageConfirmModal(message);
     setOnConfirmAction(() => onConfirm);
     setVisibleConfirmModal(true);
+  };
+
+  const Separator = () => {
+    return <View className="my-1 bg-secondary mx-2" style={{ height: 2 }} />;
+  };
+
+  const RowDetail = ({ label, value }: { label: string; value?: string }) => {
+    return (
+      <View className="flex-row">
+        <Text className="font-bold">{label}</Text>
+        <Text className="ml-2">{value}</Text>
+      </View>
+    );
   };
 
   return (
@@ -253,32 +324,10 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </TouchableOpacity>
       )}
-      <View className="flex-row">
-        <Text className="font-bold">Cliente:</Text>
-        <Text className="ml-2">{currentOrder.partner_name}</Text>
-      </View>
-
-      <View className="flex-row">
-        <Text className="font-bold">Coordinador:</Text>
-        <Text className="ml-2">{currentOrder.coordinator_name}</Text>
-      </View>
-      {/*order.coordinator_mobile && (
-        <View className="flex-1">
-          <WhatsAppButton
-            phone={order.coordinator_mobile}
-            message={`Tengo una duda sobre la orden no. ${order.name}`}
-          />
-        </View>
-      )*/}
-      <View className="flex-row">
-        <Text className="font-bold">Placa:</Text>
-        <Text className="ml-2">{currentOrder.vehicle_name}</Text>
-      </View>
-      <View className="flex-row">
-        <Text className="font-bold">Ruta:</Text>
-        <Text className="ml-2">{currentOrder.route_name}</Text>
-      </View>
-
+      <RowDetail label="Cliente:" value={order.partner_name} />
+      <RowDetail label="Coordinador:" value={order.coordinator_name} />
+      <RowDetail label="Placa:" value={order.vehicle_name} />
+      <RowDetail label="Ruta:" value={order.route_name} />
       <View>
         <TouchableOpacity
           className="bg-blue-900 py-3 px-4 rounded-xl items-center"
@@ -289,12 +338,7 @@ export function OrderForm({ order }: { order: Order }) {
           </Text>
         </TouchableOpacity>
       </View>
-      <View
-        className="my-1 bg-secondary mx-2"
-        style={{
-          height: 2,
-        }}
-      />
+      <Separator />
       {/*Data by business containers_import_immediate_loading */}
       {currentOrder.business_code === "containers" && (
         <View>
@@ -314,18 +358,18 @@ export function OrderForm({ order }: { order: Order }) {
             <Text className="font-bold">Tipo de Chasis:</Text>
             <Text className="ml-2">{currentOrder.chassis_type}</Text>
           </View>
+          {currentOrder.container_workflow === "container" && (
+            <View className="flex-row">
+              <Text className="font-bold">Patio de Vacío:</Text>
+              <Text className="ml-2">{currentOrder.retreat_yard_name}</Text>
+            </View>
+          )}
         </View>
       )}
       {currentOrder.business_code === "grain" && (
         <View>
-          <View className="flex-row">
-            <Text className="font-bold">Operación:</Text>
-            <Text className="ml-2">{currentOrder.operation_name}</Text>
-          </View>
-          <View className="flex-row">
-            <Text className="font-bold">Material:</Text>
-            <Text className="ml-2">{currentOrder.material_name}</Text>
-          </View>
+          <RowDetail label="Operación:" value={order.operation_name} />
+          <RowDetail label="Material:" value={order.material_name} />
           {currentOrder.trip_status && (
             <View>
               <Text className="font-extrabold text-lg color-primary underline mb-2">
@@ -353,29 +397,36 @@ export function OrderForm({ order }: { order: Order }) {
           </View>
         </View>
       )}
+      {currentOrder.business_code === "gas_fuel" && (
+        <View>
+          <View className="flex-row">
+            <Text className="font-bold">Auxiliar:</Text>
+            <Text className="ml-2">{currentOrder.driver_assistant_name}</Text>
+          </View>
+        </View>
+      )}
 
       {/*Buttons*/}
       {currentOrder.trip_status && (
         <View className="flex">
-          <View
-            className="my-1 bg-secondary mx-2"
-            style={{
-              height: 2,
-            }}
-          />
-          <Text className="font-extrabold text-lg color-primary underline mb-2">
-            Registrar Fechas/Horas:
-          </Text>
+          {currentOrder.business_code !== "containers" && (
+            <View>
+              <Separator />
+              <Text className="font-extrabold text-lg color-primary underline mb-2">
+                Registrar Fechas/Horas:
+              </Text>
+            </View>
+          )}
           {currentOrder.business_code === "grain" && (
             <View>
               <DatetimeButton
                 orderId={currentOrder.id}
-                field="arrival_point_download_time"
-                datetime={currentOrder.arrival_point_download_time}
+                field="arrival_point_charge_time"
+                datetime={currentOrder.arrival_point_charge_time}
                 title="Llegada Punto C."
                 orderFinished={currentOrder.trip_status === "finished"}
                 onChange={(value) =>
-                  updateOrderField("arrival_point_download_time", value)
+                  updateOrderField("arrival_point_charge_time", value)
                 }
               />
               {currentOrder.arrival_point_charge_time && (
@@ -393,16 +444,16 @@ export function OrderForm({ order }: { order: Order }) {
               {currentOrder.arrival_charge_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}
-                  field="arrival_download_time"
-                  datetime={currentOrder.arrival_download_time}
+                  field="departure_charge_time"
+                  datetime={currentOrder.departure_charge_time}
                   title="Salida Carga"
                   orderFinished={currentOrder.trip_status === "finished"}
                   onChange={(value) =>
-                    updateOrderField("arrival_download_time", value)
+                    updateOrderField("departure_charge_time", value)
                   }
                 />
               )}
-              {currentOrder.arrival_download_time && (
+              {currentOrder.departure_charge_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}
                   field="departure_point_charge_time"
@@ -429,16 +480,16 @@ export function OrderForm({ order }: { order: Order }) {
               {currentOrder.arrival_point_download_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}
-                  field="departure_charge_time"
-                  datetime={currentOrder.departure_charge_time}
+                  field="arrival_download_time"
+                  datetime={currentOrder.arrival_download_time}
                   title="Llegada Descarga"
                   orderFinished={currentOrder.trip_status === "finished"}
                   onChange={(value) =>
-                    updateOrderField("departure_charge_time", value)
+                    updateOrderField("arrival_download_time", value)
                   }
                 />
               )}
-              {currentOrder.departure_charge_time && (
+              {currentOrder.arrival_download_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}
                   field="departure_download_time"
@@ -464,7 +515,62 @@ export function OrderForm({ order }: { order: Order }) {
               )}
             </View>
           )}
-          {currentOrder.business_code !== "grain" && (
+          {currentOrder.business_code === "containers" &&
+            currentOrder.container_workflow === "process" && (
+              <View>
+                <Separator />
+                <Text className="font-extrabold text-lg color-primary underline mb-2">
+                  Registrar Fechas/Horas:
+                </Text>
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_charge_time"
+                  datetime={currentOrder.arrival_charge_time}
+                  title="Llegada Carga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_charge_time", value)
+                  }
+                />
+                {currentOrder.arrival_charge_time && (
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="departure_charge_time"
+                    datetime={currentOrder.departure_charge_time}
+                    title="Salida Carga"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("departure_charge_time", value)
+                    }
+                  />
+                )}
+                {currentOrder.departure_charge_time && (
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="arrival_download_time"
+                    datetime={currentOrder.arrival_download_time}
+                    title="Llegada Descarga"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("arrival_download_time", value)
+                    }
+                  />
+                )}
+                {currentOrder.arrival_download_time && (
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="departure_download_time"
+                    datetime={currentOrder.departure_download_time}
+                    title="Salida Descarga"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("departure_download_time", value)
+                    }
+                  />
+                )}
+              </View>
+            )}
+          {!["containers", "grain"].includes(currentOrder.business_code) && (
             <View>
               <DatetimeButton
                 orderId={currentOrder.id}
@@ -516,15 +622,11 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </View>
       )}
-      <View
-        className="my-1 bg-secondary mx-2"
-        style={{
-          height: 2,
-        }}
-      />
+      <Separator />
       {/*Data by business*/}
       {currentOrder.trip_status &&
-        currentOrder.business_code === "containers" && (
+        currentOrder.business_code === "containers" &&
+        currentOrder.container_workflow === "container" && (
           <View>
             <Text className="font-extrabold text-lg color-primary underline mb-2">
               Contenedor Vacío
@@ -560,27 +662,78 @@ export function OrderForm({ order }: { order: Order }) {
               />
             </View>
 
-            <View
-              className="my-1 bg-secondary mx-2"
-              style={{
-                height: 2,
-              }}
-            />
+            {currentOrder.container_type === "Importación" && (
+              <StyledDropdown
+                data={chassis}
+                labelField="name"
+                valueField="id"
+                placeholder="p.e Chassis"
+                // disable=
+                value={1}
+                onChange={(item) => {}}
+                className="w-full h-12 bg-white border border-black rounded-lg px-3 my-2"
+                placeholderStyle={{ color: "#999" }}
+              />
+            )}
+
+            {currentOrder.has_generator &&
+              currentOrder.container_workflow === "container" && (
+                <View>
+                  <Separator />
+                  <Text className="font-extrabold text-lg color-primary underline mb-2">
+                    Generador
+                  </Text>
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="generator_supplier_removal"
+                    datetime={currentOrder.generator_supplier_removal}
+                    title="Retiro Generador"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("generator_supplier_removal", value)
+                    }
+                  />
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="generator_supplier_delivery"
+                    datetime={currentOrder.generator_supplier_delivery}
+                    title="Entrega Generador"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("generator_supplier_delivery", value)
+                    }
+                  />
+                </View>
+              )}
+
+            <Separator />
           </View>
         )}
       {/*Guides*/}
-      <ListGuides
-        guides={currentOrder.guides}
-        order={currentOrder}
-        onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
-        orderFinished={currentOrder.trip_status === "finished"}
-      />
-      <View
-        className="my-1 bg-secondary mx-2"
-        style={{
-          height: 2,
-        }}
-      />
+      {currentOrder.business_code !== "containers" && (
+        <View>
+          <ListGuides
+            guides={currentOrder.guides}
+            order={currentOrder}
+            onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
+            orderFinished={currentOrder.trip_status === "finished"}
+          />
+          <Separator />
+        </View>
+      )}
+      {currentOrder.business_code === "containers" &&
+        currentOrder.container_workflow === "process" && (
+          <View>
+            <ListGuides
+              guides={currentOrder.guides}
+              order={currentOrder}
+              onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
+              orderFinished={currentOrder.trip_status === "finished"}
+            />
+            <Separator />
+          </View>
+        )}
+
       {/*Observations*/}
       <ListObservations
         observations={currentOrder.observations}

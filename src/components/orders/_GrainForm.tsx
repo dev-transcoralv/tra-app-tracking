@@ -61,8 +61,8 @@ export function GrainForm({
         name={name}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            inputMode="decimal"
-            keyboardType="numeric"
+            inputMode="numeric"
+            keyboardType="decimal-pad"
             onBlur={onBlur}
             readOnly={order.trip_status === "finished"}
             onChangeText={(val) => onChange(Number(val))}

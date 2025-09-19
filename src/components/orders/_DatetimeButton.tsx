@@ -13,7 +13,9 @@ type DatetimeField =
   | "departure_download_time"
   | "departure_point_download_time"
   | "arrival_empty_time"
-  | "departure_empty_time";
+  | "departure_empty_time"
+  | "generator_supplier_removal"
+  | "generator_supplier_delivery";
 
 type Props = {
   datetime: string | null;
@@ -33,18 +35,17 @@ export function DatetimeButton({
   onChange,
 }: Props) {
   const [loading, setLoading] = useState(false);
-  const update = async () => {
+
+  const handleUpdate = async () => {
     try {
       setLoading(true);
-      await updateHours(orderId, field);
       const order = await updateHours(orderId, field);
       onChange(String(order[field]));
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error?.message || String(error),
       });
-      throw error;
     } finally {
       setLoading(false);
     }
@@ -58,15 +59,14 @@ export function DatetimeButton({
         {!orderFinished && !datetime && (
           <TouchableOpacity
             style={{ width: 150 }}
-            className={`px-4 py-2 items-center bg-blue-900`}
-            onPress={() => update()}
+            className="px-4 py-2 items-center bg-blue-900"
+            onPress={handleUpdate}
+            disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <View className="items-center">
-                <Text className="text-white font-extrabold">{title}</Text>
-              </View>
+              <Text className="text-white font-extrabold">{title}</Text>
             )}
           </TouchableOpacity>
         )}

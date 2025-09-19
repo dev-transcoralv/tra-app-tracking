@@ -5,6 +5,15 @@ export const PortSchema = z.object({
   name: z.string(),
 });
 
+export const VehicleSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const ResponseListVehicleSchema = z.object({
+  results: z.array(VehicleSchema),
+});
+
 // Driver
 export const DriverSchema = z.object({
   id: z.number(),
@@ -51,7 +60,7 @@ export const OrderSchema = z.object({
   name: z.string(),
   trip_status: z.enum(["initiated", "finished"]).nullable(),
   business_name: z.string(),
-  business_code: z.enum(["containers", "grain", "palletizing"]),
+  business_code: z.enum(["containers", "grain", "palletizing", "gas_fuel"]),
   type_delivery_note: z.enum(["customer", "own", "both"]),
   status_arrival: z.enum(["done", "blocked"]),
   coordinator_name: z.string(),
@@ -60,6 +69,7 @@ export const OrderSchema = z.object({
   vehicle_name: z.string(),
   type_property: z.enum(["own", "third"]),
   chassis_name: z.string().nullable(),
+  driver_assistant_name: z.string().nullable(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
@@ -79,13 +89,19 @@ export const OrderSchema = z.object({
   child_business_code: z
     .enum(["containers_import_immediate_loading"])
     .nullable(),
+  container_workflow: z.enum(["container", "process"]).nullable(),
   container_type: z.string().nullable(),
   port_name: z.string(),
   kind_container_name: z.string(),
+  retreat_yard_name: z.string().nullable(),
   chassis_type: z.string(),
   arrival_empty_time: z.string().nullable(),
   departure_empty_time: z.string().nullable(),
   image_container: z.string().nullable(),
+  has_generator: z.boolean().default(false),
+  generator_supplier_removal: z.string().nullable(),
+  generator_supplier_delivery: z.string().nullable(),
+  container: z.string().nullable(),
   operation_name: z.string(),
   material_name: z.string(),
   burden_kg: z.number(),
@@ -176,3 +192,5 @@ export type LeaveType = z.infer<typeof LeaveTypeSchema>;
 export type Leave = z.infer<typeof LeaveSchema>;
 export type ResponseListLeaveType = z.infer<typeof ResponseListLeaveTypeSchema>;
 export type ResponseListLeave = z.infer<typeof ResponseListLeaveSchema>;
+export type Vehicle = z.infer<typeof VehicleSchema>;
+export type ResponseListVehicle = z.infer<typeof ResponseListVehicleSchema>;

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Tracking",
+    "name": "T-Track",
     "slug": "tra-app-tracking",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,7 @@
     "scheme": "tra-app-tracking-scheme",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/transcoralv-splash-icon-dark.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/transcoralv-adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -44,7 +44,20 @@
           ]
         }
       ],
-      "expo-router"
+      "expo-router",
+      [
+      "expo-splash-screen",
+        {
+          "backgroundColor": "#DEE6EA",
+          "resizeMode": "contain",
+          "image": "./assets/transcoralv-splash-icon-dark.png",
+          "dark": {
+            "image": "./assets/transcoralv-splash-icon-light.png",
+            "backgroundColor": "#211915"
+          },
+          "imageWidth": 200
+        }
+      ]
     ],
     "extra": {
       "router": {},
