@@ -1,6 +1,6 @@
 import { Geolocation } from "../shared.types";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
+import { MapViewRoute } from "react-native-maps-routes";
 import { useRef } from "react";
 
 type Props = {
@@ -32,16 +32,16 @@ export function RouteMapView({ origin, destination, width, height }: Props) {
       <Marker coordinate={origin} title="Origen" identifier="{origin}" />
       <Marker coordinate={destination} title="Destino" />
 
-      <MapViewDirections
+      <MapViewRoute
         origin={origin}
         destination={destination}
-        apikey={GOOGLE_MAPS_APIKEY}
+        apiKey={GOOGLE_MAPS_APIKEY}
         strokeWidth={4}
         strokeColor="blue"
-        mode="DRIVING"
-        onReady={(result) => {
+        mode="DRIVE"
+        onReady={(result: any) => {
           // Ajusta zoom automáticamente al cargar la ruta
-          mapRef.current?.fitToCoordinates(result.coordinates, {
+          mapRef.current?.fitToCoordinates(result, {
             edgePadding: {
               top: 50,
               right: 50,

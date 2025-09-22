@@ -15,7 +15,7 @@ import DashboardCard from "../../../components/dashboard/_Card";
 import DashboardCardInformation from "../../../components/dashboard/_CardInformation";
 import FilterSelection from "../../../components/FilterSelection";
 import { useFocusEffect } from "@react-navigation/native";
-import { BarChart } from "react-native-chart-kit";
+import { BarChart } from "react-native-gifted-charts";
 import { OrderCardSummary } from "../../../components/orders/_CardSummary";
 
 export default function DashboardScreen() {
@@ -27,22 +27,6 @@ export default function DashboardScreen() {
   const driver: Driver | null = authContext.driver;
 
   const screenWidth = Dimensions.get("window").width;
-
-  const chartConfig = {
-    backgroundGradientFrom: "#6a92e5",
-    backgroundGradientTo: "#1c3b81",
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(4, 4, 4, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    propsForBackgroundLines: {
-      strokeWidth: 1,
-      stroke: "#e3e3e3",
-      strokeDasharray: "2",
-    },
-    style: {
-      borderRadius: 8,
-    },
-  };
 
   const options = [
     { label: "Hoy", value: "today" },
@@ -110,31 +94,24 @@ export default function DashboardScreen() {
             )}
           </View>
 
-          <Text className="font-extrabold my-2 text-2xl color-white">
-            Productividad
-          </Text>
-          <View className="mb-4 items-center">
-            <BarChart
-              style={{
-                borderRadius: 16,
-              }}
-              data={{
-                labels: dashboard?.road_trips?.route || [],
-                datasets: [
-                  {
-                    data: dashboard?.road_trips.count || [],
-                  },
-                ],
-              }}
-              width={screenWidth - 16}
-              height={250}
-              yAxisLabel=""
-              yAxisSuffix="" // ✅ add this to satisfy TypeScript
-              chartConfig={chartConfig}
-              fromZero
-              showValuesOnTopOfBars
-            />
-          </View>
+          {dashboard && dashboard.road_trips.length > 0 && (
+            <View>
+              <Text className="font-extrabold my-2 text-2xl color-white">
+                Productividad
+              </Text>
+              <View className="mb-4 items-center bg-secondary-complementary">
+                <BarChart
+                  data={dashboard.road_trips}
+                  barWidth={30}
+                  frontColor="#1c3b81"
+                  yAxisThickness={0}
+                  xAxisThickness={0}
+                  showLine
+                  width={screenWidth - 34} // adjust for padding/margin if needed
+                />
+              </View>
+            </View>
+          )}
         </ScrollView>
       )}
     </ScrollView>

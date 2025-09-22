@@ -3,7 +3,9 @@ import { View, ActivityIndicator, Text, Animated } from "react-native";
 import MapView, { Marker, Polyline, LatLng } from "react-native-maps";
 import axios from "axios";
 
-const WIALON_API_URL = process.env.EXPO_PUBLIC_WIALON_API_URL;
+const WIALON_API_URL =
+  process.env.EXPO_PUBLIC_WIALON_API_URL ??
+  "https://hst-api.wialon.com/wialon/ajax.html";
 const REFRESH_INTERVAL = 300000;
 
 interface WialonLiveProps {

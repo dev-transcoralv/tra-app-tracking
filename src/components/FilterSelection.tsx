@@ -28,7 +28,7 @@ export default function FilterSelection({ options, onSelect }: Props) {
   };
 
   return (
-    <View className="bg-gray-200 flex-row mb-2 py-2 px-2 rounded-xl">
+    <View className="bg-gray-200 flex-row mb-2 py-1 px-2 rounded-xl">
       <View className="flex w-1/12 justify-center items-center">
         <FontAwesomeFilter color="#1c3b8a" />
       </View>
@@ -36,7 +36,7 @@ export default function FilterSelection({ options, onSelect }: Props) {
         <StyledPicker
           selectedValue={selected}
           onValueChange={handleValueChange}
-          className="bg-blue-900 text-white"
+          className="bg-blue-900 text-white py-0"
         >
           {options.map((option) => (
             <Picker.Item

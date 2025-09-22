@@ -180,6 +180,8 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
                   placeholder="p.e Tipo"
                   disable={canEdit}
                   value={value}
+                  search
+                  inputSearchStyle={{ height: 40, fontSize: 16 }}
                   onChange={(item) => onChange(item.id)}
                   className="w-full h-12 bg-secondary-complementary border border-gray-300 rounded-lg px-3"
                   placeholderStyle={{ color: "#999" }}

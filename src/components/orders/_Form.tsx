@@ -18,7 +18,7 @@ import { DatetimeButton } from "./_DatetimeButton";
 import { GrainForm } from "./_GrainForm";
 import { ListObservations } from "../observations/_List";
 import WhatsAppButton from "../WhatsappButton";
-// import WialonLiveMap from "../WialonLiveMap";
+import WialonLiveMap from "../WialonLiveMap";
 import { ConfirmModal } from "../ConfirmModal";
 import { RouteMapView } from "../RouteMapView";
 import { ImagePickerField } from "../ImagePickerField";
@@ -787,6 +787,13 @@ export function OrderForm({ order }: { order: Order }) {
             width={screenWidth}
             height={screenHeight - 50} // leave space for close button
           />
+
+          {/*
+          <WialonLiveMap
+            unitName={order.vehicle_name}
+            destination={order.route_geolocation_destination}
+          />
+          */}
         </View>
       </Modal>
     </View>

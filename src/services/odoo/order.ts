@@ -1,9 +1,10 @@
 import { Order, ResponseListOrder } from "./../../shared.types";
 
-interface Props {
-  driverId: number | undefined;
+interface IndexProps {
   page: number;
-  status: string;
+  driverId?: string;
+  status?: string;
+  query?: string;
 }
 
 type BusinessGrainData = {
@@ -19,8 +20,9 @@ export async function getListOrders({
   page,
   driverId,
   status,
-}: Props): Promise<ResponseListOrder> {
-  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders?page=${page}&employee_id=${driverId}&status=${status}`;
+  query,
+}: IndexProps): Promise<ResponseListOrder> {
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders?page=${page}&employee_id=${driverId}&status=${status}&query=${query}`;
   try {
     const response = await fetch(URL);
     const json = await response.json();

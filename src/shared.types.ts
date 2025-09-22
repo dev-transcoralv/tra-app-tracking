@@ -144,10 +144,12 @@ export const DashboardSchema = z.object({
   kilometers_traveled: z.number(),
   handling_time: z.string(),
   trip_in_progress: OrderSchema.nullable(),
-  road_trips: z.object({
-    route: z.array(z.string()),
-    count: z.array(z.number()),
-  }),
+  road_trips: z.array(
+    z.object({
+      label: z.string(),
+      value: z.number(),
+    }),
+  ),
 });
 
 // Leave
