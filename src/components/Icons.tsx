@@ -158,3 +158,13 @@ export const FontAwesomeSave = ({
 }): ReactNode => {
   return <FontAwesome name="save" color={color} size={size} />;
 };
+
+export const FontAwesomeMinus = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="minus" color={color} size={size} />;
+};
