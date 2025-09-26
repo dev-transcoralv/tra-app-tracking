@@ -107,7 +107,7 @@ export default function LoginForm() {
           <ActivityIndicator color="#fff" />
         ) : (
           <Text className="items-center font-bold color-white text-lg">
-            Ingresar
+            INGRESAR
           </Text>
         )}
       </TouchableOpacity>

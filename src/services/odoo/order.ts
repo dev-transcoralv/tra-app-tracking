@@ -1,4 +1,9 @@
-import { Order, ResponseListOrder } from "./../../shared.types";
+import {
+  Order,
+  ResponseListOrder,
+  ResponseListUbication,
+  ResponseListGeocerca,
+} from "./../../shared.types";
 
 interface IndexProps {
   page: number;
@@ -138,6 +143,30 @@ export async function tripFinished(id: number): Promise<Order> {
     const response = await fetch(URL, options);
     const json = await response.json();
     return json as Order;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+export async function getListUbications(): Promise<ResponseListUbication> {
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/ubications`;
+  try {
+    const response = await fetch(URL);
+    const json = await response.json();
+    return json as ResponseListUbication;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+export async function getListGeocercas(): Promise<ResponseListGeocerca> {
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/geocercas`;
+  try {
+    const response = await fetch(URL);
+    const json = await response.json();
+    return json as ResponseListGeocerca;
   } catch (error) {
     // Throw error
     throw error;

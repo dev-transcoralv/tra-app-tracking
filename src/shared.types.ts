@@ -49,6 +49,27 @@ export const GuideSchema = z.object({
   image: z.string().optional(),
 });
 
+export const UbicationSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const GeocercaSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const MoveSchema = z.object({
+  id: z.number().nullable(),
+  order_id: z.number(),
+  origin: UbicationSchema,
+  destination: UbicationSchema,
+  geocerca: GeocercaSchema,
+  geocerca_destination: GeocercaSchema,
+  date_in: z.string(),
+  date_out: z.string(),
+});
+
 export const ObservationSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -86,15 +107,21 @@ export const OrderSchema = z.object({
   start_of_trip_iso_format: z.string().nullable(),
   guides: z.array(GuideSchema),
   observations: z.array(ObservationSchema),
+  moves: z.array(MoveSchema),
   child_business_code: z
     .enum(["containers_import_immediate_loading"])
     .nullable(),
+  goes_to_position_retirement: z.boolean(),
   container_workflow: z.enum(["container", "process"]).nullable(),
+  container_type_operation: z
+    .enum(["immediate loading", "position retirement"])
+    .nullable(),
   container_type: z.string().nullable(),
   port_name: z.string(),
   kind_container_name: z.string(),
   retreat_yard_name: z.string().nullable(),
   chassis_type: z.string(),
+  turn_date: z.string().nullable(),
   arrival_empty_time: z.string().nullable(),
   departure_empty_time: z.string().nullable(),
   image_container: z.string().nullable(),
@@ -178,6 +205,14 @@ export const ResponseListLeaveSchema = z.object({
   results: z.array(LeaveSchema),
 });
 
+export const ResponseListUbicationSchema = z.object({
+  results: z.array(UbicationSchema),
+});
+
+export const ResponseListGeocercaSchema = z.object({
+  results: z.array(GeocercaSchema),
+});
+
 export type Driver = z.infer<typeof DriverSchema>;
 export type ResponseLogin = z.infer<typeof ResponseLoginSchema>;
 export type Dashboard = z.infer<typeof DashboardSchema>;
@@ -189,6 +224,7 @@ export type ResponseListGrainOperation = z.infer<
   typeof ResponseListGrainOperationSchema
 >;
 export type Guide = z.infer<typeof GuideSchema>;
+export type Move = z.infer<typeof MoveSchema>;
 export type Observation = z.infer<typeof ObservationSchema>;
 export type LeaveType = z.infer<typeof LeaveTypeSchema>;
 export type Leave = z.infer<typeof LeaveSchema>;
@@ -196,3 +232,7 @@ export type ResponseListLeaveType = z.infer<typeof ResponseListLeaveTypeSchema>;
 export type ResponseListLeave = z.infer<typeof ResponseListLeaveSchema>;
 export type Vehicle = z.infer<typeof VehicleSchema>;
 export type ResponseListVehicle = z.infer<typeof ResponseListVehicleSchema>;
+export type Ubication = z.infer<typeof UbicationSchema>;
+export type Geocerca = z.infer<typeof GeocercaSchema>;
+export type ResponseListUbication = z.infer<typeof ResponseListUbicationSchema>;
+export type ResponseListGeocerca = z.infer<typeof ResponseListGeocercaSchema>;

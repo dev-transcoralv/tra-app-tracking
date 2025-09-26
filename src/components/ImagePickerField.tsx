@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Controller } from "react-hook-form";
@@ -7,90 +7,100 @@ type Props = {
   control: any;
   name: string;
   label?: string;
+  disabled?: boolean;
+  required?: boolean;
 };
 
-export function ImagePickerField({ control, name, label }: Props) {
+export function ImagePickerField({
+  control,
+  name,
+  label,
+  disabled,
+  required,
+}: Props) {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
+  useEffect(() => {
+    (async () => {
+      await ImagePicker.requestCameraPermissionsAsync();
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    })();
+  }, []);
+
   const handlePickImage = async (
-    onChange: (value: string) => void,
+    onChange: (value: string | null) => void,
     fromCamera = false,
   ) => {
     const result = fromCamera
-      ? await ImagePicker.launchCameraAsync({
-          allowsEditing: true,
-          quality: 0.5,
-          base64: true,
-        })
+      ? await ImagePicker.launchCameraAsync({ quality: 0.5, base64: true })
       : await ImagePicker.launchImageLibraryAsync({
-          allowsEditing: true,
           quality: 0.5,
           base64: true,
         });
 
     if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      const base64 = `data:image/jpeg;base64,${result.assets[0].base64}`;
-      setImageUri(uri);
-      onChange(base64);
+      const asset = result.assets[0];
+      setImageUri(asset.uri);
+      onChange(`data:image/jpeg;base64,${asset.base64}`);
     }
+  };
+
+  const handleClear = (onChange: (value: string | null) => void) => {
+    setImageUri(null);
+    onChange(null);
   };
 
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, value } }) => (
-        <View className="flex-col gap-2">
-          {label && (
-            <Text className="text-base bg-secondary text-white text-center py-1">
-              {label}
-            </Text>
-          )}
+      rules={{ required: required ? "Este campo es obligatorio" : false }}
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
+        <View style={{ gap: 8 }}>
+          {label && <Text className="font-semibold">{label}</Text>}
 
-          <View className="flex-row justify-between">
+          <View
+            style={{
+              flexDirection: "row",
+              borderRadius: 8,
+              overflow: "hidden",
+            }}
+          >
             <TouchableOpacity
-              style={{
-                backgroundColor: "#007AFF",
-                padding: 12,
-                borderRadius: 8,
-                flex: 1,
-                marginRight: 5,
-              }}
-              onPress={() => handlePickImage(onChange, true)}
+              disabled={disabled}
+              className="flex-1 py-2 bg-blue-900 items-center justify-center"
+              onPress={() => !disabled && handlePickImage(onChange, true)}
             >
-              <Text style={{ color: "white", textAlign: "center" }}>
-                📷 Tomar Foto
-              </Text>
+              <Text className="text-white">📷 Cámara</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{
-                backgroundColor: "#34C759",
-                padding: 12,
-                borderRadius: 8,
-                flex: 1,
-                marginLeft: 5,
-              }}
-              onPress={() => handlePickImage(onChange, false)}
+              disabled={disabled}
+              className="flex-1 py-2 bg-secondary items-center justify-center"
+              onPress={() => !disabled && handlePickImage(onChange, false)}
             >
-              <Text style={{ color: "white", textAlign: "center" }}>
-                🖼 Galería
-              </Text>
+              <Text className="text-white">🖼 Galería</Text>
             </TouchableOpacity>
           </View>
 
           {(imageUri || value) && (
-            <Image
-              style={{
-                width: "100%",
-                height: 200,
-                marginTop: 10,
-                borderRadius: 10,
-              }}
-              source={{ uri: imageUri || undefined }}
-            />
+            <View style={{ gap: 8 }}>
+              <Image
+                source={{ uri: imageUri || value }}
+                style={{ width: "100%", height: 180, borderRadius: 8 }}
+                resizeMode="cover"
+              />
+
+              <TouchableOpacity
+                className="p-4 bg-primary rounded-lg"
+                onPress={() => handleClear(onChange)}
+              >
+                <Text className="text-center text-white">🗑️ Limpiar</Text>
+              </TouchableOpacity>
+            </View>
           )}
+
+          {error && <Text className="text-primary">{error.message}</Text>}
         </View>
       )}
     />

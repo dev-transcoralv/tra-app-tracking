@@ -96,16 +96,21 @@ export function GuideModalForm({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View style={{ padding: 20, flex: 1 }}>
+      <View className="flex p-4">
+        <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
+          {(guide && "*** EDITAR GUÍA ***") || "*** CREAR GUÍA ***"}
+        </Text>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
           <ImagePickerField
             control={control}
             name="image"
-            label="Foto de Guía"
+            label="* Foto de Guía"
+            required={true}
           />
 
           <View>
+            <Text className="font-semibold mb-1">* Tipo:</Text>
             <Controller
               control={control}
               rules={{
@@ -125,7 +130,8 @@ export function GuideModalForm({
             />
           </View>
 
-          <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
+          <View className="w-full flex gap-2">
+            <Text className="font-semibold mb-1">* No. de Guía:</Text>
             <Controller
               control={control}
               rules={{
@@ -147,7 +153,7 @@ export function GuideModalForm({
                   value={value}
                   maxLength={9}
                   placeholderTextColor="#211915"
-                  className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
+                  className="color-secondary bg-secondary-complementary p-2 rounded-xl border-0 w-full outline-none text-sm md:text-base"
                 />
               )}
               name="name"
@@ -155,12 +161,13 @@ export function GuideModalForm({
           </View>
           {errors.name &&
             Object.values(errors.name.types || {}).map((msg, i) => (
-              <Text key={i} className="font-bold color-primary">
+              <Text key={i} className="color-primary">
                 {msg as string}
               </Text>
             ))}
 
-          <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
+          <View className="w-full flex gap-2">
+            <Text className="font-semibold mb-1">Comentario:</Text>
             <Controller
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
@@ -170,31 +177,36 @@ export function GuideModalForm({
                   onChangeText={onChange}
                   value={value}
                   placeholderTextColor="#211915"
-                  className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
+                  className="color-secondary bg-secondary-complementary p-2 rounded-xl border-0 w-full outline-none text-sm md:text-base"
                   multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
                 />
               )}
               name="comment"
             />
           </View>
 
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            className="bg-primary px-5 py-3 items-center"
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white font-semibold">Enviar</Text>
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={onClose}
-            className="bg-secondary px-5 py-3 items-center"
-          >
-            <Text className="text-white font-semibold">Descartar</Text>
-          </TouchableOpacity>
+          <View className="flex-row gap-x-2">
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              className="flex-1 bg-primary px-5 py-3 items-center"
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-semibold">GUARDAR</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onClose}
+              className="flex-1 bg-secondary px-5 py-3 items-center"
+            >
+              <Text className="text-white font-semibold">DESCARTAR</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>

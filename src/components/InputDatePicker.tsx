@@ -16,7 +16,7 @@ export function InputDatePicker({ control, name, label, disabled }: any) {
         <View className="w-full">
           <TouchableOpacity
             onPress={() => setShow(true)}
-            className="bg-blue-500 px-5 py-3 items-center"
+            className="bg-blue-900 px-5 py-3 items-center"
             disabled={disabled}
           >
             <Text className="text-white font-semibold">

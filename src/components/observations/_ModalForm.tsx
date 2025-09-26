@@ -86,22 +86,31 @@ export function ObservationModalForm({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View style={{ padding: 20, flex: 1 }}>
+      <View className="flex p-4">
+        <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
+          {(observation && "*** EDITAR OBSERVACIÓN ***") ||
+            "*** CREAR OBSERVACIÓN ***"}
+        </Text>
         <View className="w-full flex flex-col gap-4">
-          <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
+          <View className="w-full flex">
             <Controller
               control={control}
               rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="p.e. Todo correcto"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholderTextColor="#211915"
-                  className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
-                  multiline
-                />
+                <View>
+                  <Text className="font-semibold mb-1">* Descripción</Text>
+                  <TextInput
+                    placeholder="p.e. Todo correcto"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor="#211915"
+                    className="color-secondary p-2 rounded-lg bg-secondary-complementary border-0 w-full outline-none text-sm md:text-base"
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                  />
+                </View>
               )}
               name="name"
             />
@@ -112,24 +121,26 @@ export function ObservationModalForm({
             </Text>
           )}
 
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            className="bg-primary px-5 py-3 items-center"
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white font-semibold">Enviar</Text>
-            )}
-          </TouchableOpacity>
+          <View className="flex-row gap-x-2">
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              className="flex-1 bg-primary px-5 py-3 items-center"
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-semibold">GUARDAR</Text>
+              )}
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={onClose}
-            className="bg-secondary px-5 py-3 items-center"
-          >
-            <Text className="text-white font-semibold">Descartar</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onClose}
+              className="flex-1 bg-secondary px-5 py-3 items-center"
+            >
+              <Text className="text-white font-semibold">DESCARTAR</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>

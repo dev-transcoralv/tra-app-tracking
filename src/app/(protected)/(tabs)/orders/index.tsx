@@ -1,4 +1,4 @@
-import { View, TextInput } from "react-native";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import { ListOrders } from "../../../../components/orders/_List";
 import { getListOrders } from "../../../../services/odoo/order";
 import { useContext, useState, useEffect, useRef, useCallback } from "react";
@@ -7,6 +7,7 @@ import { AuthContext } from "../../../../utils/authContext";
 import { Order } from "../../../../shared.types";
 import FilterSelection from "../../../..//components/FilterSelection";
 import debounce from "lodash/debounce";
+import { FontAwesomeSearch } from "../../../../components/Icons";
 
 export default function IndexScreen() {
   const { driver } = useContext(AuthContext);
@@ -89,13 +90,26 @@ export default function IndexScreen() {
   return (
     <View className="bg-secondary h-full flex p-2">
       <FilterSelection options={options} onSelect={handleFilterChange} />
-      <TextInput
-        placeholder="p.e Número de orden | Cliente | Placa"
-        value={query}
-        onChangeText={handleSearch}
-        placeholderTextColor="#211915"
-        className="color-secondary bg-white border-0 w-full outline-none text-sm md:text-base mb-2 px-3 rounded-lg"
-      />
+      <View className="w-full flex-row items-center bg-white gap-2 relative rounded-lg mb-2">
+        <TextInput
+          placeholder="p.e Número de orden | Cliente | Placa"
+          value={query}
+          onChangeText={(text) => {
+            setQuery(text); // instant update
+            handleSearch(text); // debounced side effect
+          }}
+          placeholderTextColor="#211915"
+          className="color-secondary flex-1 bg-transparent border-0 w-full outline-none text-sm md:text-base px-2"
+        />
+        <TouchableOpacity
+          onPress={() => handleSearch(query)}
+          accessible
+          accessibilityLabel="Buscar"
+          className="p-2"
+        >
+          <FontAwesomeSearch color="#211915" />
+        </TouchableOpacity>
+      </View>
       <ListOrders
         orders={orders}
         loading={loading}

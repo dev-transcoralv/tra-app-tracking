@@ -146,7 +146,10 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View style={{ padding: 20, flex: 1 }}>
+      <View className="flex p-4">
+        <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
+          {(leave && "*** EDITAR AUSENCIA ***") || "*** CREAR AUSENCIA ***"}
+        </Text>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
           {!canEdit && (
@@ -247,25 +250,26 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
               Este campo es requerido.
             </Text>
           )}
-          {!canEdit && (
+          <View className="flex-row gap-x-2">
             <TouchableOpacity
               onPress={handleSubmit(onSubmit)}
-              className="bg-primary px-5 py-3 items-center"
-              disabled={loading}
+              className="flex-1 bg-primary px-5 py-3 items-center"
+              disabled={loading || canEdit}
             >
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white font-semibold">Enviar</Text>
+                <Text className="text-white font-semibold">GUARDAR</Text>
               )}
             </TouchableOpacity>
-          )}
-          <TouchableOpacity
-            onPress={onClose}
-            className="bg-secondary px-5 py-3 items-center"
-          >
-            <Text className="text-white font-semibold">Descartar</Text>
-          </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onClose}
+              className="flex-1 bg-secondary px-5 py-3 items-center"
+            >
+              <Text className="text-white font-semibold">DESCARTAR</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>

@@ -61,13 +61,24 @@ export function GrainForm({
         name={name}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            inputMode="numeric"
             keyboardType="decimal-pad"
-            onBlur={onBlur}
+            onBlur={() => {
+              if (
+                value !== undefined &&
+                value !== null &&
+                String(value).trim() !== ""
+              ) {
+                const num = parseFloat(String(value));
+                if (!isNaN(num)) {
+                  onChange(num.toFixed(2));
+                }
+              }
+            }}
             readOnly={order.trip_status === "finished"}
-            onChangeText={(val) => onChange(Number(val))}
+            onChangeText={(val) => onChange(val)}
             className="mx-2 w-7/12 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
-            value={value?.toString() ?? ""}
+            value={value?.toString() ?? "0.00"}
+            placeholder="0.00"
           />
         )}
       />

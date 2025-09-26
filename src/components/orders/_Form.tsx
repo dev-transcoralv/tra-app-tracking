@@ -7,11 +7,13 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
+  TextInput,
+  Switch,
 } from "react-native";
 import { Order, Vehicle } from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FontAwesomePlay, FontAwesomeStop } from "../Icons";
+import { FontAwesomePlay, FontAwesomeSave, FontAwesomeStop } from "../Icons";
 import Toast from "react-native-toast-message";
 import { startTrip, stopTrip, tripFinished } from "../../services/odoo/order";
 import { DatetimeButton } from "./_DatetimeButton";
@@ -27,6 +29,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { cssInterop } from "nativewind";
 import { useForm, Controller } from "react-hook-form";
 import { getListChassis } from "../../services/odoo/vehicle";
+import { ListMoves } from "../moves/_List";
 
 type GrainData = {
   burden_kg: number;
@@ -43,6 +46,7 @@ export function OrderForm({ order }: { order: Order }) {
   const [currentOrder, setCurrentOrder] = useState<Order>(order);
   const [orderIdStarted, setOrderIdStarted] = useState<number | null>(null);
   const [loadingChangeInitiated, setLoadingChangeInitiated] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
   const [loadingTripFinished, setLoadingTripFinished] = useState(false);
   const [chassis, setChassis] = useState<Vehicle[]>([]);
   // Confirm modal
@@ -224,17 +228,21 @@ export function OrderForm({ order }: { order: Order }) {
       ) {
         throw "Registrar fechas/horas de contenedor vacío.";
       }
-      if (
-        currentOrder.has_generator &&
-        currentOrder.container_workflow === "container"
-      ) {
+      if (currentOrder.has_generator) {
         if (
-          !currentOrder.generator_supplier_removal ||
-          !currentOrder.generator_supplier_delivery
+          currentOrder.container_workflow === "container" &&
+          !currentOrder.generator_supplier_removal
         ) {
-          throw "Registrar fechas/horas de generador.";
+          throw "Registrar fecha/hora de retiro de generador.";
         }
       }
+    }
+    if (
+      currentOrder.has_generator &&
+      currentOrder.container_workflow === "process" &&
+      !currentOrder.generator_supplier_delivery
+    ) {
+      throw "Registrar fecha/hora de devolución de generador.";
     }
     /*Guides*/
     if (currentOrder.business_code !== "containers") {
@@ -243,6 +251,23 @@ export function OrderForm({ order }: { order: Order }) {
       if (currentOrder.container_workflow === "process") {
         validateGuides();
       }
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      validateFieldsTripCompleted();
+      setLoadingSave(true);
+      const order = await tripFinished(currentOrder.id);
+      setCurrentOrder(order);
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error,
+      });
+      throw error;
+    } finally {
+      setLoadingSave(false);
     }
   };
 
@@ -317,8 +342,8 @@ export function OrderForm({ order }: { order: Order }) {
                 className={`items-center font-extrabold ${(currentOrder.trip_status as string) === "finished" ? "color-black" : "color-white"}`}
               >
                 {(currentOrder.trip_status as string) === "initiated"
-                  ? "Detener"
-                  : "Iniciar"}
+                  ? "DETENER"
+                  : "INICIAR"}
               </Text>
             </View>
           )}
@@ -359,9 +384,15 @@ export function OrderForm({ order }: { order: Order }) {
             <Text className="ml-2">{currentOrder.chassis_type}</Text>
           </View>
           {currentOrder.container_workflow === "container" && (
-            <View className="flex-row">
-              <Text className="font-bold">Patio de Vacío:</Text>
-              <Text className="ml-2">{currentOrder.retreat_yard_name}</Text>
+            <View>
+              <View className="flex-row">
+                <Text className="font-bold">Patio de Vacío:</Text>
+                <Text className="ml-2">{currentOrder.retreat_yard_name}</Text>
+              </View>
+              <View className="flex-row">
+                <Text className="font-bold">Fecha/Hora de Turno:</Text>
+                <Text className="ml-2">{currentOrder.turn_date}</Text>
+              </View>
             </View>
           )}
         </View>
@@ -625,56 +656,83 @@ export function OrderForm({ order }: { order: Order }) {
       <Separator />
       {/*Data by business*/}
       {currentOrder.trip_status &&
-        currentOrder.business_code === "containers" &&
-        currentOrder.container_workflow === "container" && (
+        currentOrder.business_code === "containers" && (
           <View>
-            <Text className="font-extrabold text-lg color-primary underline mb-2">
-              Contenedor Vacío
-            </Text>
-            <DatetimeButton
-              orderId={currentOrder.id}
-              field="arrival_empty_time"
-              datetime={currentOrder.arrival_empty_time}
-              title="Llegada Vacío"
-              orderFinished={currentOrder.trip_status === "finished"}
-              onChange={(value) =>
-                updateOrderField("arrival_empty_time", value)
-              }
-            />
-            {currentOrder.arrival_empty_time && (
-              <DatetimeButton
-                orderId={currentOrder.id}
-                field="departure_empty_time"
-                datetime={currentOrder.departure_empty_time}
-                title="Salida Vacío"
-                orderFinished={currentOrder.trip_status === "finished"}
-                onChange={(value) =>
-                  updateOrderField("departure_empty_time", value)
-                }
-              />
+            {currentOrder.container_workflow === "container" && (
+              <View>
+                <Text className="font-extrabold text-lg color-primary underline mb-2">
+                  Contenedor Vacío
+                </Text>
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_empty_time"
+                  datetime={currentOrder.arrival_empty_time}
+                  title="Llegada Vacío"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_empty_time", value)
+                  }
+                />
+                {currentOrder.arrival_empty_time && (
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="departure_empty_time"
+                    datetime={currentOrder.departure_empty_time}
+                    title="Salida Vacío"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("departure_empty_time", value)
+                    }
+                  />
+                )}
+                {/* Image Container */}
+                <View>
+                  <ImagePickerField
+                    control={control}
+                    name="image"
+                    label="* Foto de Contenedor"
+                  />
+                </View>
+              </View>
             )}
-            {/* Image Container */}
-            <View className="mt-2">
-              <ImagePickerField
-                control={control}
-                name="image"
-                label="Foto de Contenedor"
-              />
-            </View>
 
-            {currentOrder.container_type === "Importación" && (
-              <StyledDropdown
-                data={chassis}
-                labelField="name"
-                valueField="id"
-                placeholder="p.e Chassis"
-                // disable=
-                value={1}
-                onChange={(item) => {}}
-                className="w-full h-12 bg-white border border-black rounded-lg px-3 my-2"
-                placeholderStyle={{ color: "#999" }}
-              />
+            {currentOrder.container_workflow === "container" && (
+              <View className="mt-1">
+                <Text className="font-semibold">* Acople</Text>
+                <StyledDropdown
+                  data={chassis}
+                  labelField="name"
+                  valueField="id"
+                  placeholder="p.e B30"
+                  // disable=
+                  value={1}
+                  search
+                  onChange={(item) => {}}
+                  className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                  placeholderStyle={{ color: "#999" }}
+                />
+              </View>
             )}
+
+            {currentOrder.container_workflow === "container" && (
+              <View className="my-1">
+                <Text className="font-semibold">* Contenedor</Text>
+                <TextInput
+                  placeholder="p.e MSNU2331501"
+                  placeholderTextColor="#999"
+                  className="color-secondary bg-white p-2 rounded-xl w-full outline-none text-sm md:text-base border border-black"
+                />
+              </View>
+            )}
+            {currentOrder.container_workflow === "container" &&
+              currentOrder.container_type_operation === "immediate loading" && (
+                <View className="my-1 flex-row items-center justify-between">
+                  <Text className="font-semibold">
+                    Pasa a Posición y Retiro
+                  </Text>
+                  <Switch value={currentOrder.goes_to_position_retirement} />
+                </View>
+              )}
 
             {currentOrder.has_generator &&
               currentOrder.container_workflow === "container" && (
@@ -693,6 +751,12 @@ export function OrderForm({ order }: { order: Order }) {
                       updateOrderField("generator_supplier_removal", value)
                     }
                   />
+                </View>
+              )}
+
+            {currentOrder.has_generator &&
+              currentOrder.container_workflow === "process" && (
+                <View>
                   <DatetimeButton
                     orderId={currentOrder.id}
                     field="generator_supplier_delivery"
@@ -706,6 +770,20 @@ export function OrderForm({ order }: { order: Order }) {
                 </View>
               )}
 
+            <Separator />
+          </View>
+        )}
+
+      {/*Moves*/}
+      {currentOrder.business_code === "containers" &&
+        currentOrder.container_workflow === "process" && (
+          <View>
+            <ListMoves
+              moves={currentOrder.moves}
+              order={currentOrder}
+              onUpdate={(newMoves) => updateOrderField("moves", newMoves)}
+              orderFinished={currentOrder.trip_status === "finished"}
+            />
             <Separator />
           </View>
         )}
@@ -743,6 +821,25 @@ export function OrderForm({ order }: { order: Order }) {
         }
         orderFinished={currentOrder.trip_status === "finished"}
       />
+
+      {["initiated", null].includes(currentOrder.trip_status) && (
+        <TouchableOpacity
+          className="flex-1 mb-2 px-5 py-2 items-center bg-primary"
+          onPress={handleSave}
+        >
+          {loadingSave ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <View className="items-center">
+              <FontAwesomeSave />
+              <Text className="items-center font-extrabold color-white">
+                GUARDAR
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
+
       {["initiated", null].includes(currentOrder.trip_status) && (
         <TouchableOpacity
           className="flex-1 mb-2 px-5 py-2 items-center bg-blue-900"
@@ -759,7 +856,7 @@ export function OrderForm({ order }: { order: Order }) {
             <View className="items-center">
               <FontAwesomeStop />
               <Text className="items-center font-extrabold color-white">
-                Finalizar
+                FINALIZAR
               </Text>
             </View>
           )}

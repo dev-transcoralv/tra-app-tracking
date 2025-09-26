@@ -138,3 +138,23 @@ export const FontAwesomeUserCircle = ({
 }): ReactNode => {
   return <FontAwesome name="user-circle" color={color} size={size} />;
 };
+
+export const FontAwesomeSearch = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="search" color={color} size={size} />;
+};
+
+export const FontAwesomeSave = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="save" color={color} size={size} />;
+};
