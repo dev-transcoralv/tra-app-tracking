@@ -9,13 +9,19 @@ import {
   Modal,
   TextInput,
   Switch,
+  StyleSheet,
 } from "react-native";
 import { Order, Vehicle } from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomePlay, FontAwesomeSave, FontAwesomeStop } from "../Icons";
 import Toast from "react-native-toast-message";
-import { startTrip, stopTrip, tripFinished } from "../../services/odoo/order";
+import {
+  startTrip,
+  stopTrip,
+  tripFinished,
+  updateBusinessContainersProcessContainer,
+} from "../../services/odoo/order";
 import { DatetimeButton } from "./_DatetimeButton";
 import { GrainForm } from "./_GrainForm";
 import { ListObservations } from "../observations/_List";
@@ -36,6 +42,13 @@ type GrainData = {
   tara_kg: number;
   final_burden_kg: number;
   final_tara_kg: number;
+};
+
+type BusinessContainersProcessContainerData = {
+  chassis_id: number | null;
+  goes_to_position_retirement: boolean;
+  image_container: string | null;
+  container: string | null;
 };
 
 const StyledDropdown = cssInterop(Dropdown, {
@@ -60,13 +73,7 @@ export function OrderForm({ order }: { order: Order }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FormData>();
-
+  // Load initital masters
   useEffect(() => {
     const getChassis = async () => {
       try {
@@ -83,7 +90,7 @@ export function OrderForm({ order }: { order: Order }) {
   }, []);
 
   useEffect(() => {
-    setCurrentOrder(order); // si viene un order nuevo desde arriba
+    setCurrentOrder(order); // Si viene un order nueva desde listado
   }, [order]);
 
   const updateOrderField = (field: keyof Order, value: any) => {
@@ -254,11 +261,16 @@ export function OrderForm({ order }: { order: Order }) {
     }
   };
 
-  const handleSave = async () => {
+  // Submit by business
+  const handleSaveContainers = async (
+    data: BusinessContainersProcessContainerData,
+  ) => {
     try {
-      validateFieldsTripCompleted();
       setLoadingSave(true);
-      const order = await tripFinished(currentOrder.id);
+      const order = await updateBusinessContainersProcessContainer(
+        currentOrder.id,
+        data,
+      );
       setCurrentOrder(order);
     } catch (error: any) {
       Toast.show({
@@ -271,6 +283,21 @@ export function OrderForm({ order }: { order: Order }) {
     }
   };
 
+  const {
+    control: controlContainers,
+    handleSubmit: handleSubmitContainers,
+    formState: { errors: errorsContainers },
+    reset: resetContainers,
+  } = useForm<BusinessContainersProcessContainerData>({
+    defaultValues: {
+      image_container: currentOrder.image_container,
+      container: currentOrder.container,
+      goes_to_position_retirement: currentOrder.goes_to_position_retirement,
+      chassis_id: currentOrder.chassis && currentOrder.chassis.id,
+    },
+  });
+
+  // Buttons Process
   const handleTripFinished = async () => {
     try {
       validateFieldsTripCompleted();
@@ -289,6 +316,7 @@ export function OrderForm({ order }: { order: Order }) {
     }
   };
 
+  // Helpers
   const openConfirmModal = (
     message: string,
     onConfirm: () => void | Promise<void>,
@@ -686,11 +714,13 @@ export function OrderForm({ order }: { order: Order }) {
                   />
                 )}
                 {/* Image Container */}
-                <View>
+                <View className="mt-2">
                   <ImagePickerField
-                    control={control}
-                    name="image"
-                    label="* Foto de Contenedor"
+                    control={controlContainers}
+                    name="image_container"
+                    label="Foto de Contenedor"
+                    bg="bg-white"
+                    required
                   />
                 </View>
               </View>
@@ -699,29 +729,52 @@ export function OrderForm({ order }: { order: Order }) {
             {currentOrder.container_workflow === "container" && (
               <View className="mt-1">
                 <Text className="font-semibold">* Acople</Text>
-                <StyledDropdown
-                  data={chassis}
-                  labelField="name"
-                  valueField="id"
-                  placeholder="p.e B30"
-                  // disable=
-                  value={1}
-                  search
-                  onChange={(item) => {}}
-                  className="w-full h-12 bg-white border border-black rounded-lg px-3"
-                  placeholderStyle={{ color: "#999" }}
+                <Controller
+                  control={controlContainers}
+                  name="chassis_id"
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <StyledDropdown
+                      data={chassis}
+                      labelField="name"
+                      valueField="id"
+                      placeholder="p.e B30"
+                      // disable=
+                      value={value}
+                      search
+                      onChange={(item) => onChange(item.id)}
+                      className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                      placeholderStyle={{ color: "#999" }}
+                    />
+                  )}
                 />
+                {errorsContainers.chassis_id && (
+                  <Text style={styles.error}>Este campo es requerido.</Text>
+                )}
               </View>
             )}
 
             {currentOrder.container_workflow === "container" && (
               <View className="my-1">
                 <Text className="font-semibold">* Contenedor</Text>
-                <TextInput
-                  placeholder="p.e MSNU2331501"
-                  placeholderTextColor="#999"
-                  className="color-secondary bg-white p-2 rounded-xl w-full outline-none text-sm md:text-base border border-black"
+                <Controller
+                  control={controlContainers}
+                  name="container"
+                  rules={{ required: true }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      placeholder="p.e MSNU2331501"
+                      placeholderTextColor="#999"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value ? String(value) : ""}
+                      className="color-secondary bg-white p-2 rounded-xl w-full outline-none text-sm md:text-base border border-black"
+                    />
+                  )}
                 />
+                {errorsContainers.container && (
+                  <Text style={styles.error}>Este campo es requerido.</Text>
+                )}
               </View>
             )}
             {currentOrder.container_workflow === "container" &&
@@ -730,7 +783,13 @@ export function OrderForm({ order }: { order: Order }) {
                   <Text className="font-semibold">
                     Pasa a Posición y Retiro
                   </Text>
-                  <Switch value={currentOrder.goes_to_position_retirement} />
+                  <Controller
+                    control={controlContainers}
+                    name="goes_to_position_retirement"
+                    render={({ field: { value, onChange } }) => (
+                      <Switch value={value} onValueChange={onChange} />
+                    )}
+                  />
                 </View>
               )}
 
@@ -767,10 +826,9 @@ export function OrderForm({ order }: { order: Order }) {
                       updateOrderField("generator_supplier_delivery", value)
                     }
                   />
+                  <Separator />
                 </View>
               )}
-
-            <Separator />
           </View>
         )}
 
@@ -825,7 +883,7 @@ export function OrderForm({ order }: { order: Order }) {
       {["initiated", null].includes(currentOrder.trip_status) && (
         <TouchableOpacity
           className="flex-1 mb-2 px-5 py-2 items-center bg-primary"
-          onPress={handleSave}
+          onPress={handleSubmitContainers(handleSaveContainers)}
         >
           {loadingSave ? (
             <ActivityIndicator color="#fff" />
@@ -885,7 +943,7 @@ export function OrderForm({ order }: { order: Order }) {
             height={screenHeight - 50} // leave space for close button
           />
 
-          {/*
+          {/*TODO
           <WialonLiveMap
             unitName={order.vehicle_name}
             destination={order.route_geolocation_destination}
@@ -896,3 +954,9 @@ export function OrderForm({ order }: { order: Order }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  error: {
+    color: "#e10718",
+  },
+});

@@ -43,6 +43,10 @@ export function ListObservations({
       throw error;
     } finally {
       setLoadingById(null);
+      Toast.show({
+        type: "success",
+        text1: "Observación eliminada correctamente.",
+      });
     }
   };
 

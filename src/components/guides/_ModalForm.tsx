@@ -70,6 +70,12 @@ export function GuideModalForm({
       });
       throw error;
     } finally {
+      Toast.show({
+        type: "success",
+        text1:
+          (data.id && "Guía editada correctamente.") ||
+          "Guía creada correctamente.",
+      });
       setLoading(false);
       reset();
       onClose();

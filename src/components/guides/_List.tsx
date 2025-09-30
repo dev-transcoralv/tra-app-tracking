@@ -62,35 +62,36 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
           </TouchableOpacity>
         )}
       </View>
-      {guides.map((item) => (
-        <View key={item.id} className="bg-white border rounded-xl p-2 mb-2">
-          <View className="flex-row justify-between items-center">
-            <Text className="text-sm font-bold">
-              {TYPES[item.type]} No. {item.name}
-            </Text>
-            {!orderFinished && (
-              <View className="flex-row gap-x-2">
-                <TouchableOpacity
-                  className="justify-center bg-secondary px-5 py-4 rounded-lg"
-                  onPress={() => openModal(item)}
-                >
-                  <FontAwesomeEdit color="white" size={16} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="justify-center bg-primary px-5 py-4 rounded-lg"
-                  onPress={() => deleteItem(item.id)}
-                >
-                  {loadingById === item.id ? (
-                    <ActivityIndicator color="#fff" size={"small"} />
-                  ) : (
-                    <FontAwesomeTrash color="white" size={16} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            )}
+      {guides &&
+        guides.map((item) => (
+          <View key={item.id} className="bg-white border rounded-xl p-2 mb-2">
+            <View className="flex-row justify-between items-center">
+              <Text className="text-sm font-bold">
+                {TYPES[item.type]} No. {item.name}
+              </Text>
+              {!orderFinished && (
+                <View className="flex-row gap-x-2">
+                  <TouchableOpacity
+                    className="justify-center bg-secondary px-5 py-4 rounded-lg"
+                    onPress={() => openModal(item)}
+                  >
+                    <FontAwesomeEdit color="white" size={16} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className="justify-center bg-primary px-5 py-4 rounded-lg"
+                    onPress={() => deleteItem(item.id)}
+                  >
+                    {loadingById === item.id ? (
+                      <ActivityIndicator color="#fff" size={"small"} />
+                    ) : (
+                      <FontAwesomeTrash color="white" size={16} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
 
       <GuideModalForm
         visible={visible}

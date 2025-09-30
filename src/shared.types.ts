@@ -89,7 +89,7 @@ export const OrderSchema = z.object({
   route_name: z.string(),
   vehicle_name: z.string(),
   type_property: z.enum(["own", "third"]),
-  chassis_name: z.string().nullable(),
+  chassis: VehicleSchema.nullable(),
   driver_assistant_name: z.string().nullable(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,

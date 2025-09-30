@@ -63,6 +63,12 @@ export function ObservationModalForm({
       });
       throw error;
     } finally {
+      Toast.show({
+        type: "success",
+        text1:
+          (data.id && "Observación editada correctamente.") ||
+          "Observación creada correctamente.",
+      });
       setLoading(false);
       reset();
       onClose();

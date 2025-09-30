@@ -21,6 +21,13 @@ type BusinessGrainData = {
   final_image_scale_ticket: string | null;
 };
 
+type BusinessContainersProcessContainerData = {
+  chassis_id: number;
+  goes_to_position_retirement: boolean;
+  image_container: string | null;
+  container: string | null;
+};
+
 export async function getListOrders({
   page,
   driverId,
@@ -149,6 +156,29 @@ export async function tripFinished(id: number): Promise<Order> {
   }
 }
 
+export async function updateBusinessContainersProcessContainer(
+  id: number,
+  data: BusinessContainersProcessContainerData,
+): Promise<Order> {
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  };
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_business_containers_process_container_data`;
+  try {
+    const response = await fetch(URL, options);
+    const json = await response.json();
+    return json as Order;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+// Masters
 export async function getListUbications(): Promise<ResponseListUbication> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/ubications`;
   try {

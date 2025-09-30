@@ -14,7 +14,7 @@ import Toast from "react-native-toast-message";
 import { getListUbications, getListGeocercas } from "../../services/odoo/order";
 import { createOrUpdateMove } from "../../services/odoo/move";
 import { cssInterop } from "nativewind";
-import { InputDatePicker } from "../InputDatePicker";
+import { InputDatetimePicker } from "../InputDatetimePicker";
 import { parse } from "date-fns";
 
 const StyledDropdown = cssInterop(Dropdown, { className: "style" });
@@ -78,11 +78,17 @@ export function MoveModalForm({
         destination_id: move.destination.id,
         geocerca_id: move.geocerca.id,
         geocerca_destination_id: move.geocerca_destination.id,
-        date_in: parse(move.date_in, "dd/MM/yyyy", new Date()),
-        date_out: parse(move.date_out, "dd/MM/yyyy", new Date()),
+        date_in: parse(move.date_in, "dd/MM/yyyy HH:mm:ss", new Date()),
+        date_out: parse(move.date_out, "dd/MM/yyyy HH:mm:ss", new Date()),
       });
     }
   }, [move, reset]);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup logic on unmount (when modal is destroyed)
+    };
+  }, []);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -92,6 +98,12 @@ export function MoveModalForm({
     } catch (error: any) {
       Toast.show({ type: "error", text1: error });
     } finally {
+      Toast.show({
+        type: "success",
+        text1:
+          (data.id && "Movimiento editado correctamente.") ||
+          "Movimiento creado correctamente.",
+      });
       setLoading(false);
       reset();
       onClose();
@@ -155,7 +167,11 @@ export function MoveModalForm({
 
         <View className="mb-2">
           <Text className="font-semibold mb-1">* Ingreso:</Text>
-          <InputDatePicker control={control} name="date_in" label="Ingreso" />
+          <InputDatetimePicker
+            control={control}
+            name="date_in"
+            label="Ingreso"
+          />
           {errors.date_in && (
             <Text style={styles.error}>Este campo es requerido.</Text>
           )}
@@ -163,7 +179,11 @@ export function MoveModalForm({
 
         <View className="mb-4">
           <Text className="font-semibold mb-1">* Salida:</Text>
-          <InputDatePicker control={control} name="date_out" label="Salida" />
+          <InputDatetimePicker
+            control={control}
+            name="date_out"
+            label="Salida"
+          />
           {errors.date_out && (
             <Text style={styles.error}>Este campo es requerido.</Text>
           )}

@@ -76,13 +76,13 @@ export function OrderCard({ order }: { order: Order }) {
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.vehicle_name}
           </StyledText>
-          {order.chassis_name && (
+          {order.chassis && (
             <View className="flex-row">
               <Text className="mx-1 font-bold text-sm color-blue-500">
                 con acople
               </Text>
               <StyledText className="text-gray-800 font-semibold text-sm">
-                {order.chassis_name}
+                {order.chassis.name}
               </StyledText>
             </View>
           )}

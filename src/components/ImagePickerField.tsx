@@ -18,6 +18,7 @@ type Props = {
   label?: string;
   disabled?: boolean;
   required?: boolean;
+  bg?: string;
 };
 
 if (
@@ -33,6 +34,7 @@ export function ImagePickerField({
   label,
   disabled,
   required,
+  bg = "bg-secondary-complementary",
 }: Props) {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -78,20 +80,20 @@ export function ImagePickerField({
       name={name}
       rules={{ required: required ? "Este campo es obligatorio" : false }}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <View style={{ gap: 8 }}>
+        <View>
           {/* Label */}
           <TouchableOpacity
-            className="p-4 bg-secondary-complementary justify-between flex-row rounded-lg"
+            className={`p-4 ${bg} justify-between flex-row rounded-lg`}
             onPress={toggleExpand}
           >
             <Text className="font-semibold">{label}</Text>
-            {(expanded && <FontAwesomeMinus color="grey" size={12} />) || (
-              <FontAwesomePlus color="grey" size={12} />
+            {(expanded && <FontAwesomeMinus color="grey" size={14} />) || (
+              <FontAwesomePlus color="grey" size={14} />
             )}
           </TouchableOpacity>
 
           {expanded && (
-            <View>
+            <View className="mt-2">
               <View
                 style={{
                   flexDirection: "row",
@@ -117,7 +119,7 @@ export function ImagePickerField({
               </View>
 
               {(imageUri || value) && (
-                <View style={{ gap: 8 }}>
+                <View className="mt-2" style={{ gap: 8 }}>
                   <Image
                     source={{ uri: imageUri || value }}
                     style={{ width: "100%", height: 180, borderRadius: 8 }}
@@ -132,10 +134,9 @@ export function ImagePickerField({
                   </TouchableOpacity>
                 </View>
               )}
-
-              {error && <Text className="text-primary">{error.message}</Text>}
             </View>
           )}
+          {error && <Text className="text-primary">{error.message}</Text>}
         </View>
       )}
     />
