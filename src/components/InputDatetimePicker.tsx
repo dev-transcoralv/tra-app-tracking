@@ -19,7 +19,7 @@ export function InputDatetimePicker({ control, name, label, disabled }: any) {
             className="bg-blue-900 px-5 py-3 items-center"
             disabled={disabled}
           >
-            <Text className="text-white font-semibold">
+            <Text className="color-white font-semibold">
               {value
                 ? `📅 ${format(value, "dd/MM/yyyy HH:mm:ss")}`
                 : `Seleccionar ${label}`}

@@ -12,7 +12,7 @@ export function ProfileForm({ driver }: { driver: Driver | null }) {
         className="bg-primary px-5 py-4 mb-2 items-center"
         onPress={() => authContext.logOut()}
       >
-        <Text className="text-white font-bold">CERRAR SESIÓN</Text>
+        <Text className="color-white font-bold">CERRAR SESIÓN</Text>
       </TouchableOpacity>
       <Avatar uri={driver?.image_1920} size={128} />
       <Text className="font-bold">Nombre:</Text>

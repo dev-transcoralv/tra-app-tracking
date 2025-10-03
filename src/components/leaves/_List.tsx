@@ -28,7 +28,7 @@ export function ListLeaves({ loading, leaves, handleLoadMore }: Props) {
       ListEmptyComponent={
         !loading ? (
           <View className="py-8 items-center">
-            <Text className="text-white">No se encontraron ausencias.</Text>
+            <Text className="color-white">No se encontraron ausencias.</Text>
           </View>
         ) : null
       }

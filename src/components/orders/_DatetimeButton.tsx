@@ -66,7 +66,7 @@ export function DatetimeButton({
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-extrabold">{title}</Text>
+              <Text className="color-white font-extrabold">{title}</Text>
             )}
           </TouchableOpacity>
         )}

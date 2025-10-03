@@ -36,7 +36,7 @@ export default function FilterSelection({ options, onSelect }: Props) {
         <StyledPicker
           selectedValue={selected}
           onValueChange={handleValueChange}
-          className="bg-blue-900 text-white py-0"
+          className="bg-blue-900 color-white py-0"
         >
           {options.map((option) => (
             <Picker.Item

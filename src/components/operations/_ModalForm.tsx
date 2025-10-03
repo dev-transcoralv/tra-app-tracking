@@ -215,7 +215,7 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-semibold">Enviar</Text>
+              <Text className="color-white font-semibold">Enviar</Text>
             )}
           </TouchableOpacity>
 
@@ -223,7 +223,7 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
             onPress={handleClose}
             className="bg-secondary px-5 py-3 items-center"
           >
-            <Text className="text-white font-semibold">Descartar</Text>
+            <Text className="color-white font-semibold">Descartar</Text>
           </TouchableOpacity>
         </View>
       </View>

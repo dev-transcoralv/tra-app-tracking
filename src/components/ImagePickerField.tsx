@@ -106,7 +106,7 @@ export function ImagePickerField({
                   className="flex-1 py-2 bg-blue-900 items-center justify-center"
                   onPress={() => !disabled && handlePickImage(onChange, true)}
                 >
-                  <Text className="text-white">📷 Cámara</Text>
+                  <Text className="color-white">📷 Cámara</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -114,7 +114,7 @@ export function ImagePickerField({
                   className="flex-1 py-2 bg-secondary items-center justify-center"
                   onPress={() => !disabled && handlePickImage(onChange, false)}
                 >
-                  <Text className="text-white">🖼 Galería</Text>
+                  <Text className="color-white">🖼 Galería</Text>
                 </TouchableOpacity>
               </View>
 
@@ -130,7 +130,7 @@ export function ImagePickerField({
                     className="p-4 bg-primary rounded-lg"
                     onPress={() => handleClear(onChange)}
                   >
-                    <Text className="text-center text-white">🗑️ Limpiar</Text>
+                    <Text className="text-center color-white">🗑️ Limpiar</Text>
                   </TouchableOpacity>
                 </View>
               )}

@@ -30,7 +30,7 @@ export function OrderCard({ order }: { order: Order }) {
         {order.trip_status === "initiated" && (
           <View>
             <View className="absolute top-2 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
-              <Text className="text-white text-m font-bold">Iniciado</Text>
+              <Text className="color-white text-m font-bold">Iniciado</Text>
             </View>
             <View className="absolute top-12 right-2 z-10">
               {order.status_arrival === "done" ? (
@@ -44,7 +44,7 @@ export function OrderCard({ order }: { order: Order }) {
 
         {order.trip_status === "finished" && (
           <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
-            <Text className="text-white text-m font-bold">Finalizado</Text>
+            <Text className="color-white text-m font-bold">Finalizado</Text>
           </View>
         )}
 
@@ -63,6 +63,14 @@ export function OrderCard({ order }: { order: Order }) {
           </StyledText>
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.business_name}
+            {order.business_code === "containers" && (
+              <View className="flex-row">
+                <Text className="mx-1 font-bold text-sm color-blue-500">-</Text>
+                <StyledText className="text-gray-800 font-semibold text-sm">
+                  {order.container_type_value}
+                </StyledText>
+              </View>
+            )}
           </StyledText>
         </StyledView>
         <StyledView className="flex-row flex-wrap">
@@ -88,7 +96,9 @@ export function OrderCard({ order }: { order: Order }) {
           )}
         </StyledView>
         <StyledView className="flex-row">
-          <StyledText className="font-bold text-sm">Fecha/Hora:</StyledText>
+          <StyledText className="font-bold text-sm">
+            Fecha/Hora ETA Carga:
+          </StyledText>
           <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
             {order.eta_charge}
           </StyledText>

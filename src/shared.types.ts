@@ -95,6 +95,7 @@ export const OrderSchema = z.object({
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
   eta_charge: z.string(),
+  eta_download: z.string(),
   arrival_point_charge_time: z.string().nullable(),
   arrival_charge_time: z.string().nullable(),
   departure_charge_time: z.string().nullable(),
@@ -108,15 +109,14 @@ export const OrderSchema = z.object({
   guides: z.array(GuideSchema),
   observations: z.array(ObservationSchema),
   moves: z.array(MoveSchema),
-  child_business_code: z
-    .enum(["containers_import_immediate_loading"])
-    .nullable(),
   goes_to_position_retirement: z.boolean(),
-  container_workflow: z.enum(["container", "process"]).nullable(),
+  container_workflow: z.enum(["1", "2", "3", "4"]).nullable(),
   container_type_operation: z
     .enum(["immediate loading", "position retirement"])
     .nullable(),
-  container_type: z.string().nullable(),
+  container_type_operation_value: z.string().nullable(),
+  container_type: z.enum(["import", "export"]).nullable(),
+  container_type_value: z.string().nullable(),
   port_name: z.string(),
   kind_container_name: z.string(),
   retreat_yard_name: z.string().nullable(),
@@ -126,6 +126,7 @@ export const OrderSchema = z.object({
   departure_empty_time: z.string().nullable(),
   image_container: z.string().nullable(),
   has_generator: z.boolean().default(false),
+  generator_supplier_name: z.string().nullable(),
   generator_supplier_removal: z.string().nullable(),
   generator_supplier_delivery: z.string().nullable(),
   container: z.string().nullable(),

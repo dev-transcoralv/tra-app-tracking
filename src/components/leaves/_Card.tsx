@@ -34,14 +34,14 @@ export function LeaveCard({ leave }: { leave: Leave }) {
         {leave.state === "confirm" && (
           <View>
             <View className="absolute top-1 right-1 bg-blue-500 px-2 py-1 rounded-full z-10">
-              <Text className="text-white text-m font-bold">Por aprobar</Text>
+              <Text className="color-white text-m font-bold">Por aprobar</Text>
             </View>
           </View>
         )}
 
         {leave.state === "validate1" && (
           <View className="absolute top-2 right-2 bg-green-300 px-2 py-1 rounded-full z-10">
-            <Text className="text-white text-m font-bold">
+            <Text className="color-white text-m font-bold">
               Segunda aprobación
             </Text>
           </View>
@@ -49,13 +49,13 @@ export function LeaveCard({ leave }: { leave: Leave }) {
 
         {leave.state === "validate" && (
           <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
-            <Text className="text-white text-m font-bold">Aprobado</Text>
+            <Text className="color-white text-m font-bold">Aprobado</Text>
           </View>
         )}
 
         {leave.state === "refuse" && (
           <View className="absolute top-2 right-2 bg-red-500 px-2 py-1 rounded-full z-10">
-            <Text className="text-white text-m font-bold">Rechazada</Text>
+            <Text className="color-white text-m font-bold">Rechazada</Text>
           </View>
         )}
 

@@ -259,7 +259,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white font-semibold">GUARDAR</Text>
+                <Text className="color-white font-semibold">GUARDAR</Text>
               )}
             </TouchableOpacity>
 
@@ -267,7 +267,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
               onPress={onClose}
               className="flex-1 bg-secondary px-5 py-3 items-center"
             >
-              <Text className="text-white font-semibold">DESCARTAR</Text>
+              <Text className="color-white font-semibold">DESCARTAR</Text>
             </TouchableOpacity>
           </View>
         </View>

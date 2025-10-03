@@ -45,14 +45,16 @@ export function ConfirmModal({
               className="bg-secondary px-4 py-2"
               onPress={onCancel}
             >
-              <StyledText className="text-white font-bold">Cancelar</StyledText>
+              <StyledText className="color-white font-bold">
+                Cancelar
+              </StyledText>
             </StyledTouchableOpacity>
 
             <StyledTouchableOpacity
               className="bg-primary px-4 py-2"
               onPress={onConfirm}
             >
-              <StyledText className="text-white font-bold">
+              <StyledText className="color-white font-bold">
                 Confirmar
               </StyledText>
             </StyledTouchableOpacity>

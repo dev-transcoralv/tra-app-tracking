@@ -190,7 +190,7 @@ export function OrderForm({ order }: { order: Order }) {
       throw "Registrar fechas/horas.";
     } else {
       if (
-        currentOrder.container_workflow === "process" &&
+        currentOrder.container_workflow === "1" &&
         (!currentOrder.arrival_charge_time ||
           !currentOrder.arrival_download_time ||
           !currentOrder.departure_charge_time ||
@@ -227,7 +227,7 @@ export function OrderForm({ order }: { order: Order }) {
     }
     if (
       currentOrder.business_code === "containers" &&
-      currentOrder.container_workflow === "container"
+      currentOrder.container_workflow === "1"
     ) {
       if (
         !currentOrder.arrival_empty_time ||
@@ -237,7 +237,7 @@ export function OrderForm({ order }: { order: Order }) {
       }
       if (currentOrder.has_generator) {
         if (
-          currentOrder.container_workflow === "container" &&
+          currentOrder.container_workflow === "1" &&
           !currentOrder.generator_supplier_removal
         ) {
           throw "Registrar fecha/hora de retiro de generador.";
@@ -246,7 +246,7 @@ export function OrderForm({ order }: { order: Order }) {
     }
     if (
       currentOrder.has_generator &&
-      currentOrder.container_workflow === "process" &&
+      currentOrder.container_workflow === "1" &&
       !currentOrder.generator_supplier_delivery
     ) {
       throw "Registrar fecha/hora de devolución de generador.";
@@ -255,14 +255,14 @@ export function OrderForm({ order }: { order: Order }) {
     if (currentOrder.business_code !== "containers") {
       validateGuides();
     } else {
-      if (currentOrder.container_workflow === "process") {
+      if (currentOrder.container_workflow === "3") {
         validateGuides();
       }
     }
   };
 
   // Submit by business
-  const handleSaveContainers = async (
+  const handleSaveContainersImportIL1 = async (
     data: BusinessContainersProcessContainerData,
   ) => {
     try {
@@ -284,10 +284,10 @@ export function OrderForm({ order }: { order: Order }) {
   };
 
   const {
-    control: controlContainers,
-    handleSubmit: handleSubmitContainers,
-    formState: { errors: errorsContainers },
-    reset: resetContainers,
+    control: controlContainersImportIL1,
+    handleSubmit: handleSubmitContainersImportIL1,
+    formState: { errors: errorsContainersImportIL1 },
+    reset: resetContainersImportIL1,
   } = useForm<BusinessContainersProcessContainerData>({
     defaultValues: {
       image_container: currentOrder.image_container,
@@ -341,6 +341,7 @@ export function OrderForm({ order }: { order: Order }) {
 
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
+      {/* Confirm Modal */}
       <ConfirmModal
         visible={visibleConfirmModal}
         message={messageConfirmModal}
@@ -377,10 +378,13 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </TouchableOpacity>
       )}
+      {/* Common data */}
       <RowDetail label="Cliente:" value={order.partner_name} />
       <RowDetail label="Coordinador:" value={order.coordinator_name} />
       <RowDetail label="Placa:" value={order.vehicle_name} />
       <RowDetail label="Ruta:" value={order.route_name} />
+      <RowDetail label="Fecha/Hora ETA Carga:" value={order.eta_charge} />
+      <RowDetail label="Fecha/Hora ETA Descarga" value={order.eta_download} />
       <View>
         <TouchableOpacity
           className="bg-blue-900 py-3 px-4 rounded-xl items-center"
@@ -392,36 +396,48 @@ export function OrderForm({ order }: { order: Order }) {
         </TouchableOpacity>
       </View>
       <Separator />
-      {/*Data by business containers_import_immediate_loading */}
+      {/* Data by business */}
       {currentOrder.business_code === "containers" && (
         <View>
-          <View className="flex-row">
-            <Text className="font-bold">Tipo de Contenedor:</Text>
-            <Text className="ml-2">{currentOrder.container_type}</Text>
-          </View>
-          <View className="flex-row">
-            <Text className="font-bold">Puerto:</Text>
-            <Text className="ml-2">{currentOrder.port_name}</Text>
-          </View>
-          <View className="flex-row">
-            <Text className="font-bold">Clase de Contenedor:</Text>
-            <Text className="ml-2">{currentOrder.kind_container_name}</Text>
-          </View>
-          <View className="flex-row">
-            <Text className="font-bold">Tipo de Chasis:</Text>
-            <Text className="ml-2">{currentOrder.chassis_type}</Text>
-          </View>
-          {currentOrder.container_workflow === "container" && (
-            <View>
-              <View className="flex-row">
-                <Text className="font-bold">Patio de Vacío:</Text>
-                <Text className="ml-2">{currentOrder.retreat_yard_name}</Text>
-              </View>
-              <View className="flex-row">
-                <Text className="font-bold">Fecha/Hora de Turno:</Text>
-                <Text className="ml-2">{currentOrder.turn_date}</Text>
-              </View>
-            </View>
+          <RowDetail
+            label="Tipo de Contenedor:"
+            value={currentOrder.container_type_value ?? ""}
+          />
+          <RowDetail
+            label="Tipo de Operación:"
+            value={currentOrder.container_type_operation_value ?? ""}
+          />
+          <RowDetail
+            label={
+              currentOrder.container_type === "import"
+                ? `Puerto Carga:`
+                : `Puerto Descarga:`
+            }
+            value={currentOrder.port_name}
+          />
+          <RowDetail
+            label="Clase de Contenedor:"
+            value={currentOrder.kind_container_name}
+          />
+          <RowDetail
+            label="Tipo de Chasis:"
+            value={currentOrder.chassis_type}
+          />
+          <RowDetail
+            label="Patio de Vacío:"
+            value={currentOrder.retreat_yard_name ?? ""}
+          />
+          {currentOrder.turn_date && (
+            <RowDetail
+              label="Fecha/Hora de Turno:"
+              value={currentOrder.turn_date}
+            />
+          )}
+          {currentOrder.has_generator && (
+            <RowDetail
+              label="Proveedor de Generador:"
+              value={currentOrder.generator_supplier_name ?? ""}
+            />
           )}
         </View>
       )}
@@ -450,32 +466,22 @@ export function OrderForm({ order }: { order: Order }) {
       )}
       {currentOrder.business_code === "palletizing" && (
         <View>
-          <View className="flex-row">
-            <Text className="font-bold">Carga:</Text>
-            <Text className="ml-2">{currentOrder.sacks_information}</Text>
-          </View>
+          <RowDetail label="Carga:" value={order.sacks_information ?? ""} />
         </View>
       )}
       {currentOrder.business_code === "gas_fuel" && (
         <View>
-          <View className="flex-row">
-            <Text className="font-bold">Auxiliar:</Text>
-            <Text className="ml-2">{currentOrder.driver_assistant_name}</Text>
-          </View>
+          <RowDetail
+            label="Auxiliar:"
+            value={currentOrder.driver_assistant_name ?? ""}
+          />
         </View>
       )}
 
-      {/*Buttons*/}
+      {/* Data by business */}
       {currentOrder.trip_status && (
         <View className="flex">
-          {currentOrder.business_code !== "containers" && (
-            <View>
-              <Separator />
-              <Text className="font-extrabold text-lg color-primary underline mb-2">
-                Registrar Fechas/Horas:
-              </Text>
-            </View>
-          )}
+          {/* Buttons Hours - Grain */}
           {currentOrder.business_code === "grain" && (
             <View>
               <DatetimeButton
@@ -574,8 +580,11 @@ export function OrderForm({ order }: { order: Order }) {
               )}
             </View>
           )}
+          {/* Buttons Hours - Import (immediate loading) */}
           {currentOrder.business_code === "containers" &&
-            currentOrder.container_workflow === "process" && (
+            currentOrder.container_type === "import" &&
+            currentOrder.container_type_operation === "immediate loading" &&
+            currentOrder.container_workflow === "1" && (
               <View>
                 <Separator />
                 <Text className="font-extrabold text-lg color-primary underline mb-2">
@@ -603,34 +612,80 @@ export function OrderForm({ order }: { order: Order }) {
                     }
                   />
                 )}
-                {currentOrder.departure_charge_time && (
-                  <DatetimeButton
-                    orderId={currentOrder.id}
-                    field="arrival_download_time"
-                    datetime={currentOrder.arrival_download_time}
-                    title="Llegada Descarga"
-                    orderFinished={currentOrder.trip_status === "finished"}
-                    onChange={(value) =>
-                      updateOrderField("arrival_download_time", value)
-                    }
+                <View className="mt-1">
+                  <Text className="font-semibold">* Acople</Text>
+                  <Controller
+                    control={controlContainersImportIL1}
+                    name="chassis_id"
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange } }) => (
+                      <StyledDropdown
+                        data={chassis}
+                        labelField="name"
+                        valueField="id"
+                        placeholder="p.e B30"
+                        // disable=
+                        value={value}
+                        search
+                        onChange={(item) => onChange(item.id)}
+                        className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                        placeholderStyle={{ color: "#999" }}
+                      />
+                    )}
                   />
-                )}
-                {currentOrder.arrival_download_time && (
-                  <DatetimeButton
-                    orderId={currentOrder.id}
-                    field="departure_download_time"
-                    datetime={currentOrder.departure_download_time}
-                    title="Salida Descarga"
-                    orderFinished={currentOrder.trip_status === "finished"}
-                    onChange={(value) =>
-                      updateOrderField("departure_download_time", value)
-                    }
+                  {errorsContainersImportIL1.chassis_id && (
+                    <Text style={styles.error}>Este campo es requerido.</Text>
+                  )}
+                </View>
+
+                <View className="my-1">
+                  <Text className="font-semibold">* Contenedor</Text>
+                  <Controller
+                    control={controlContainersImportIL1}
+                    name="container"
+                    rules={{ required: true }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        placeholder="p.e MSNU2331501"
+                        placeholderTextColor="#999"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value ? String(value) : ""}
+                        className="color-secondary bg-white p-2 rounded-xl w-full outline-none text-sm md:text-base border border-black"
+                      />
+                    )}
                   />
+                  {errorsContainersImportIL1.container && (
+                    <Text style={styles.error}>Este campo es requerido.</Text>
+                  )}
+                </View>
+                {currentOrder.has_generator && (
+                  <View>
+                    <Separator />
+                    <Text className="font-extrabold text-lg color-primary underline mb-2">
+                      Generador
+                    </Text>
+                    <DatetimeButton
+                      orderId={currentOrder.id}
+                      field="generator_supplier_delivery"
+                      datetime={currentOrder.generator_supplier_delivery}
+                      title="Entrega Generador"
+                      orderFinished={currentOrder.trip_status === "finished"}
+                      onChange={(value) =>
+                        updateOrderField("generator_supplier_delivery", value)
+                      }
+                    />
+                  </View>
                 )}
               </View>
             )}
+          {/* Buttons Hours - Others */}
           {!["containers", "grain"].includes(currentOrder.business_code) && (
             <View>
+              <Separator />
+              <Text className="font-extrabold text-lg color-primary underline mb-2">
+                Registrar Fechas/Horas:
+              </Text>
               <DatetimeButton
                 orderId={currentOrder.id}
                 field="arrival_charge_time"
@@ -682,159 +737,10 @@ export function OrderForm({ order }: { order: Order }) {
         </View>
       )}
       <Separator />
-      {/*Data by business*/}
-      {currentOrder.trip_status &&
-        currentOrder.business_code === "containers" && (
-          <View>
-            {currentOrder.container_workflow === "container" && (
-              <View>
-                <Text className="font-extrabold text-lg color-primary underline mb-2">
-                  Contenedor Vacío
-                </Text>
-                <DatetimeButton
-                  orderId={currentOrder.id}
-                  field="arrival_empty_time"
-                  datetime={currentOrder.arrival_empty_time}
-                  title="Llegada Vacío"
-                  orderFinished={currentOrder.trip_status === "finished"}
-                  onChange={(value) =>
-                    updateOrderField("arrival_empty_time", value)
-                  }
-                />
-                {currentOrder.arrival_empty_time && (
-                  <DatetimeButton
-                    orderId={currentOrder.id}
-                    field="departure_empty_time"
-                    datetime={currentOrder.departure_empty_time}
-                    title="Salida Vacío"
-                    orderFinished={currentOrder.trip_status === "finished"}
-                    onChange={(value) =>
-                      updateOrderField("departure_empty_time", value)
-                    }
-                  />
-                )}
-                {/* Image Container */}
-                <View className="mt-2">
-                  <ImagePickerField
-                    control={controlContainers}
-                    name="image_container"
-                    label="Foto de Contenedor"
-                    bg="bg-white"
-                    required
-                  />
-                </View>
-              </View>
-            )}
 
-            {currentOrder.container_workflow === "container" && (
-              <View className="mt-1">
-                <Text className="font-semibold">* Acople</Text>
-                <Controller
-                  control={controlContainers}
-                  name="chassis_id"
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <StyledDropdown
-                      data={chassis}
-                      labelField="name"
-                      valueField="id"
-                      placeholder="p.e B30"
-                      // disable=
-                      value={value}
-                      search
-                      onChange={(item) => onChange(item.id)}
-                      className="w-full h-12 bg-white border border-black rounded-lg px-3"
-                      placeholderStyle={{ color: "#999" }}
-                    />
-                  )}
-                />
-                {errorsContainers.chassis_id && (
-                  <Text style={styles.error}>Este campo es requerido.</Text>
-                )}
-              </View>
-            )}
-
-            {currentOrder.container_workflow === "container" && (
-              <View className="my-1">
-                <Text className="font-semibold">* Contenedor</Text>
-                <Controller
-                  control={controlContainers}
-                  name="container"
-                  rules={{ required: true }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                      placeholder="p.e MSNU2331501"
-                      placeholderTextColor="#999"
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value ? String(value) : ""}
-                      className="color-secondary bg-white p-2 rounded-xl w-full outline-none text-sm md:text-base border border-black"
-                    />
-                  )}
-                />
-                {errorsContainers.container && (
-                  <Text style={styles.error}>Este campo es requerido.</Text>
-                )}
-              </View>
-            )}
-            {currentOrder.container_workflow === "container" &&
-              currentOrder.container_type_operation === "immediate loading" && (
-                <View className="my-1 flex-row items-center justify-between">
-                  <Text className="font-semibold">
-                    Pasa a Posición y Retiro
-                  </Text>
-                  <Controller
-                    control={controlContainers}
-                    name="goes_to_position_retirement"
-                    render={({ field: { value, onChange } }) => (
-                      <Switch value={value} onValueChange={onChange} />
-                    )}
-                  />
-                </View>
-              )}
-
-            {currentOrder.has_generator &&
-              currentOrder.container_workflow === "container" && (
-                <View>
-                  <Separator />
-                  <Text className="font-extrabold text-lg color-primary underline mb-2">
-                    Generador
-                  </Text>
-                  <DatetimeButton
-                    orderId={currentOrder.id}
-                    field="generator_supplier_removal"
-                    datetime={currentOrder.generator_supplier_removal}
-                    title="Retiro Generador"
-                    orderFinished={currentOrder.trip_status === "finished"}
-                    onChange={(value) =>
-                      updateOrderField("generator_supplier_removal", value)
-                    }
-                  />
-                </View>
-              )}
-
-            {currentOrder.has_generator &&
-              currentOrder.container_workflow === "process" && (
-                <View>
-                  <DatetimeButton
-                    orderId={currentOrder.id}
-                    field="generator_supplier_delivery"
-                    datetime={currentOrder.generator_supplier_delivery}
-                    title="Entrega Generador"
-                    orderFinished={currentOrder.trip_status === "finished"}
-                    onChange={(value) =>
-                      updateOrderField("generator_supplier_delivery", value)
-                    }
-                  />
-                  <Separator />
-                </View>
-              )}
-          </View>
-        )}
-
-      {/*Moves*/}
+      {/* Moves - Only in export */}
       {currentOrder.business_code === "containers" &&
-        currentOrder.container_workflow === "process" && (
+        currentOrder.container_type === "export" && (
           <View>
             <ListMoves
               moves={currentOrder.moves}
@@ -858,7 +764,7 @@ export function OrderForm({ order }: { order: Order }) {
         </View>
       )}
       {currentOrder.business_code === "containers" &&
-        currentOrder.container_workflow === "process" && (
+        currentOrder.container_workflow === "1" && (
           <View>
             <ListGuides
               guides={currentOrder.guides}
@@ -882,8 +788,10 @@ export function OrderForm({ order }: { order: Order }) {
 
       {["initiated", null].includes(currentOrder.trip_status) && (
         <TouchableOpacity
-          className="flex-1 mb-2 px-5 py-2 items-center bg-primary"
-          onPress={handleSubmitContainers(handleSaveContainers)}
+          className="flex-1 mb-2 px-5 py-2 items-center bg-green-500"
+          onPress={handleSubmitContainersImportIL1(
+            handleSaveContainersImportIL1,
+          )}
         >
           {loadingSave ? (
             <ActivityIndicator color="#fff" />
@@ -933,7 +841,7 @@ export function OrderForm({ order }: { order: Order }) {
             onPress={() => setIsMapModalVisible(false)}
             className="bg-secondary px-5 py-3 items-center"
           >
-            <Text className="text-white font-semibold">Cerrar</Text>
+            <Text className="color-white font-semibold">Cerrar</Text>
           </TouchableOpacity>
 
           <RouteMapView
