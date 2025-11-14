@@ -1,5 +1,14 @@
 import { z } from "zod/v4";
 
+export const ReasonFakeFreightSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const ResponseListReasonFakeFreightSchema = z.object({
+  results: z.array(ReasonFakeFreightSchema),
+});
+
 export const PortSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -139,6 +148,8 @@ export const OrderSchema = z.object({
   image_scale_ticket: z.string().nullable(),
   final_image_scale_ticket: z.string().nullable(),
   sacks_information: z.string().nullable(),
+  fake_freight: z.boolean().default(false),
+  reason_fake_freight: ReasonFakeFreightSchema,
 });
 
 // Response List Order
@@ -237,3 +248,7 @@ export type Ubication = z.infer<typeof UbicationSchema>;
 export type Geocerca = z.infer<typeof GeocercaSchema>;
 export type ResponseListUbication = z.infer<typeof ResponseListUbicationSchema>;
 export type ResponseListGeocerca = z.infer<typeof ResponseListGeocercaSchema>;
+export type ReasonFakeFreight = z.infer<typeof ReasonFakeFreightSchema>;
+export type ResponseListReasonFakeFreight = z.infer<
+  typeof ResponseListReasonFakeFreightSchema
+>;

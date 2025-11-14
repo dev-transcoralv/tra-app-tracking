@@ -3,6 +3,7 @@ import {
   ResponseListOrder,
   ResponseListUbication,
   ResponseListGeocerca,
+  ResponseListReasonFakeFreight,
 } from "./../../shared.types";
 
 interface IndexProps {
@@ -21,7 +22,7 @@ type BusinessGrainData = {
   final_image_scale_ticket: string | null;
 };
 
-type BusinessContainersProcessContainerData = {
+type orderData = {
   chassis_id: number;
   goes_to_position_retirement: boolean;
   image_container: string | null;
@@ -156,10 +157,7 @@ export async function tripFinished(id: number): Promise<Order> {
   }
 }
 
-export async function updateBusinessContainersProcessContainer(
-  id: number,
-  data: BusinessContainersProcessContainerData,
-): Promise<Order> {
+export async function updateTrip(id: number, data: orderData): Promise<Order> {
   const options = {
     method: "PUT",
     headers: {
@@ -167,7 +165,7 @@ export async function updateBusinessContainersProcessContainer(
     },
     body: JSON.stringify(data),
   };
-  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_business_containers_process_container_data`;
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_order`;
   try {
     const response = await fetch(URL, options);
     const json = await response.json();
@@ -197,6 +195,19 @@ export async function getListGeocercas(): Promise<ResponseListGeocerca> {
     const response = await fetch(URL);
     const json = await response.json();
     return json as ResponseListGeocerca;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+// Reasons
+export async function getListReasonFakeFreight(): Promise<ResponseListReasonFakeFreight> {
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/reasons_fake_freight`;
+  try {
+    const response = await fetch(URL);
+    const json = await response.json();
+    return json as ResponseListReasonFakeFreight;
   } catch (error) {
     // Throw error
     throw error;

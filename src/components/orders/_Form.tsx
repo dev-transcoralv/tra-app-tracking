@@ -11,16 +11,17 @@ import {
   Switch,
   StyleSheet,
 } from "react-native";
-import { Order, Vehicle } from "../../shared.types";
+import { Order, ReasonFakeFreight, Vehicle } from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomePlay, FontAwesomeSave, FontAwesomeStop } from "../Icons";
 import Toast from "react-native-toast-message";
 import {
+  getListReasonFakeFreight,
   startTrip,
   stopTrip,
   tripFinished,
-  updateBusinessContainersProcessContainer,
+  updateTrip,
 } from "../../services/odoo/order";
 import { DatetimeButton } from "./_DatetimeButton";
 import { GrainForm } from "./_GrainForm";
@@ -44,7 +45,9 @@ type GrainData = {
   final_tara_kg: number;
 };
 
-type BusinessContainersProcessContainerData = {
+type orderData = {
+  fake_freight: boolean;
+  reason_fake_freight_id: number | null;
   chassis_id: number | null;
   goes_to_position_retirement: boolean;
   image_container: string | null;
@@ -62,6 +65,9 @@ export function OrderForm({ order }: { order: Order }) {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingTripFinished, setLoadingTripFinished] = useState(false);
   const [chassis, setChassis] = useState<Vehicle[]>([]);
+  const [reasonFakeFreight, setReasonFakeFreight] = useState<
+    ReasonFakeFreight[]
+  >([]);
   // Confirm modal
   const [visibleConfirmModal, setVisibleConfirmModal] = useState(false);
   const [messageConfirmModal, setMessageConfirmModal] = useState("");
@@ -90,15 +96,23 @@ export function OrderForm({ order }: { order: Order }) {
   }, []);
 
   useEffect(() => {
+    const getReasonFakeFreight = async () => {
+      try {
+        const data = await getListReasonFakeFreight();
+        const fetcheasonFakeFreight = data.results ?? [];
+        setReasonFakeFreight(fetcheasonFakeFreight);
+      } catch (err) {
+        console.error(err);
+      } finally {
+      }
+    };
+
+    getReasonFakeFreight();
+  }, []);
+
+  useEffect(() => {
     setCurrentOrder(order); // Si viene un order nueva desde listado
   }, [order]);
-
-  const updateOrderField = (field: keyof Order, value: any) => {
-    setCurrentOrder((previous) => ({
-      ...previous,
-      [field]: value,
-    }));
-  };
 
   const loadSaveOrderIdStarted = async () => {
     try {
@@ -261,16 +275,11 @@ export function OrderForm({ order }: { order: Order }) {
     }
   };
 
-  // Submit by business
-  const handleSaveContainersImportIL1 = async (
-    data: BusinessContainersProcessContainerData,
-  ) => {
+  // Submit - Save
+  const handleSaveOrder = async (data: orderData) => {
     try {
       setLoadingSave(true);
-      const order = await updateBusinessContainersProcessContainer(
-        currentOrder.id,
-        data,
-      );
+      const order = await updateTrip(currentOrder.id, data);
       setCurrentOrder(order);
     } catch (error: any) {
       Toast.show({
@@ -284,20 +293,23 @@ export function OrderForm({ order }: { order: Order }) {
   };
 
   const {
-    control: controlContainersImportIL1,
-    handleSubmit: handleSubmitContainersImportIL1,
-    formState: { errors: errorsContainersImportIL1 },
-    reset: resetContainersImportIL1,
-  } = useForm<BusinessContainersProcessContainerData>({
+    control: controlOrder,
+    handleSubmit: handleSubmitOrder,
+    formState: { errors: errorsOrder },
+    reset: resetOrder,
+  } = useForm<orderData>({
     defaultValues: {
       image_container: currentOrder.image_container,
       container: currentOrder.container,
       goes_to_position_retirement: currentOrder.goes_to_position_retirement,
       chassis_id: currentOrder.chassis && currentOrder.chassis.id,
+      fake_freight: currentOrder.fake_freight,
+      reason_fake_freight_id:
+        currentOrder.reason_fake_freight && currentOrder.reason_fake_freight.id,
     },
   });
 
-  // Buttons Process
+  // Submit - TripFinished
   const handleTripFinished = async () => {
     try {
       validateFieldsTripCompleted();
@@ -317,6 +329,13 @@ export function OrderForm({ order }: { order: Order }) {
   };
 
   // Helpers
+  const updateOrderField = (field: keyof Order, value: any) => {
+    setCurrentOrder((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  };
+
   const openConfirmModal = (
     message: string,
     onConfirm: () => void | Promise<void>,
@@ -339,6 +358,7 @@ export function OrderForm({ order }: { order: Order }) {
     );
   };
 
+  // Main
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
       {/* Confirm Modal */}
@@ -378,6 +398,7 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </TouchableOpacity>
       )}
+
       {/* Common data */}
       <RowDetail label="Cliente:" value={order.partner_name} />
       <RowDetail label="Coordinador:" value={order.coordinator_name} />
@@ -475,6 +496,49 @@ export function OrderForm({ order }: { order: Order }) {
             label="Auxiliar:"
             value={currentOrder.driver_assistant_name ?? ""}
           />
+        </View>
+      )}
+
+      {/* Data to update (General) */}
+      <View className="flex-row items-center">
+        <Text className="mr-3 font-semibold">Flete Falso</Text>
+        <Controller
+          control={controlOrder}
+          name="fake_freight"
+          render={({ field: { value, onChange } }) => (
+            <Switch
+              value={value}
+              onValueChange={onChange}
+              trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+              thumbColor={value ? "#16a34a" : "#f3f4f6"}
+            />
+          )}
+        />
+      </View>
+      {currentOrder.fake_freight && (
+        <View className="mt-1">
+          <Text className="font-semibold">Motivo Flete Falso</Text>
+          <Controller
+            control={controlOrder}
+            name="reason_fake_freight_id"
+            rules={{ required: currentOrder.fake_freight }}
+            render={({ field: { value, onChange } }) => (
+              <StyledDropdown
+                data={chassis}
+                labelField="name"
+                valueField="id"
+                // disable=
+                value={value}
+                search
+                onChange={(item) => onChange(item.id)}
+                className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                placeholderStyle={{ color: "#999" }}
+              />
+            )}
+          />
+          {errorsOrder.reason_fake_freight_id && (
+            <Text style={styles.error}>Este campo es requerido.</Text>
+          )}
         </View>
       )}
 
@@ -615,7 +679,7 @@ export function OrderForm({ order }: { order: Order }) {
                 <View className="mt-1">
                   <Text className="font-semibold">* Acople</Text>
                   <Controller
-                    control={controlContainersImportIL1}
+                    control={controlOrder}
                     name="chassis_id"
                     rules={{ required: true }}
                     render={({ field: { value, onChange } }) => (
@@ -633,7 +697,7 @@ export function OrderForm({ order }: { order: Order }) {
                       />
                     )}
                   />
-                  {errorsContainersImportIL1.chassis_id && (
+                  {errorsOrder.chassis_id && (
                     <Text style={styles.error}>Este campo es requerido.</Text>
                   )}
                 </View>
@@ -641,7 +705,7 @@ export function OrderForm({ order }: { order: Order }) {
                 <View className="my-1">
                   <Text className="font-semibold">* Contenedor</Text>
                   <Controller
-                    control={controlContainersImportIL1}
+                    control={controlOrder}
                     name="container"
                     rules={{ required: true }}
                     render={({ field: { onChange, onBlur, value } }) => (
@@ -655,7 +719,7 @@ export function OrderForm({ order }: { order: Order }) {
                       />
                     )}
                   />
-                  {errorsContainersImportIL1.container && (
+                  {errorsOrder.container && (
                     <Text style={styles.error}>Este campo es requerido.</Text>
                   )}
                 </View>
@@ -786,12 +850,11 @@ export function OrderForm({ order }: { order: Order }) {
         orderFinished={currentOrder.trip_status === "finished"}
       />
 
+      {/* Button Save trip */}
       {["initiated", null].includes(currentOrder.trip_status) && (
         <TouchableOpacity
           className="flex-1 mb-2 px-5 py-2 items-center bg-green-500"
-          onPress={handleSubmitContainersImportIL1(
-            handleSaveContainersImportIL1,
-          )}
+          onPress={handleSubmitOrder(handleSaveOrder)}
         >
           {loadingSave ? (
             <ActivityIndicator color="#fff" />
@@ -806,6 +869,7 @@ export function OrderForm({ order }: { order: Order }) {
         </TouchableOpacity>
       )}
 
+      {/* Button End trip */}
       {["initiated", null].includes(currentOrder.trip_status) && (
         <TouchableOpacity
           className="flex-1 mb-2 px-5 py-2 items-center bg-blue-900"
