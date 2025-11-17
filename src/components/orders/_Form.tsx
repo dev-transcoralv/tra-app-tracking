@@ -11,13 +11,20 @@ import {
   Switch,
   StyleSheet,
 } from "react-native";
-import { Order, ReasonFakeFreight, Vehicle } from "../../shared.types";
+import {
+  Order,
+  orderData,
+  ReasonFakeFreight,
+  ReasonReturn,
+  Vehicle,
+} from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomePlay, FontAwesomeSave, FontAwesomeStop } from "../Icons";
 import Toast from "react-native-toast-message";
 import {
   getListReasonFakeFreight,
+  getListReasonReturn,
   startTrip,
   stopTrip,
   tripFinished,
@@ -45,15 +52,6 @@ type GrainData = {
   final_tara_kg: number;
 };
 
-type orderData = {
-  fake_freight: boolean;
-  reason_fake_freight_id: number | null;
-  chassis_id: number | null;
-  goes_to_position_retirement: boolean;
-  image_container: string | null;
-  container: string | null;
-};
-
 const StyledDropdown = cssInterop(Dropdown, {
   className: "style",
 });
@@ -68,6 +66,7 @@ export function OrderForm({ order }: { order: Order }) {
   const [reasonFakeFreight, setReasonFakeFreight] = useState<
     ReasonFakeFreight[]
   >([]);
+  const [reasonReturn, setReasonReturn] = useState<ReasonReturn[]>([]);
   // Confirm modal
   const [visibleConfirmModal, setVisibleConfirmModal] = useState(false);
   const [messageConfirmModal, setMessageConfirmModal] = useState("");
@@ -108,6 +107,21 @@ export function OrderForm({ order }: { order: Order }) {
     };
 
     getReasonFakeFreight();
+  }, []);
+
+  useEffect(() => {
+    const getReasonReturn = async () => {
+      try {
+        const data = await getListReasonReturn();
+        const fetchReasonReturn = data.results ?? [];
+        setReasonReturn(fetchReasonReturn);
+      } catch (err) {
+        console.error(err);
+      } finally {
+      }
+    };
+
+    getReasonReturn();
   }, []);
 
   useEffect(() => {
@@ -277,6 +291,7 @@ export function OrderForm({ order }: { order: Order }) {
 
   // Submit - Save
   const handleSaveOrder = async (data: orderData) => {
+    console.log(data);
     try {
       setLoadingSave(true);
       const order = await updateTrip(currentOrder.id, data);
@@ -297,6 +312,8 @@ export function OrderForm({ order }: { order: Order }) {
     handleSubmit: handleSubmitOrder,
     formState: { errors: errorsOrder },
     reset: resetOrder,
+    watch,
+    setValue,
   } = useForm<orderData>({
     defaultValues: {
       image_container: currentOrder.image_container,
@@ -304,9 +321,27 @@ export function OrderForm({ order }: { order: Order }) {
       goes_to_position_retirement: currentOrder.goes_to_position_retirement,
       chassis_id: currentOrder.chassis && currentOrder.chassis.id,
       fake_freight: currentOrder.fake_freight,
+      has_adjustment_tm: currentOrder.has_adjustment_tm,
+      adjustment_sacks: currentOrder.adjustment_sacks,
       reason_fake_freight_id:
         currentOrder.reason_fake_freight && currentOrder.reason_fake_freight.id,
+      is_return: currentOrder.is_return,
+      reason_return_id:
+        currentOrder.reason_return && currentOrder.reason_return.id,
+      return_burden_sacks: currentOrder.return_burden_sacks,
     },
+  });
+
+  const fakeFreight = watch("fake_freight");
+  const isReturn = watch("is_return");
+  const hasAdjustmentTm = watch("has_adjustment_tm");
+
+  useEffect(() => {
+    setValue("reason_fake_freight_id", null);
+  });
+
+  useEffect(() => {
+    setValue("reason_return_id", null);
   });
 
   // Submit - TripFinished
@@ -488,6 +523,66 @@ export function OrderForm({ order }: { order: Order }) {
       {currentOrder.business_code === "palletizing" && (
         <View>
           <RowDetail label="Carga:" value={order.sacks_information ?? ""} />
+          <View className="flex-row items-center">
+            <Text className="font-semibold">Viaje Consolidado:</Text>
+            <Switch
+              disabled
+              value={currentOrder.consolidated_trip}
+              trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+              thumbColor={
+                currentOrder.consolidated_trip ? "#16a34a" : "#f3f4f6"
+              }
+            />
+          </View>
+          <View className="flex-row items-center">
+            <Text className="mr-3 font-semibold">Ajuste Toneladas</Text>
+            <Controller
+              control={controlOrder}
+              name="has_adjustment_tm"
+              rules={{ required: hasAdjustmentTm }}
+              render={({ field: { value, onChange } }) => (
+                <Switch
+                  value={value}
+                  onValueChange={onChange}
+                  trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                  thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                />
+              )}
+            />
+            {hasAdjustmentTm && (
+              <View>
+                <Controller
+                  control={controlOrder}
+                  name="adjustment_sacks"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      keyboardType="number-pad"
+                      onBlur={() => {
+                        if (
+                          value !== undefined &&
+                          value !== null &&
+                          String(value).trim() !== ""
+                        ) {
+                          const num = parseInt(String(value));
+                          if (!isNaN(num)) {
+                            onChange(num.toFixed(2));
+                          }
+                        }
+                      }}
+                      readOnly={order.trip_status === "finished"}
+                      onChangeText={(val) => onChange(val)}
+                      className="mx-2 w-7/12 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
+                      value={value?.toString() ?? "0"}
+                      placeholder="Número de sacos"
+                    />
+                  )}
+                />
+                {errorsOrder.adjustment_sacks && (
+                  <Text style={styles.error}>Este campo es requerido.</Text>
+                )}
+              </View>
+            )}
+          </View>
         </View>
       )}
       {currentOrder.business_code === "gas_fuel" && (
@@ -496,53 +591,159 @@ export function OrderForm({ order }: { order: Order }) {
             label="Auxiliar:"
             value={currentOrder.driver_assistant_name ?? ""}
           />
+          {currentOrder.return_date_bottle && (
+            <View>
+              <RowDetail
+                label="Retorno Bombona:"
+                value={currentOrder.return_date_bottle}
+              />
+              <View className="flex-row items-center">
+                <Text className="mr-3 font-semibold">Bombona Entregada</Text>
+                <Controller
+                  control={controlOrder}
+                  name="cylinder_delivered"
+                  render={({ field: { value, onChange } }) => (
+                    <Switch
+                      value={value}
+                      onValueChange={onChange}
+                      trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                      thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                    />
+                  )}
+                />
+              </View>
+            </View>
+          )}
         </View>
       )}
 
       {/* Data to update (General) */}
-      <View className="flex-row items-center">
-        <Text className="mr-3 font-semibold">Flete Falso</Text>
-        <Controller
-          control={controlOrder}
-          name="fake_freight"
-          render={({ field: { value, onChange } }) => (
-            <Switch
-              value={value}
-              onValueChange={onChange}
-              trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-              thumbColor={value ? "#16a34a" : "#f3f4f6"}
+      {currentOrder.trip_status && (
+        <View>
+          <View className="flex-row items-center">
+            <Text className="mr-3 font-semibold">Flete Falso</Text>
+            <Controller
+              control={controlOrder}
+              name="fake_freight"
+              render={({ field: { value, onChange } }) => (
+                <Switch
+                  value={value}
+                  onValueChange={onChange}
+                  trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                  thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                />
+              )}
             />
-          )}
-        />
-      </View>
-      {currentOrder.fake_freight && (
-        <View className="mt-1">
-          <Text className="font-semibold">Motivo Flete Falso</Text>
-          <Controller
-            control={controlOrder}
-            name="reason_fake_freight_id"
-            rules={{ required: currentOrder.fake_freight }}
-            render={({ field: { value, onChange } }) => (
-              <StyledDropdown
-                data={chassis}
-                labelField="name"
-                valueField="id"
-                // disable=
-                value={value}
-                search
-                onChange={(item) => onChange(item.id)}
-                className="w-full h-12 bg-white border border-black rounded-lg px-3"
-                placeholderStyle={{ color: "#999" }}
+          </View>
+          {fakeFreight && (
+            <View className="mt-1">
+              <Text className="font-semibold">Motivo Flete Falso</Text>
+              <Controller
+                control={controlOrder}
+                name="reason_fake_freight_id"
+                rules={{ required: fakeFreight }}
+                render={({ field: { value, onChange } }) => (
+                  <StyledDropdown
+                    data={reasonFakeFreight}
+                    labelField="name"
+                    valueField="id"
+                    // disable=
+                    value={value}
+                    search
+                    onChange={(item) => onChange(item.id)}
+                    className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                    placeholderStyle={{ color: "#999" }}
+                  />
+                )}
               />
-            )}
-          />
-          {errorsOrder.reason_fake_freight_id && (
-            <Text style={styles.error}>Este campo es requerido.</Text>
+              {errorsOrder.reason_fake_freight_id && (
+                <Text style={styles.error}>Este campo es requerido.</Text>
+              )}
+            </View>
+          )}
+          <View className="flex-row items-center">
+            <Text className="mr-3 font-semibold">Devolución</Text>
+            <Controller
+              control={controlOrder}
+              name="is_return"
+              render={({ field: { value, onChange } }) => (
+                <Switch
+                  value={value}
+                  onValueChange={onChange}
+                  trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                  thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                />
+              )}
+            />
+          </View>
+          {isReturn && (
+            <View className="mt-1">
+              <Text className="font-semibold">Motivo Devolución</Text>
+              <Controller
+                control={controlOrder}
+                name="reason_return_id"
+                rules={{ required: isReturn }}
+                render={({ field: { value, onChange } }) => (
+                  <StyledDropdown
+                    data={reasonReturn}
+                    labelField="name"
+                    valueField="id"
+                    // disable=
+                    value={value}
+                    search
+                    onChange={(item) => onChange(item.id)}
+                    className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                    placeholderStyle={{ color: "#999" }}
+                  />
+                )}
+              />
+              {errorsOrder.reason_return_id && (
+                <Text style={styles.error}>Este campo es requerido.</Text>
+              )}
+            </View>
+          )}
+          {currentOrder.business_code === "palletizing" && isReturn && (
+            <View>
+              <Text className="font-semibold">Sacos Devueltos</Text>
+              <Controller
+                control={controlOrder}
+                name="return_burden_sacks"
+                rules={{
+                  required:
+                    currentOrder.business_code === "palletizing" && isReturn,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    keyboardType="number-pad"
+                    onBlur={() => {
+                      if (
+                        value !== undefined &&
+                        value !== null &&
+                        String(value).trim() !== ""
+                      ) {
+                        const num = parseInt(String(value));
+                        if (!isNaN(num)) {
+                          onChange(num.toFixed(2));
+                        }
+                      }
+                    }}
+                    readOnly={order.trip_status === "finished"}
+                    onChangeText={(val) => onChange(val)}
+                    className="w-full color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
+                    value={value?.toString() ?? "0"}
+                    placeholder="Número de sacos"
+                  />
+                )}
+              />
+              {errorsOrder.return_burden_sacks && (
+                <Text style={styles.error}>Este campo es requerido.</Text>
+              )}
+            </View>
           )}
         </View>
       )}
 
-      {/* Data by business */}
+      {/* Data by business (Hours) */}
       {currentOrder.trip_status && (
         <View className="flex">
           {/* Buttons Hours - Grain */}

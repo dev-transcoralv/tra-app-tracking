@@ -4,6 +4,8 @@ import {
   ResponseListUbication,
   ResponseListGeocerca,
   ResponseListReasonFakeFreight,
+  ResponseListReasonReturn,
+  orderData,
 } from "./../../shared.types";
 
 interface IndexProps {
@@ -20,13 +22,6 @@ type BusinessGrainData = {
   final_tara_kg: number;
   image_scale_ticket: string | null;
   final_image_scale_ticket: string | null;
-};
-
-type orderData = {
-  chassis_id: number;
-  goes_to_position_retirement: boolean;
-  image_container: string | null;
-  container: string | null;
 };
 
 export async function getListOrders({
@@ -208,6 +203,18 @@ export async function getListReasonFakeFreight(): Promise<ResponseListReasonFake
     const response = await fetch(URL);
     const json = await response.json();
     return json as ResponseListReasonFakeFreight;
+  } catch (error) {
+    // Throw error
+    throw error;
+  }
+}
+
+export async function getListReasonReturn(): Promise<ResponseListReasonReturn> {
+  const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/reasons_return`;
+  try {
+    const response = await fetch(URL);
+    const json = await response.json();
+    return json as ResponseListReasonReturn;
   } catch (error) {
     // Throw error
     throw error;

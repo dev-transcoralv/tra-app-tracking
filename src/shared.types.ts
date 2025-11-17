@@ -5,8 +5,17 @@ export const ReasonFakeFreightSchema = z.object({
   name: z.string(),
 });
 
+export const ReasonReturnSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
 export const ResponseListReasonFakeFreightSchema = z.object({
   results: z.array(ReasonFakeFreightSchema),
+});
+
+export const ResponseListReasonReturnSchema = z.object({
+  results: z.array(ReasonReturnSchema),
 });
 
 export const PortSchema = z.object({
@@ -100,6 +109,7 @@ export const OrderSchema = z.object({
   type_property: z.enum(["own", "third"]),
   chassis: VehicleSchema.nullable(),
   driver_assistant_name: z.string().nullable(),
+  return_date_bottle: z.string().nullable(),
   route_geolocation_origin: GeolocationSchema,
   route_geolocation_destination: GeolocationSchema,
   partner_name: z.string(),
@@ -150,6 +160,13 @@ export const OrderSchema = z.object({
   sacks_information: z.string().nullable(),
   fake_freight: z.boolean().default(false),
   reason_fake_freight: ReasonFakeFreightSchema,
+  has_adjustment_tm: z.boolean().default(false),
+  adjustment_sacks: z.int(),
+  consolidated_trip: z.boolean().default(false),
+  is_return: z.boolean().default(false),
+  reason_return: ReasonReturnSchema,
+  return_burden_sacks: z.int(),
+  cylinder_delivered: z.boolean(),
 });
 
 // Response List Order
@@ -252,3 +269,23 @@ export type ReasonFakeFreight = z.infer<typeof ReasonFakeFreightSchema>;
 export type ResponseListReasonFakeFreight = z.infer<
   typeof ResponseListReasonFakeFreightSchema
 >;
+export type ReasonReturn = z.infer<typeof ReasonReturnSchema>;
+export type ResponseListReasonReturn = z.infer<
+  typeof ResponseListReasonReturnSchema
+>;
+
+// Forms
+export type orderData = {
+  fake_freight: boolean;
+  reason_fake_freight_id: number | null;
+  is_return: boolean;
+  reason_return_id: number | null;
+  has_adjustment_tm: boolean;
+  adjustment_sacks: number;
+  chassis_id: number | null;
+  goes_to_position_retirement: boolean;
+  image_container: string | null;
+  container: string | null;
+  return_burden_sacks: number;
+  cylinder_delivered: boolean;
+};
