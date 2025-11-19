@@ -704,7 +704,7 @@ export function OrderForm({ order }: { order: Order }) {
                 labelField="name"
                 valueField="id"
                 placeholder="p.e B30"
-                // disable=
+                disable={currentOrder.trip_status === "finished"}
                 value={value}
                 search
                 onChange={(item) => onChange(item.id)}
@@ -1066,21 +1066,9 @@ export function OrderForm({ order }: { order: Order }) {
               {currentOrder.arrival_charge_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}
-                  field="arrival_download_time"
-                  datetime={currentOrder.arrival_download_time}
-                  title="Salida Carga"
-                  orderFinished={currentOrder.trip_status === "finished"}
-                  onChange={(value) =>
-                    updateOrderField("arrival_download_time", value)
-                  }
-                />
-              )}
-              {currentOrder.arrival_download_time && (
-                <DatetimeButton
-                  orderId={currentOrder.id}
                   field="departure_charge_time"
                   datetime={currentOrder.departure_charge_time}
-                  title="Llegada Descarga"
+                  title="Salida Carga"
                   orderFinished={currentOrder.trip_status === "finished"}
                   onChange={(value) =>
                     updateOrderField("departure_charge_time", value)
@@ -1088,6 +1076,18 @@ export function OrderForm({ order }: { order: Order }) {
                 />
               )}
               {currentOrder.departure_charge_time && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_download_time"
+                  datetime={currentOrder.arrival_download_time}
+                  title="Llegada Descarga"
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_download_time", value)
+                  }
+                />
+              )}
+              {currentOrder.arrival_download_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}
                   field="departure_download_time"

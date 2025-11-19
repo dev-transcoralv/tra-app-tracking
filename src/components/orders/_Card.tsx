@@ -29,10 +29,10 @@ export function OrderCard({ order }: { order: Order }) {
         {/* Badges */}
         {order.trip_status === "initiated" && (
           <View>
-            <View className="absolute top-4 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
+            <View className="absolute top-3 right-3 bg-blue-500 px-2 py-1 rounded-full z-10">
               <Text className="color-white text-m font-bold">Iniciado</Text>
             </View>
-            <View className="absolute top-12 right-2 z-10">
+            <View className="absolute top-12 right-3 z-10">
               {order.status_arrival === "done" ? (
                 <StatusCircle type="success" size={6} />
               ) : (
