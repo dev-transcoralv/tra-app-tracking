@@ -41,9 +41,9 @@ export const DriverSchema = z.object({
   license_type: z.string(),
   expiration_date: z.string(),
   image_1920: z.string().nullable(),
-  port_permit: z.array(PortSchema),
+  port_permit: z.array(PortSchema).default([]),
   assigned_plate: z.string().nullable(),
-  assigned_plate_port_permit: z.array(PortSchema),
+  assigned_plate_port_permit: z.array(PortSchema).default([]),
   push_token: z.string().nullable(),
 });
 
@@ -105,8 +105,10 @@ export const OrderSchema = z.object({
   coordinator_name: z.string(),
   coordinator_mobile: z.string().nullable(),
   route_name: z.string(),
+  route_2_name: z.string().nullable(),
   vehicle_name: z.string(),
   type_property: z.enum(["own", "third"]),
+  not_need_chassis: z.boolean(),
   chassis: VehicleSchema.nullable(),
   driver_assistant_name: z.string().nullable(),
   return_date_bottle: z.string().nullable(),
@@ -165,7 +167,9 @@ export const OrderSchema = z.object({
   consolidated_trip: z.boolean().default(false),
   is_return: z.boolean().default(false),
   reason_return: ReasonReturnSchema,
+  type_return_burden_sacks: z.enum(["complete", "partial"]).nullable(),
   return_burden_sacks: z.int(),
+  consolidated_delivery: z.boolean(),
   cylinder_delivered: z.boolean(),
 });
 
@@ -286,6 +290,8 @@ export type orderData = {
   goes_to_position_retirement: boolean;
   image_container: string | null;
   container: string | null;
+  consolidated_delivery: boolean;
+  type_return_burden_sacks: "complete" | "partial" | null;
   return_burden_sacks: number;
   cylinder_delivered: boolean;
 };

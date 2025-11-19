@@ -18,7 +18,7 @@ const StyledText = cssInterop(Text, {
 export function OrderCard({ order }: { order: Order }) {
   return (
     <Link
-      className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative"
+      className="bg-secondary-complementary rounded-xl p-3 shadow-md mb-4 relative"
       href={{
         pathname: `orders/${order.id}`,
         params: { reference: order.name },
@@ -29,7 +29,7 @@ export function OrderCard({ order }: { order: Order }) {
         {/* Badges */}
         {order.trip_status === "initiated" && (
           <View>
-            <View className="absolute top-2 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
+            <View className="absolute top-4 right-2 bg-blue-500 px-2 py-1 rounded-full z-10">
               <Text className="color-white text-m font-bold">Iniciado</Text>
             </View>
             <View className="absolute top-12 right-2 z-10">
@@ -43,7 +43,7 @@ export function OrderCard({ order }: { order: Order }) {
         )}
 
         {order.trip_status === "finished" && (
-          <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
+          <View className="absolute top-3 right-3 bg-green-500 px-2 py-1 rounded-full z-10">
             <Text className="color-white text-m font-bold">Finalizado</Text>
           </View>
         )}
@@ -73,9 +73,13 @@ export function OrderCard({ order }: { order: Order }) {
             )}
           </StyledText>
         </StyledView>
-        <StyledView className="flex-row flex-wrap">
+        <StyledView className="flex-row items-center">
           <StyledText className="font-bold text-sm">Cliente:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm text-wrap">
+          <StyledText
+            className="w-[100%] ml-1 text-gray-800 font-semibold text-sm text-wrap"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {order.partner_name}
           </StyledText>
         </StyledView>

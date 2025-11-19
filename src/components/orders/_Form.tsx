@@ -43,7 +43,12 @@ import { Dropdown } from "react-native-element-dropdown";
 import { cssInterop } from "nativewind";
 import { useForm, Controller } from "react-hook-form";
 import { getListChassis } from "../../services/odoo/vehicle";
+import { Picker } from "@react-native-picker/picker";
 import { ListMoves } from "../moves/_List";
+
+const StyledPicker = cssInterop(Picker, {
+  className: "style",
+});
 
 type GrainData = {
   burden_kg: number;
@@ -291,7 +296,6 @@ export function OrderForm({ order }: { order: Order }) {
 
   // Submit - Save
   const handleSaveOrder = async (data: orderData) => {
-    console.log(data);
     try {
       setLoadingSave(true);
       const order = await updateTrip(currentOrder.id, data);
@@ -334,20 +338,35 @@ export function OrderForm({ order }: { order: Order }) {
 
   const fakeFreight = watch("fake_freight");
   const isReturn = watch("is_return");
+  const typeReturnBurdenSacks = watch("type_return_burden_sacks");
   const hasAdjustmentTm = watch("has_adjustment_tm");
 
   useEffect(() => {
-    setValue("reason_fake_freight_id", null);
+    if (!fakeFreight) {
+      setValue("reason_fake_freight_id", null, { shouldValidate: false });
+    }
   });
 
   useEffect(() => {
-    setValue("reason_return_id", null);
+    if (!isReturn) {
+      setValue("reason_return_id", null, { shouldValidate: false });
+      setValue("type_return_burden_sacks", null, { shouldValidate: false });
+      setValue("return_burden_sacks", 0, { shouldValidate: false });
+    }
+  }, [isReturn, setValue]);
+
+  useEffect(() => {
+    if (!hasAdjustmentTm) {
+      setValue("adjustment_sacks", 0, { shouldValidate: false });
+    }
   });
 
   // Submit - TripFinished
   const handleTripFinished = async () => {
     try {
-      validateFieldsTripCompleted();
+      if (!currentOrder.fake_freight && !currentOrder.is_return) {
+        validateFieldsTripCompleted();
+      }
       setLoadingTripFinished(true);
       const order = await tripFinished(currentOrder.id);
       setCurrentOrder(order);
@@ -382,6 +401,18 @@ export function OrderForm({ order }: { order: Order }) {
 
   const Separator = () => {
     return <View className="my-1 bg-secondary mx-2" style={{ height: 2 }} />;
+  };
+
+  const ListItem = ({ label }: { label: string }) => {
+    return (
+      <View className="flex-row items-start">
+        {/* Punto estilo bullet */}
+        <View className="w-2 h-2 rounded-full bg-gray-700 mt-2 mr-2" />
+
+        {/* Texto */}
+        <Text className="text-base flex-1">{label}</Text>
+      </View>
+    );
   };
 
   const RowDetail = ({ label, value }: { label: string; value?: string }) => {
@@ -434,11 +465,26 @@ export function OrderForm({ order }: { order: Order }) {
         </TouchableOpacity>
       )}
 
+      {order.trip_status === "finished" && (
+        <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
+          <Text className="color-white text-m font-bold">Finalizado</Text>
+        </View>
+      )}
+
       {/* Common data */}
       <RowDetail label="Cliente:" value={order.partner_name} />
       <RowDetail label="Coordinador:" value={order.coordinator_name} />
       <RowDetail label="Placa:" value={order.vehicle_name} />
-      <RowDetail label="Ruta:" value={order.route_name} />
+      {!currentOrder.consolidated_trip && (
+        <RowDetail label="Ruta:" value={order.route_name} />
+      )}
+      {currentOrder.consolidated_trip && (
+        <View>
+          <Text className="font-bold">Rutas:</Text>
+          <ListItem label={currentOrder.route_name} />
+          <ListItem label={currentOrder.route_2_name ?? ""} />
+        </View>
+      )}
       <RowDetail label="Fecha/Hora ETA Carga:" value={order.eta_charge} />
       <RowDetail label="Fecha/Hora ETA Descarga" value={order.eta_download} />
       <View>
@@ -452,7 +498,7 @@ export function OrderForm({ order }: { order: Order }) {
         </TouchableOpacity>
       </View>
       <Separator />
-      {/* Data by business */}
+      {/* Data (Readonly) by business */}
       {currentOrder.business_code === "containers" && (
         <View>
           <RowDetail
@@ -534,55 +580,77 @@ export function OrderForm({ order }: { order: Order }) {
               }
             />
           </View>
-          <View className="flex-row items-center">
-            <Text className="mr-3 font-semibold">Ajuste Toneladas</Text>
-            <Controller
-              control={controlOrder}
-              name="has_adjustment_tm"
-              rules={{ required: hasAdjustmentTm }}
-              render={({ field: { value, onChange } }) => (
-                <Switch
-                  value={value}
-                  onValueChange={onChange}
-                  trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-                  thumbColor={value ? "#16a34a" : "#f3f4f6"}
-                />
-              )}
-            />
-            {hasAdjustmentTm && (
-              <View>
-                <Controller
-                  control={controlOrder}
-                  name="adjustment_sacks"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                      keyboardType="number-pad"
-                      onBlur={() => {
-                        if (
-                          value !== undefined &&
-                          value !== null &&
-                          String(value).trim() !== ""
-                        ) {
-                          const num = parseInt(String(value));
-                          if (!isNaN(num)) {
-                            onChange(num.toFixed(2));
-                          }
-                        }
-                      }}
-                      readOnly={order.trip_status === "finished"}
-                      onChangeText={(val) => onChange(val)}
-                      className="mx-2 w-7/12 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
-                      value={value?.toString() ?? "0"}
-                      placeholder="Número de sacos"
-                    />
-                  )}
-                />
-                {errorsOrder.adjustment_sacks && (
-                  <Text style={styles.error}>Este campo es requerido.</Text>
+          {currentOrder.trip_status && currentOrder.consolidated_trip && (
+            <View className="flex-row items-center">
+              <Text className="mr-3 font-semibold">Entrega Consolidada</Text>
+              <Controller
+                control={controlOrder}
+                name="consolidated_delivery"
+                render={({ field: { value, onChange } }) => (
+                  <Switch
+                    value={value}
+                    onValueChange={onChange}
+                    disabled={currentOrder.trip_status === "finished"}
+                    trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                    thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                  />
                 )}
-              </View>
-            )}
-          </View>
+              />
+            </View>
+          )}
+          {currentOrder.trip_status && (
+            <View className="flex-row items-center">
+              <Text className="mr-3 font-semibold">
+                Ajuste Toneladas Origin
+              </Text>
+              <Controller
+                control={controlOrder}
+                name="has_adjustment_tm"
+                rules={{ required: hasAdjustmentTm }}
+                render={({ field: { value, onChange } }) => (
+                  <Switch
+                    value={value}
+                    onValueChange={onChange}
+                    trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                    thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                  />
+                )}
+              />
+              {hasAdjustmentTm && (
+                <View>
+                  <Controller
+                    control={controlOrder}
+                    name="adjustment_sacks"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        keyboardType="number-pad"
+                        onBlur={() => {
+                          if (
+                            value !== undefined &&
+                            value !== null &&
+                            String(value).trim() !== ""
+                          ) {
+                            const num = parseInt(String(value));
+                            if (!isNaN(num)) {
+                              onChange(num.toFixed(2));
+                            }
+                          }
+                        }}
+                        readOnly={order.trip_status === "finished"}
+                        onChangeText={(val) => onChange(val)}
+                        className="mx-2 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
+                        value={value?.toString() ?? "0"}
+                        placeholder="Número de sacos"
+                      />
+                    )}
+                  />
+                  {errorsOrder.adjustment_sacks && (
+                    <Text style={styles.error}>Este campo es requerido.</Text>
+                  )}
+                </View>
+              )}
+            </View>
+          )}
         </View>
       )}
       {currentOrder.business_code === "gas_fuel" && (
@@ -597,27 +665,59 @@ export function OrderForm({ order }: { order: Order }) {
                 label="Retorno Bombona:"
                 value={currentOrder.return_date_bottle}
               />
-              <View className="flex-row items-center">
-                <Text className="mr-3 font-semibold">Bombona Entregada</Text>
-                <Controller
-                  control={controlOrder}
-                  name="cylinder_delivered"
-                  render={({ field: { value, onChange } }) => (
-                    <Switch
-                      value={value}
-                      onValueChange={onChange}
-                      trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-                      thumbColor={value ? "#16a34a" : "#f3f4f6"}
-                    />
-                  )}
-                />
-              </View>
+              {!currentOrder.trip_status && (
+                <View className="flex-row items-center">
+                  <Text className="mr-3 font-semibold">Bombona Entregada</Text>
+                  <Controller
+                    control={controlOrder}
+                    name="cylinder_delivered"
+                    render={({ field: { value, onChange } }) => (
+                      <Switch
+                        value={value}
+                        onValueChange={onChange}
+                        disabled={currentOrder.trip_status === "finished"}
+                        trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                        thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                      />
+                    )}
+                  />
+                </View>
+              )}
             </View>
           )}
         </View>
       )}
 
       {/* Data to update (General) */}
+      {!currentOrder.not_need_chassis && (
+        <View className="mt-1">
+          <Text className="font-semibold">Acople</Text>
+          <Controller
+            control={controlOrder}
+            name="chassis_id"
+            rules={{
+              required: !currentOrder.not_need_chassis,
+            }}
+            render={({ field: { value, onChange } }) => (
+              <StyledDropdown
+                data={chassis}
+                labelField="name"
+                valueField="id"
+                placeholder="p.e B30"
+                // disable=
+                value={value}
+                search
+                onChange={(item) => onChange(item.id)}
+                className="w-full h-12 bg-white border border-black rounded-lg px-3"
+                placeholderStyle={{ color: "#999" }}
+              />
+            )}
+          />
+          {errorsOrder.chassis_id && (
+            <Text style={styles.error}>Este campo es requerido.</Text>
+          )}
+        </View>
+      )}
       {currentOrder.trip_status && (
         <View>
           <View className="flex-row items-center">
@@ -628,6 +728,7 @@ export function OrderForm({ order }: { order: Order }) {
               render={({ field: { value, onChange } }) => (
                 <Switch
                   value={value}
+                  disabled={currentOrder.trip_status === "finished"}
                   onValueChange={onChange}
                   trackColor={{ false: "#9ca3af", true: "#4ade80" }}
                   thumbColor={value ? "#16a34a" : "#f3f4f6"}
@@ -647,7 +748,7 @@ export function OrderForm({ order }: { order: Order }) {
                     data={reasonFakeFreight}
                     labelField="name"
                     valueField="id"
-                    // disable=
+                    disable={currentOrder.trip_status === "finished"}
                     value={value}
                     search
                     onChange={(item) => onChange(item.id)}
@@ -670,6 +771,7 @@ export function OrderForm({ order }: { order: Order }) {
                 <Switch
                   value={value}
                   onValueChange={onChange}
+                  disabled={currentOrder.trip_status === "finished"}
                   trackColor={{ false: "#9ca3af", true: "#4ade80" }}
                   thumbColor={value ? "#16a34a" : "#f3f4f6"}
                 />
@@ -688,7 +790,7 @@ export function OrderForm({ order }: { order: Order }) {
                     data={reasonReturn}
                     labelField="name"
                     valueField="id"
-                    // disable=
+                    disable={currentOrder.trip_status === "finished"}
                     value={value}
                     search
                     onChange={(item) => onChange(item.id)}
@@ -704,37 +806,63 @@ export function OrderForm({ order }: { order: Order }) {
           )}
           {currentOrder.business_code === "palletizing" && isReturn && (
             <View>
-              <Text className="font-semibold">Sacos Devueltos</Text>
-              <Controller
-                control={controlOrder}
-                name="return_burden_sacks"
-                rules={{
-                  required:
-                    currentOrder.business_code === "palletizing" && isReturn,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    keyboardType="number-pad"
-                    onBlur={() => {
-                      if (
-                        value !== undefined &&
-                        value !== null &&
-                        String(value).trim() !== ""
-                      ) {
-                        const num = parseInt(String(value));
-                        if (!isNaN(num)) {
-                          onChange(num.toFixed(2));
-                        }
-                      }
+              <View>
+                <Text className="font-semibold">Tipo:</Text>
+                <Controller
+                  control={controlOrder}
+                  rules={{
+                    required:
+                      currentOrder.business_code === "palletizing" && isReturn,
+                  }}
+                  name="type_return_burden_sacks"
+                  render={({ field: { onChange, value } }) => (
+                    <StyledPicker
+                      selectedValue={value}
+                      onValueChange={(itemValue) => onChange(itemValue)}
+                      className="bg-secondary-complementary"
+                    >
+                      <Picker.Item label="Completo" value="complete" />
+                      <Picker.Item label="Parcial" value="partial" />
+                    </StyledPicker>
+                  )}
+                />
+              </View>
+              {typeReturnBurdenSacks === "partial" && (
+                <View>
+                  <Text className="font-semibold">Sacos Devueltos</Text>
+                  <Controller
+                    control={controlOrder}
+                    name="return_burden_sacks"
+                    rules={{
+                      required:
+                        currentOrder.business_code === "palletizing" &&
+                        typeReturnBurdenSacks === "partial",
                     }}
-                    readOnly={order.trip_status === "finished"}
-                    onChangeText={(val) => onChange(val)}
-                    className="w-full color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
-                    value={value?.toString() ?? "0"}
-                    placeholder="Número de sacos"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        keyboardType="number-pad"
+                        onBlur={() => {
+                          if (
+                            value !== undefined &&
+                            value !== null &&
+                            String(value).trim() !== ""
+                          ) {
+                            const num = parseInt(String(value));
+                            if (!isNaN(num)) {
+                              onChange(num.toFixed(2));
+                            }
+                          }
+                        }}
+                        readOnly={order.trip_status === "finished"}
+                        onChangeText={(val) => onChange(val)}
+                        className="w-full color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
+                        value={value?.toString() ?? "0"}
+                        placeholder="Número de sacos"
+                      />
+                    )}
                   />
-                )}
-              />
+                </View>
+              )}
               {errorsOrder.return_burden_sacks && (
                 <Text style={styles.error}>Este campo es requerido.</Text>
               )}
@@ -877,34 +1005,8 @@ export function OrderForm({ order }: { order: Order }) {
                     }
                   />
                 )}
-                <View className="mt-1">
-                  <Text className="font-semibold">* Acople</Text>
-                  <Controller
-                    control={controlOrder}
-                    name="chassis_id"
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange } }) => (
-                      <StyledDropdown
-                        data={chassis}
-                        labelField="name"
-                        valueField="id"
-                        placeholder="p.e B30"
-                        // disable=
-                        value={value}
-                        search
-                        onChange={(item) => onChange(item.id)}
-                        className="w-full h-12 bg-white border border-black rounded-lg px-3"
-                        placeholderStyle={{ color: "#999" }}
-                      />
-                    )}
-                  />
-                  {errorsOrder.chassis_id && (
-                    <Text style={styles.error}>Este campo es requerido.</Text>
-                  )}
-                </View>
-
                 <View className="my-1">
-                  <Text className="font-semibold">* Contenedor</Text>
+                  <Text className="font-semibold">Contenedor</Text>
                   <Controller
                     control={controlOrder}
                     name="container"

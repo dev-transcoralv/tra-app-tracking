@@ -1,4 +1,4 @@
-import { ResponseListVehicle } from "../../shared.typespes";
+import { ResponseListVehicle } from "../../shared.types";
 
 export async function getListChassis(
   businessCode = "all",

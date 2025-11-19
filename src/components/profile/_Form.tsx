@@ -32,7 +32,7 @@ export function ProfileForm({ driver }: { driver: Driver | null }) {
       <Text className="mb-2 p-2 bg-white rounded-xl">
         {driver?.expiration_date}
       </Text>
-      {driver?.port_permit && (
+      {driver && driver.port_permit.length !== 0 && (
         <View>
           <Text className="font-extrabold text-lg color-blue-900 underline mb-2">
             Puertos Permitidos
@@ -55,20 +55,25 @@ export function ProfileForm({ driver }: { driver: Driver | null }) {
           </Text>
         </View>
       )}
-      {driver?.assigned_plate_port_permit && (
-        <View>
-          <Text className="font-extrabold text-lg color-blue-900 underline mb-2">
-            Puertos Permitidos
-          </Text>
-          {driver.assigned_plate_port_permit.map((port) => (
-            <View key={port.id} className="bg-white border rounded-xl p-2 mb-2">
-              <View className="flex-row">
-                <Text className="text-sm font-bold">{port.name}</Text>
+      {driver &&
+        driver.assigned_plate &&
+        driver.assigned_plate_port_permit.length !== 0 && (
+          <View>
+            <Text className="font-extrabold text-lg color-blue-900 underline mb-2">
+              Puertos Permitidos - Placa Asignada
+            </Text>
+            {driver.assigned_plate_port_permit.map((port) => (
+              <View
+                key={port.id}
+                className="bg-white border rounded-xl p-2 mb-2"
+              >
+                <View className="flex-row">
+                  <Text className="text-sm font-bold">{port.name}</Text>
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
-      )}
+            ))}
+          </View>
+        )}
     </View>
   );
 }
