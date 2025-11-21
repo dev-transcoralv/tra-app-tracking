@@ -6,7 +6,6 @@ import {
   Modal,
   TextInput,
   ActivityIndicator,
-  StyleSheet,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Observation, Order } from "../../shared.types";
@@ -104,9 +103,8 @@ export function ObservationModalForm({
               rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
-                  <Text className="font-semibold mb-1">* Descripción</Text>
+                  <Text className="font-semibold mb-1">Descripción</Text>
                   <TextInput
-                    placeholder="p.e. Todo correcto"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -122,7 +120,7 @@ export function ObservationModalForm({
             />
           </View>
           {errors.name && (
-            <Text className="font-bold" style={styles.error}>
+            <Text className="font-bold text-primary">
               Este campo es requerido.
             </Text>
           )}
@@ -152,9 +150,3 @@ export function ObservationModalForm({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  error: {
-    color: "#e10718",
-  },
-});

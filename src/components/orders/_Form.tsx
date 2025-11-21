@@ -31,7 +31,6 @@ import {
   updateTrip,
 } from "../../services/odoo/order";
 import { DatetimeButton } from "./_DatetimeButton";
-import { GrainForm } from "./_GrainForm";
 import { ListObservations } from "../observations/_List";
 import WhatsAppButton from "../WhatsappButton";
 import WialonLiveMap from "../WialonLiveMap";
@@ -241,7 +240,7 @@ export function OrderForm({ order }: { order: Order }) {
         !currentOrder.arrival_point_download_time ||
         !currentOrder.departure_point_download_time
       ) {
-        throw "Rgistrar fechas/horas.";
+        throw "Registrar fechas/horas.";
       }
       if (
         !currentOrder.burden_kg ||
@@ -333,6 +332,12 @@ export function OrderForm({ order }: { order: Order }) {
       reason_return_id:
         currentOrder.reason_return && currentOrder.reason_return.id,
       return_burden_sacks: currentOrder.return_burden_sacks,
+      burden_kg: currentOrder.burden_kg || 0,
+      tara_kg: currentOrder.tara_kg || 0,
+      final_burden_kg: currentOrder.final_burden_kg || 0,
+      final_tara_kg: currentOrder.final_tara_kg || 0,
+      image_scale_ticket: currentOrder.image_scale_ticket,
+      final_image_scale_ticket: currentOrder.final_image_scale_ticket,
     },
   });
 
@@ -424,6 +429,76 @@ export function OrderForm({ order }: { order: Order }) {
     );
   };
 
+  const ControllerDecimalInput = ({
+    name,
+    label,
+  }: {
+    name: keyof orderData;
+    label: string;
+  }) => (
+    <View>
+      <View className="flex-row mt-2">
+        <Text className="w-1/4 font-bold align-middle">{label}:</Text>
+        <Controller
+          control={controlOrder}
+          name={name}
+          rules={{
+            // 1. Handle Requirement
+            required: {
+              value:
+                !currentOrder.trip_status &&
+                currentOrder.business_code === "grain",
+              message: "Valor es requerido.",
+            },
+            // 2. Handle "Zero" check specifically
+            validate: (value) => {
+              // If the field is empty, let 'required' handle it.
+              // If it has a value, convert to float and check if > 0.
+              if (!value) return true;
+              return parseFloat(String(value)) > 0 || "Valor no puede ser 0.";
+            },
+          }}
+          render={({ field: { onChange, onBlur: onBlurRHF, value } }) => (
+            <TextInput
+              keyboardType="decimal-pad"
+              onBlur={() => {
+                // Your Formatting Logic
+                if (
+                  value !== undefined &&
+                  value !== null &&
+                  String(value).trim() !== ""
+                ) {
+                  const num = parseFloat(String(value));
+                  if (!isNaN(num)) {
+                    onChange(num.toFixed(2));
+                  }
+                }
+
+                // CRITICAL FIX: Call the React Hook Form onBlur
+                // This ensures the form knows validation should run now.
+                onBlurRHF();
+              }}
+              readOnly={currentOrder.trip_status === "finished"}
+              onChangeText={(val) => onChange(val)}
+              // Add red border on error
+              className={`mx-2 w-7/12 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2 ${
+                errorsOrder[name] ? "border-red-500" : "border-gray-200"
+              }`}
+              value={value?.toString() ?? "0.00"}
+              placeholder="0.00"
+            />
+          )}
+        />
+        <Text className="w-1/6 font-bold align-middle">/Kg</Text>
+      </View>
+
+      {/* Error Message Display */}
+      {errorsOrder[name] && (
+        <Text style={styles.error}>{errorsOrder[name]?.message}</Text>
+      )}
+    </View>
+  );
+
   // Main
   return (
     <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
@@ -498,196 +573,6 @@ export function OrderForm({ order }: { order: Order }) {
         </TouchableOpacity>
       </View>
       <Separator />
-      {/* Data (Readonly) by business */}
-      {currentOrder.business_code === "containers" && (
-        <View>
-          <RowDetail
-            label="Tipo de Contenedor:"
-            value={currentOrder.container_type_value ?? ""}
-          />
-          <RowDetail
-            label="Tipo de Operación:"
-            value={currentOrder.container_type_operation_value ?? ""}
-          />
-          <RowDetail
-            label={
-              currentOrder.container_type === "import"
-                ? `Puerto Carga:`
-                : `Puerto Descarga:`
-            }
-            value={currentOrder.port_name}
-          />
-          <RowDetail
-            label="Clase de Contenedor:"
-            value={currentOrder.kind_container_name}
-          />
-          <RowDetail
-            label="Tipo de Chasis:"
-            value={currentOrder.chassis_type}
-          />
-          <RowDetail
-            label="Patio de Vacío:"
-            value={currentOrder.retreat_yard_name ?? ""}
-          />
-          {currentOrder.turn_date && (
-            <RowDetail
-              label="Fecha/Hora de Turno:"
-              value={currentOrder.turn_date}
-            />
-          )}
-          {currentOrder.has_generator && (
-            <RowDetail
-              label="Proveedor de Generador:"
-              value={currentOrder.generator_supplier_name ?? ""}
-            />
-          )}
-        </View>
-      )}
-      {currentOrder.business_code === "grain" && (
-        <View>
-          <RowDetail label="Operación:" value={order.operation_name} />
-          <RowDetail label="Material:" value={order.material_name} />
-          {currentOrder.trip_status && (
-            <View>
-              <Text className="font-extrabold text-lg color-primary underline mb-2">
-                Registrar Pesos
-              </Text>
-              <GrainForm
-                order={currentOrder}
-                onSave={(grainData) => {
-                  (Object.keys(grainData) as (keyof GrainData)[]).forEach(
-                    (key) => {
-                      updateOrderField(key, grainData[key]);
-                    },
-                  );
-                }}
-              />
-            </View>
-          )}
-        </View>
-      )}
-      {currentOrder.business_code === "palletizing" && (
-        <View>
-          <RowDetail label="Carga:" value={order.sacks_information ?? ""} />
-          <View className="flex-row items-center">
-            <Text className="font-semibold">Viaje Consolidado:</Text>
-            <Switch
-              disabled
-              value={currentOrder.consolidated_trip}
-              trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-              thumbColor={
-                currentOrder.consolidated_trip ? "#16a34a" : "#f3f4f6"
-              }
-            />
-          </View>
-          {currentOrder.trip_status && currentOrder.consolidated_trip && (
-            <View className="flex-row items-center">
-              <Text className="mr-3 font-semibold">Entrega Consolidada</Text>
-              <Controller
-                control={controlOrder}
-                name="consolidated_delivery"
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value}
-                    onValueChange={onChange}
-                    disabled={currentOrder.trip_status === "finished"}
-                    trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-                    thumbColor={value ? "#16a34a" : "#f3f4f6"}
-                  />
-                )}
-              />
-            </View>
-          )}
-          {currentOrder.trip_status && (
-            <View className="flex-row items-center">
-              <Text className="mr-3 font-semibold">
-                Ajuste Toneladas Origin
-              </Text>
-              <Controller
-                control={controlOrder}
-                name="has_adjustment_tm"
-                rules={{ required: hasAdjustmentTm }}
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value}
-                    onValueChange={onChange}
-                    trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-                    thumbColor={value ? "#16a34a" : "#f3f4f6"}
-                  />
-                )}
-              />
-              {hasAdjustmentTm && (
-                <View>
-                  <Controller
-                    control={controlOrder}
-                    name="adjustment_sacks"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <TextInput
-                        keyboardType="number-pad"
-                        onBlur={() => {
-                          if (
-                            value !== undefined &&
-                            value !== null &&
-                            String(value).trim() !== ""
-                          ) {
-                            const num = parseInt(String(value));
-                            if (!isNaN(num)) {
-                              onChange(num.toFixed(2));
-                            }
-                          }
-                        }}
-                        readOnly={order.trip_status === "finished"}
-                        onChangeText={(val) => onChange(val)}
-                        className="mx-2 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
-                        value={value?.toString() ?? "0"}
-                        placeholder="Número de sacos"
-                      />
-                    )}
-                  />
-                  {errorsOrder.adjustment_sacks && (
-                    <Text style={styles.error}>Este campo es requerido.</Text>
-                  )}
-                </View>
-              )}
-            </View>
-          )}
-        </View>
-      )}
-      {currentOrder.business_code === "gas_fuel" && (
-        <View>
-          <RowDetail
-            label="Auxiliar:"
-            value={currentOrder.driver_assistant_name ?? ""}
-          />
-          {currentOrder.return_date_bottle && (
-            <View>
-              <RowDetail
-                label="Retorno Bombona:"
-                value={currentOrder.return_date_bottle}
-              />
-              {!currentOrder.trip_status && (
-                <View className="flex-row items-center">
-                  <Text className="mr-3 font-semibold">Bombona Entregada</Text>
-                  <Controller
-                    control={controlOrder}
-                    name="cylinder_delivered"
-                    render={({ field: { value, onChange } }) => (
-                      <Switch
-                        value={value}
-                        onValueChange={onChange}
-                        disabled={currentOrder.trip_status === "finished"}
-                        trackColor={{ false: "#9ca3af", true: "#4ade80" }}
-                        thumbColor={value ? "#16a34a" : "#f3f4f6"}
-                      />
-                    )}
-                  />
-                </View>
-              )}
-            </View>
-          )}
-        </View>
-      )}
-
       {/* Data to update (General) */}
       {!currentOrder.not_need_chassis && (
         <View className="mt-1">
@@ -870,6 +755,211 @@ export function OrderForm({ order }: { order: Order }) {
           )}
         </View>
       )}
+      {/* Data (Readonly) by business */}
+      {currentOrder.business_code === "containers" && (
+        <View>
+          <RowDetail
+            label="Tipo de Contenedor:"
+            value={currentOrder.container_type_value ?? ""}
+          />
+          <RowDetail
+            label="Tipo de Operación:"
+            value={currentOrder.container_type_operation_value ?? ""}
+          />
+          <RowDetail
+            label={
+              currentOrder.container_type === "import"
+                ? `Puerto Carga:`
+                : `Puerto Descarga:`
+            }
+            value={currentOrder.port_name}
+          />
+          <RowDetail
+            label="Clase de Contenedor:"
+            value={currentOrder.kind_container_name}
+          />
+          <RowDetail
+            label="Tipo de Chasis:"
+            value={currentOrder.chassis_type}
+          />
+          <RowDetail
+            label="Patio de Vacío:"
+            value={currentOrder.retreat_yard_name ?? ""}
+          />
+          {currentOrder.turn_date && (
+            <RowDetail
+              label="Fecha/Hora de Turno:"
+              value={currentOrder.turn_date}
+            />
+          )}
+          {currentOrder.has_generator && (
+            <RowDetail
+              label="Proveedor de Generador:"
+              value={currentOrder.generator_supplier_name ?? ""}
+            />
+          )}
+        </View>
+      )}
+      {currentOrder.business_code === "grain" && (
+        <View>
+          <RowDetail label="Operación:" value={order.operation_name} />
+          <RowDetail label="Material:" value={order.material_name} />
+          {currentOrder.trip_status && (
+            <View>
+              <Text className="font-extrabold text-lg color-primary underline mb-2">
+                Registrar Pesos:
+              </Text>
+              <ControllerDecimalInput name="burden_kg" label="Origen Bruto" />
+              <ControllerDecimalInput name="tara_kg" label="Origen TARA" />
+              <View className="mt-1">
+                <ImagePickerField
+                  control={controlOrder}
+                  name="image_scale_ticket"
+                  label="Foto de Ticket de Báscula Carga"
+                  readonly={currentOrder.trip_status === "finished"}
+                />
+              </View>
+              <ControllerDecimalInput
+                name="final_burden_kg"
+                label="Destino Bruto"
+              />
+              <ControllerDecimalInput
+                name="final_tara_kg"
+                label="Destino TARA"
+              />
+              <View className="mt-1">
+                <ImagePickerField
+                  control={controlOrder}
+                  name="final_image_scale_ticket"
+                  label="Foto de Ticket de Báscula Descarga"
+                  readonly={currentOrder.trip_status === "finished"}
+                />
+              </View>
+            </View>
+          )}
+        </View>
+      )}
+      {currentOrder.business_code === "palletizing" && (
+        <View>
+          <RowDetail label="Carga:" value={order.sacks_information ?? ""} />
+          <View className="flex-row items-center">
+            <Text className="font-semibold">Viaje Consolidado:</Text>
+            <Switch
+              disabled
+              value={currentOrder.consolidated_trip}
+              trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+              thumbColor={
+                currentOrder.consolidated_trip ? "#16a34a" : "#f3f4f6"
+              }
+            />
+          </View>
+          {currentOrder.trip_status && currentOrder.consolidated_trip && (
+            <View className="flex-row items-center">
+              <Text className="mr-3 font-semibold">Entrega Consolidada</Text>
+              <Controller
+                control={controlOrder}
+                name="consolidated_delivery"
+                render={({ field: { value, onChange } }) => (
+                  <Switch
+                    value={value}
+                    onValueChange={onChange}
+                    disabled={currentOrder.trip_status === "finished"}
+                    trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                    thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                  />
+                )}
+              />
+            </View>
+          )}
+          {currentOrder.trip_status && (
+            <View className="flex-row items-center">
+              <Text className="mr-3 font-semibold">
+                Ajuste Toneladas Origin
+              </Text>
+              <Controller
+                control={controlOrder}
+                name="has_adjustment_tm"
+                rules={{ required: hasAdjustmentTm }}
+                render={({ field: { value, onChange } }) => (
+                  <Switch
+                    value={value}
+                    onValueChange={onChange}
+                    trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                    thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                  />
+                )}
+              />
+              {hasAdjustmentTm && (
+                <View>
+                  <Controller
+                    control={controlOrder}
+                    name="adjustment_sacks"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        keyboardType="number-pad"
+                        onBlur={() => {
+                          if (
+                            value !== undefined &&
+                            value !== null &&
+                            String(value).trim() !== ""
+                          ) {
+                            const num = parseInt(String(value));
+                            if (!isNaN(num)) {
+                              onChange(num.toFixed(2));
+                            }
+                          }
+                        }}
+                        readOnly={order.trip_status === "finished"}
+                        onChangeText={(val) => onChange(val)}
+                        className="mx-2 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
+                        value={value?.toString() ?? "0"}
+                        placeholder="Número de sacos"
+                      />
+                    )}
+                  />
+                  {errorsOrder.adjustment_sacks && (
+                    <Text style={styles.error}>Este campo es requerido.</Text>
+                  )}
+                </View>
+              )}
+            </View>
+          )}
+        </View>
+      )}
+      {currentOrder.business_code === "gas_fuel" && (
+        <View>
+          <RowDetail
+            label="Auxiliar:"
+            value={currentOrder.driver_assistant_name ?? ""}
+          />
+          {currentOrder.return_date_bottle && (
+            <View>
+              <RowDetail
+                label="Retorno Bombona:"
+                value={currentOrder.return_date_bottle}
+              />
+              {!currentOrder.trip_status && (
+                <View className="flex-row items-center">
+                  <Text className="mr-3 font-semibold">Bombona Entregada</Text>
+                  <Controller
+                    control={controlOrder}
+                    name="cylinder_delivered"
+                    render={({ field: { value, onChange } }) => (
+                      <Switch
+                        value={value}
+                        onValueChange={onChange}
+                        disabled={currentOrder.trip_status === "finished"}
+                        trackColor={{ false: "#9ca3af", true: "#4ade80" }}
+                        thumbColor={value ? "#16a34a" : "#f3f4f6"}
+                      />
+                    )}
+                  />
+                </View>
+              )}
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Data by business (Hours) */}
       {currentOrder.trip_status && (
@@ -877,6 +967,10 @@ export function OrderForm({ order }: { order: Order }) {
           {/* Buttons Hours - Grain */}
           {currentOrder.business_code === "grain" && (
             <View>
+              <Separator />
+              <Text className="font-extrabold text-lg color-primary underline mb-2">
+                Registrar Fechas/Horas:
+              </Text>
               <DatetimeButton
                 orderId={currentOrder.id}
                 field="arrival_point_charge_time"

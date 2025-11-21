@@ -7,7 +7,6 @@ import {
   Modal,
   TextInput,
   ActivityIndicator,
-  StyleSheet,
   Image,
 } from "react-native";
 import { InputDatePicker } from "../../components/InputDatePicker";
@@ -193,7 +192,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
             />
           </View>
           {errors.holiday_status_id && (
-            <Text className="font-bold" style={styles.error}>
+            <Text className="font-bold text-primary">
               Este campo es requerido.
             </Text>
           )}
@@ -207,7 +206,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
             />
           </View>
           {errors.request_date_from && (
-            <Text className="font-bold" style={styles.error}>
+            <Text className="font-bold text-primary">
               Este campo es requerido.
             </Text>
           )}
@@ -221,7 +220,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
             />
           </View>
           {errors.request_date_to && (
-            <Text className="font-bold" style={styles.error}>
+            <Text className="font-bold text-primary">
               Este campo es requerido.
             </Text>
           )}
@@ -246,7 +245,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
             />
           </View>
           {errors.name && (
-            <Text className="font-bold" style={styles.error}>
+            <Text className="font-bold text-primary">
               Este campo es requerido.
             </Text>
           )}
@@ -275,9 +274,3 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  error: {
-    color: "#e10718",
-  },
-});

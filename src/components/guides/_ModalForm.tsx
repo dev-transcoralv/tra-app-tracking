@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -44,6 +44,18 @@ export function GuideModalForm({
 }: Props) {
   const [loading, setLoading] = useState(false);
 
+  // 1. Define default values for a "Clean" form
+  const defaultValues: FormData = useMemo(
+    () => ({
+      id: null,
+      type: "third",
+      name: "",
+      comment: "",
+      image: "",
+    }),
+    [],
+  );
+
   const {
     control,
     handleSubmit,
@@ -51,72 +63,80 @@ export function GuideModalForm({
     reset,
   } = useForm<FormData>({
     criteriaMode: "all",
-    defaultValues: {
-      comment: "",
-      image: "",
-      type: "third",
-    },
+    defaultValues: defaultValues,
   });
+
+  // 2. Handle Reset Logic (Open/Edit/Create)
+  useEffect(() => {
+    if (visible) {
+      if (guide) {
+        // EDIT MODE: Populate form with guide data
+        reset({
+          id: guide.id,
+          type: guide.type,
+          name: guide.name,
+          comment: guide.comment || "",
+          image: guide.image || "",
+        });
+      } else {
+        // CREATE MODE: Reset to default empty values
+        reset(defaultValues);
+      }
+    }
+  }, [visible, guide, reset, defaultValues]);
+
+  // 3. Manual Close Handler
+  const handleClose = () => {
+    reset(defaultValues); // Optional: Clear form on close to prevent flash on next open
+    onClose();
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      const guide = await createOrUpdateGuide(order.id, data);
-      onSave(guide);
+      const savedGuide = await createOrUpdateGuide(order.id, data);
+      onSave(savedGuide);
+
+      Toast.show({
+        type: "success",
+        text1: data.id
+          ? "Guía editada correctamente."
+          : "Guía creada correctamente.",
+      });
+
+      reset(defaultValues);
+      onClose(); // Use prop onClose here as reset is done
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error.message || "Error al guardar",
       });
-      throw error;
+      // Do not throw error here unless you want to crash the app or catch it higher up
+      console.error(error);
     } finally {
-      Toast.show({
-        type: "success",
-        text1:
-          (data.id && "Guía editada correctamente.") ||
-          "Guía creada correctamente.",
-      });
       setLoading(false);
-      reset();
-      onClose();
     }
   };
 
-  useEffect(() => {
-    if (guide) {
-      reset({
-        id: guide.id,
-        type: guide.type,
-        name: guide.name,
-        comment: guide.comment,
-        image: guide.image,
-      });
-    }
-  }, [guide, reset]);
-
-  useEffect(() => {
-    return () => {
-      // Cleanup logic on unmount (when modal is destroyed)
-    };
-  }, []);
-
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
       <View className="flex p-4">
         <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
-          {(guide && "*** EDITAR GUÍA ***") || "*** CREAR GUÍA ***"}
+          {guide ? "*** EDITAR GUÍA ***" : "*** CREAR GUÍA ***"}
         </Text>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
           <ImagePickerField
             control={control}
             name="image"
-            label="* Foto de Guía"
+            label="Foto de Guía"
+            // defaultValue is handled by useForm/Controller now, but keeping prop is fine
+            defaultValue={guide?.image || ""}
             required={true}
           />
 
           <View>
-            <Text className="font-semibold mb-1">* Tipo:</Text>
+            <Text className="font-semibold mb-1">Tipo:</Text>
             <Controller
               control={control}
               rules={{
@@ -137,22 +157,25 @@ export function GuideModalForm({
           </View>
 
           <View className="w-full flex gap-2">
-            <Text className="font-semibold mb-1">* No. de Guía:</Text>
+            <Text className="font-semibold mb-1">No. de Guía:</Text>
             <Controller
               control={control}
               rules={{
                 required: "Este campo es requerido.",
                 pattern: {
-                  value: /^[0-9]{9}$/, // solo 10 dígitos
-                  message: "No. de documento incorrecto.",
+                  value: /^[0-9]{9}$/, // solo 9 dígitos
+                  message:
+                    "No. de documento incorrecto (debe tener 9 dígitos).",
                 },
               }}
+              name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   placeholder="p.e 000000001"
                   onChangeText={(text) => onChange(text)}
                   onBlur={() => {
-                    if (value.length !== 0) {
+                    onBlur();
+                    if (value && value.length > 0) {
                       onChange(value.padStart(9, "0"));
                     }
                   }}
@@ -160,25 +183,24 @@ export function GuideModalForm({
                   maxLength={9}
                   placeholderTextColor="#211915"
                   className="color-secondary bg-secondary-complementary p-2 rounded-xl border-0 w-full outline-none text-sm md:text-base"
+                  keyboardType="numeric"
                 />
               )}
-              name="name"
             />
           </View>
-          {errors.name &&
-            Object.values(errors.name.types || {}).map((msg, i) => (
-              <Text key={i} className="color-primary">
-                {msg as string}
-              </Text>
-            ))}
+          {errors.name && (
+            <Text className="font-bold color-primary">
+              {errors.name.message as string}
+            </Text>
+          )}
 
           <View className="w-full flex gap-2">
             <Text className="font-semibold mb-1">Comentario:</Text>
             <Controller
               control={control}
+              name="comment"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  placeholder="p.e. Todo correcto"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -189,7 +211,6 @@ export function GuideModalForm({
                   textAlignVertical="top"
                 />
               )}
-              name="comment"
             />
           </View>
 
@@ -207,7 +228,7 @@ export function GuideModalForm({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleClose}
               className="flex-1 bg-secondary px-5 py-3 items-center"
             >
               <Text className="color-white font-semibold">DESCARTAR</Text>

@@ -294,4 +294,10 @@ export type orderData = {
   type_return_burden_sacks: "complete" | "partial" | null;
   return_burden_sacks: number;
   cylinder_delivered: boolean;
+  burden_kg: number;
+  tara_kg: number;
+  final_burden_kg: number;
+  final_tara_kg: number;
+  image_scale_ticket: string | null;
+  final_image_scale_ticket: string | null;
 };

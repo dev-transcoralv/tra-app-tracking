@@ -19,6 +19,8 @@ type Props = {
   disabled?: boolean;
   required?: boolean;
   bg?: string;
+  defaultValue?: string;
+  readonly?: boolean;
 };
 
 if (
@@ -35,6 +37,8 @@ export function ImagePickerField({
   disabled,
   required,
   bg = "bg-secondary-complementary",
+  defaultValue = "",
+  readonly = false,
 }: Props) {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -64,81 +68,141 @@ export function ImagePickerField({
 
     if (!result.canceled) {
       const asset = result.assets[0];
+      // Local URI for immediate display
       setImageUri(asset.uri);
+      // Send full Base64 Data URI to Odoo
       onChange(`data:image/jpeg;base64,${asset.base64}`);
     }
   };
 
   const handleClear = (onChange: (value: string | null) => void) => {
     setImageUri(null);
-    onChange(null);
+    onChange(null); // Send null to Odoo to delete the image
   };
 
   return (
     <Controller
       control={control}
       name={name}
-      rules={{ required: required ? "Este campo es obligatorio" : false }}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <View>
-          {/* Label */}
-          <TouchableOpacity
-            className={`p-4 ${bg} justify-between flex-row rounded-lg`}
-            onPress={toggleExpand}
-          >
-            <Text className="font-semibold">{label}</Text>
-            {(expanded && <FontAwesomeMinus color="grey" size={14} />) || (
-              <FontAwesomePlus color="grey" size={14} />
-            )}
-          </TouchableOpacity>
+      // 1. ADD THIS: explicit default value prop
+      defaultValue={defaultValue}
+      rules={{ required: required ? "Este campo es obligatorio." : false }}
+      render={({ field: { onChange, value }, fieldState: { error } }) => {
+        // --- LOGIC START ---
+        let displaySource = null;
 
-          {expanded && (
-            <View className="mt-2">
-              <View
-                style={{
-                  flexDirection: "row",
-                  borderRadius: 8,
-                  overflow: "hidden",
-                }}
-              >
-                <TouchableOpacity
-                  disabled={disabled}
-                  className="flex-1 py-2 bg-blue-900 items-center justify-center"
-                  onPress={() => !disabled && handlePickImage(onChange, true)}
-                >
-                  <Text className="color-white">📷 Cámara</Text>
-                </TouchableOpacity>
+        // Priority 1: User just picked a new photo (local state)
+        if (imageUri) {
+          displaySource = imageUri;
+        }
+        // Priority 2: Form value (from DB/defaultValues)
+        else if (value) {
+          if (
+            typeof value === "string" &&
+            !value.startsWith("http") &&
+            !value.startsWith("data:")
+          ) {
+            // Fix for Odoo: Raw Base64 string
+            displaySource = `data:image/png;base64,${value}`;
+          } else {
+            // Standard URL or Data URI
+            displaySource = value;
+          }
+        }
+        // --- LOGIC END ---
 
-                <TouchableOpacity
-                  disabled={disabled}
-                  className="flex-1 py-2 bg-secondary items-center justify-center"
-                  onPress={() => !disabled && handlePickImage(onChange, false)}
-                >
-                  <Text className="color-white">🖼 Galería</Text>
-                </TouchableOpacity>
-              </View>
-
-              {(imageUri || value) && (
-                <View className="mt-2" style={{ gap: 8 }}>
-                  <Image
-                    source={{ uri: imageUri || value }}
-                    style={{ width: "100%", height: 180, borderRadius: 8 }}
-                    resizeMode="cover"
-                  />
-
-                  <TouchableOpacity
-                    className="p-4 bg-primary rounded-lg"
-                    onPress={() => handleClear(onChange)}
-                  >
-                    <Text className="text-center color-white">🗑️ Limpiar</Text>
-                  </TouchableOpacity>
-                </View>
+        return (
+          <View>
+            {/* Label Logic */}
+            <TouchableOpacity
+              className={`p-4 ${bg || "bg-white"} justify-between flex-row rounded-lg`}
+              onPress={toggleExpand}
+            >
+              <Text className="font-semibold">{label}</Text>
+              {expanded ? (
+                <FontAwesomeMinus color="grey" size={14} />
+              ) : (
+                <FontAwesomePlus color="grey" size={14} />
               )}
-            </View>
-          )}
-          {error && <Text className="text-primary">{error.message}</Text>}
-        </View>
-      )}
+            </TouchableOpacity>
+
+            {expanded && (
+              <View className="mt-2">
+                {/* Controls: Show only if no image is displayed */}
+                {!displaySource && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      gap: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      disabled={disabled}
+                      className="flex-1 py-3 bg-blue-900 items-center justify-center rounded-lg"
+                      onPress={() =>
+                        !disabled &&
+                        handlePickImage((uri) => {
+                          setImageUri(uri); // Update local UI
+                          onChange(uri); // Update Form Data
+                        }, true)
+                      }
+                    >
+                      <Text className="text-white font-medium">📷 Cámara</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      disabled={disabled}
+                      className="flex-1 py-3 bg-gray-500 items-center justify-center rounded-lg"
+                      onPress={() =>
+                        !disabled &&
+                        handlePickImage((uri) => {
+                          setImageUri(uri);
+                          onChange(uri);
+                        }, false)
+                      }
+                    >
+                      <Text className="text-white font-medium">🖼 Galería</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* Image Display */}
+                {displaySource && (
+                  <View className="mt-2 items-center relative">
+                    <Image
+                      source={{ uri: displaySource }}
+                      style={{
+                        width: "100%",
+                        height: 250,
+                        borderRadius: 8,
+                        backgroundColor: "#f0f0f0",
+                      }}
+                      resizeMode="cover"
+                    />
+
+                    {!readonly && (
+                      <TouchableOpacity
+                        className="mt-2 p-3 bg-primary rounded-lg w-full"
+                        onPress={() => handleClear(onChange)}
+                      >
+                        <Text className="text-center text-white font-bold">
+                          🗑️ Eliminar Foto
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </View>
+            )}
+
+            {error && (
+              <Text className="font-bold color-primary">{error.message}</Text>
+            )}
+          </View>
+        );
+      }}
     />
   );
 }
