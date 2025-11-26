@@ -540,7 +540,7 @@ export function OrderForm({ order }: { order: Order }) {
         </TouchableOpacity>
       )}
 
-      {order.trip_status === "finished" && (
+      {currentOrder.trip_status === "finished" && (
         <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
           <Text className="color-white text-m font-bold">Finalizado</Text>
         </View>
