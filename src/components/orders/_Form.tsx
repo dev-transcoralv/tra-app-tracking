@@ -883,6 +883,7 @@ export function OrderForm({ order }: { order: Order }) {
                 render={({ field: { value, onChange } }) => (
                   <Switch
                     value={value}
+                    disabled={currentOrder.trip_status === "finished"}
                     onValueChange={onChange}
                     trackColor={{ false: "#9ca3af", true: "#4ade80" }}
                     thumbColor={value ? "#16a34a" : "#f3f4f6"}
@@ -964,8 +965,8 @@ export function OrderForm({ order }: { order: Order }) {
       {/* Data by business (Hours) */}
       {currentOrder.trip_status && (
         <View className="flex">
-          {/* Buttons Hours - Grain */}
-          {currentOrder.business_code === "grain" && (
+          {/* Buttons Hours */}
+          {currentOrder.business_code !== "containers" && (
             <View>
               <Separator />
               <Text className="font-extrabold text-lg color-primary underline mb-2">
@@ -1067,7 +1068,7 @@ export function OrderForm({ order }: { order: Order }) {
               )}
             </View>
           )}
-          {/* Buttons Hours - Import (immediate loading) */}
+          {/* Buttons Hours - Containers - Import (immediate loading) */}
           {currentOrder.business_code === "containers" &&
             currentOrder.container_type === "import" &&
             currentOrder.container_type_operation === "immediate loading" &&
@@ -1140,61 +1141,6 @@ export function OrderForm({ order }: { order: Order }) {
                 )}
               </View>
             )}
-          {/* Buttons Hours - Others */}
-          {!["containers", "grain"].includes(currentOrder.business_code) && (
-            <View>
-              <Separator />
-              <Text className="font-extrabold text-lg color-primary underline mb-2">
-                Registrar Fechas/Horas:
-              </Text>
-              <DatetimeButton
-                orderId={currentOrder.id}
-                field="arrival_charge_time"
-                datetime={currentOrder.arrival_charge_time}
-                title="Llegada Carga"
-                orderFinished={currentOrder.trip_status === "finished"}
-                onChange={(value) =>
-                  updateOrderField("arrival_charge_time", value)
-                }
-              />
-              {currentOrder.arrival_charge_time && (
-                <DatetimeButton
-                  orderId={currentOrder.id}
-                  field="departure_charge_time"
-                  datetime={currentOrder.departure_charge_time}
-                  title="Salida Carga"
-                  orderFinished={currentOrder.trip_status === "finished"}
-                  onChange={(value) =>
-                    updateOrderField("departure_charge_time", value)
-                  }
-                />
-              )}
-              {currentOrder.departure_charge_time && (
-                <DatetimeButton
-                  orderId={currentOrder.id}
-                  field="arrival_download_time"
-                  datetime={currentOrder.arrival_download_time}
-                  title="Llegada Descarga"
-                  orderFinished={currentOrder.trip_status === "finished"}
-                  onChange={(value) =>
-                    updateOrderField("arrival_download_time", value)
-                  }
-                />
-              )}
-              {currentOrder.arrival_download_time && (
-                <DatetimeButton
-                  orderId={currentOrder.id}
-                  field="departure_download_time"
-                  datetime={currentOrder.departure_download_time}
-                  title="Salida Descarga"
-                  orderFinished={currentOrder.trip_status === "finished"}
-                  onChange={(value) =>
-                    updateOrderField("departure_download_time", value)
-                  }
-                />
-              )}
-            </View>
-          )}
         </View>
       )}
       <Separator />

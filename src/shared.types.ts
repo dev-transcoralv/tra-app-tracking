@@ -301,3 +301,16 @@ export type orderData = {
   image_scale_ticket: string | null;
   final_image_scale_ticket: string | null;
 };
+
+export interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+
+export interface GeoPolygonResult {
+  isInside: boolean;
+  userLocation: Coordinate | null;
+  loading: boolean;
+  error: string | null;
+  validarZona: () => Promise<void>;
+}
