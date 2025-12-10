@@ -37,7 +37,6 @@ import WialonLiveMap from "../WialonLiveMap";
 import { ConfirmModal } from "../ConfirmModal";
 import { RouteMapView } from "../RouteMapView";
 import { ImagePickerField } from "../ImagePickerField";
-// TODO: import { AppleMaps, GoogleMaps } from "expo-maps";
 import { Dropdown } from "react-native-element-dropdown";
 import { cssInterop } from "nativewind";
 import { useForm, Controller } from "react-hook-form";
