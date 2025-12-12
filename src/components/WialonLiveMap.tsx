@@ -27,11 +27,6 @@ const WialonLiveMap: React.FC<WialonLiveProps> = ({
   const latitude = useRef(new Animated.Value(0)).current;
   const longitude = useRef(new Animated.Value(0)).current;
 
-  const markerCoordinate = {
-    latitude: latitude as unknown as number,
-    longitude: longitude as unknown as number,
-  };
-
   // --- Funciones Wialon (login, posición, ruta) ---
   const wialonLogin = async (): Promise<string | null> => {
     try {

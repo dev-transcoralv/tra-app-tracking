@@ -43,6 +43,7 @@ import { useForm, Controller } from "react-hook-form";
 import { getListChassis } from "../../services/odoo/vehicle";
 import { Picker } from "@react-native-picker/picker";
 import { ListMoves } from "../moves/_List";
+import { DatetimeButtonWialon } from "./_DatetimeButtonWialon";
 
 const StyledPicker = cssInterop(Picker, {
   className: "style",
@@ -971,16 +972,33 @@ export function OrderForm({ order }: { order: Order }) {
               <Text className="font-extrabold text-lg color-primary underline mb-2">
                 Registrar Fechas/Horas:
               </Text>
-              <DatetimeButton
-                orderId={currentOrder.id}
-                field="arrival_point_charge_time"
-                datetime={currentOrder.arrival_point_charge_time}
-                title="Llegada Punto C."
-                orderFinished={currentOrder.trip_status === "finished"}
-                onChange={(value) =>
-                  updateOrderField("arrival_point_charge_time", value)
-                }
-              />
+              {/* The dot marking button depends on the property type */}
+              {currentOrder.type_property === "own" && (
+                <DatetimeButtonWialon
+                  orderId={currentOrder.id}
+                  field="arrival_point_charge_time"
+                  datetime={currentOrder.arrival_point_charge_time}
+                  title="Llegada Punto C."
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  vehicleName={currentOrder.vehicle_name}
+                  geocercaId={currentOrder.route_geolocation_origin.wialon_id}
+                  onChange={(value) =>
+                    updateOrderField("arrival_point_charge_time", value)
+                  }
+                />
+              )}
+              {currentOrder.type_property === "third" && (
+                <DatetimeButton
+                  orderId={currentOrder.id}
+                  field="arrival_point_charge_time"
+                  datetime={currentOrder.arrival_point_charge_time}
+                  title="Llegada Punto C."
+                  orderFinished={currentOrder.trip_status === "finished"}
+                  onChange={(value) =>
+                    updateOrderField("arrival_point_charge_time", value)
+                  }
+                />
+              )}
               {currentOrder.arrival_point_charge_time && (
                 <DatetimeButton
                   orderId={currentOrder.id}

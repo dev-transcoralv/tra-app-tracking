@@ -2,7 +2,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { ReactNode } from "react";
 
-// TODO: Review props 'color'
 export const FontAwesomeEye = (props: { props?: any }): ReactNode => {
   return <FontAwesome name="eye" color="#211915" size={24} {...props} />;
 };

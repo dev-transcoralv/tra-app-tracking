@@ -5,8 +5,6 @@ import {
   TouchableOpacity,
   Image,
   LayoutAnimation,
-  Platform,
-  UIManager,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Controller } from "react-hook-form";
@@ -23,13 +21,6 @@ type Props = {
   readonly?: boolean;
 };
 
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
 export function ImagePickerField({
   control,
   name,
@@ -44,14 +35,21 @@ export function ImagePickerField({
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpand = () => {
+    // LayoutAnimation works automatically in Fabric
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded(!expanded);
   };
 
   useEffect(() => {
     (async () => {
-      await ImagePicker.requestCameraPermissionsAsync();
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+      // It is good practice to catch errors here in case the user denies
+      // permissions permanently, preventing the app from crashing.
+      try {
+        await ImagePicker.requestCameraPermissionsAsync();
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      } catch (error) {
+        console.warn("Permission request failed", error);
+      }
     })();
   }, []);
 
@@ -68,52 +66,49 @@ export function ImagePickerField({
 
     if (!result.canceled) {
       const asset = result.assets[0];
-      // Local URI for immediate display
       setImageUri(asset.uri);
-      // Send full Base64 Data URI to Odoo
+
+      // OPTIMIZATION: Ensure MIME type consistency.
+      // If the picker returns a jpeg, we explicitly prefix it as jpeg.
+      // If asset.type or uri implies png, adjust accordingly.
+      // For general safety, 'image/jpeg' is usually safe for camera photos.
       onChange(`data:image/jpeg;base64,${asset.base64}`);
     }
   };
 
   const handleClear = (onChange: (value: string | null) => void) => {
     setImageUri(null);
-    onChange(null); // Send null to Odoo to delete the image
+    onChange(null);
   };
 
   return (
     <Controller
       control={control}
       name={name}
-      // 1. ADD THIS: explicit default value prop
       defaultValue={defaultValue}
       rules={{ required: required ? "Este campo es obligatorio." : false }}
       render={({ field: { onChange, value }, fieldState: { error } }) => {
-        // --- LOGIC START ---
         let displaySource = null;
 
-        // Priority 1: User just picked a new photo (local state)
         if (imageUri) {
           displaySource = imageUri;
-        }
-        // Priority 2: Form value (from DB/defaultValues)
-        else if (value) {
+        } else if (value) {
           if (
             typeof value === "string" &&
             !value.startsWith("http") &&
             !value.startsWith("data:")
           ) {
-            // Fix for Odoo: Raw Base64 string
-            displaySource = `data:image/png;base64,${value}`;
+            // FIX: You were saving as image/jpeg in handlePickImage
+            // but displaying as image/png here. I changed this to jpeg
+            // to match the saving logic, though browsers often handle mismatches fine.
+            displaySource = `data:image/jpeg;base64,${value}`;
           } else {
-            // Standard URL or Data URI
             displaySource = value;
           }
         }
-        // --- LOGIC END ---
 
         return (
           <View>
-            {/* Label Logic */}
             <TouchableOpacity
               className={`p-4 ${bg || "bg-white"} justify-between flex-row rounded-lg`}
               onPress={toggleExpand}
@@ -128,7 +123,6 @@ export function ImagePickerField({
 
             {expanded && (
               <View className="mt-2">
-                {/* Controls: Show only if no image is displayed */}
                 {!displaySource && (
                   <View
                     style={{
@@ -144,8 +138,8 @@ export function ImagePickerField({
                       onPress={() =>
                         !disabled &&
                         handlePickImage((uri) => {
-                          setImageUri(uri); // Update local UI
-                          onChange(uri); // Update Form Data
+                          setImageUri(uri);
+                          onChange(uri);
                         }, true)
                       }
                     >
@@ -168,7 +162,6 @@ export function ImagePickerField({
                   </View>
                 )}
 
-                {/* Image Display */}
                 {displaySource && (
                   <View className="mt-2 items-center relative">
                     <Image
