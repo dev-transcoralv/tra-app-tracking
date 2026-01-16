@@ -1,5 +1,4 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { FontAwesome } from "@expo/vector-icons";
 import { ReactNode } from "react";
 
 export const FontAwesomeEye = (props: { props?: any }): ReactNode => {
@@ -11,7 +10,7 @@ export const FontAwesomeEyeOff = (props: { props?: any }): ReactNode => {
 };
 
 export const FontAwesome5Route = (props: { props?: any }): ReactNode => {
-  return <FontAwesome5 name="route" color="black" size={24} {...props} />;
+  return <FontAwesome name="map-marker" color="black" size={24} {...props} />;
 };
 
 export const FontAwesomeDashboard = ({
@@ -41,7 +40,7 @@ export const FontAwesomeOperative = ({
   color: string;
   size?: number;
 }): ReactNode => {
-  return <FontAwesome5 name="truck" color={color} size={size} />;
+  return <FontAwesome name="truck" color={color} size={size} />;
 };
 
 export const FontAwesomeUmbrellaBeach = ({
@@ -51,7 +50,7 @@ export const FontAwesomeUmbrellaBeach = ({
   color: string;
   size?: number;
 }): ReactNode => {
-  return <FontAwesome5 name="umbrella-beach" color={color} size={size} />;
+  return <FontAwesome name="plane" color={color} size={size} />;
 };
 
 export const FontAwesomeUser = ({
