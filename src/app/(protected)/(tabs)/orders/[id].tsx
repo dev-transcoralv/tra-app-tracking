@@ -35,7 +35,7 @@ export default function OrderId() {
     if (reference) {
       navigation.setOptions({ title: `Orden: ${reference}` });
     }
-  });
+  }, [reference, navigation]);
 
   useFocusEffect(
     useCallback(() => {

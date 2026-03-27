@@ -203,7 +203,7 @@ export function OrderForm({ order }: { order: Order }) {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error?.message || String(error),
       });
       throw error;
     } finally {
@@ -302,7 +302,7 @@ export function OrderForm({ order }: { order: Order }) {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error?.message || String(error),
       });
       throw error;
     } finally {
@@ -350,7 +350,7 @@ export function OrderForm({ order }: { order: Order }) {
     if (!fakeFreight) {
       setValue("reason_fake_freight_id", null, { shouldValidate: false });
     }
-  });
+  }, [fakeFreight, setValue]);
 
   useEffect(() => {
     if (!isReturn) {
@@ -364,7 +364,7 @@ export function OrderForm({ order }: { order: Order }) {
     if (!hasAdjustmentTm) {
       setValue("adjustment_sacks", 0, { shouldValidate: false });
     }
-  });
+  }, [hasAdjustmentTm, setValue]);
 
   // Submit - TripFinished
   const handleTripFinished = async () => {
@@ -378,7 +378,7 @@ export function OrderForm({ order }: { order: Order }) {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error?.message || String(error),
       });
       throw error;
     } finally {
@@ -782,10 +782,12 @@ export function OrderForm({ order }: { order: Order }) {
             label="Tipo de Chasis:"
             value={currentOrder.chassis_type}
           />
-          <RowDetail
-            label="Patio de Vacío:"
-            value={currentOrder.retreat_yard_name ?? ""}
-          />
+          {currentOrder.retreat_yard_name && (
+            <RowDetail
+              label="Patio de Vacío:"
+              value={currentOrder.retreat_yard_name ?? ""}
+            />
+          )}
           {currentOrder.turn_date && (
             <RowDetail
               label="Fecha/Hora de Turno:"
@@ -891,7 +893,7 @@ export function OrderForm({ order }: { order: Order }) {
                 )}
               />
               {hasAdjustmentTm && (
-                <View>
+                <View className="flex-1">
                   <Controller
                     control={controlOrder}
                     name="adjustment_sacks"
@@ -910,7 +912,7 @@ export function OrderForm({ order }: { order: Order }) {
                             }
                           }
                         }}
-                        readOnly={order.trip_status === "finished"}
+                        readOnly={currentOrder.trip_status === "finished"}
                         onChangeText={(val) => onChange(val)}
                         className="mx-2 color-secondary bg-gray-50 border rounded-xl outline-none text-sm md:text-base px-2"
                         value={value?.toString() ?? "0"}

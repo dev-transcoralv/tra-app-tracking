@@ -6,7 +6,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { AuthContext } from "../../../../utils/authContext";
 import { Order } from "../../../../shared.types";
 import FilterSelection from "../../../..//components/FilterSelection";
-import debounce from "lodash/debounce";
+import debounce from "lodash.debounce";
 import { FontAwesomeSearch } from "../../../../components/Icons";
 
 export default function IndexScreen() {
@@ -85,7 +85,7 @@ export default function IndexScreen() {
     return () => {
       handleSearch.cancel();
     };
-  });
+  }, [handleSearch]);
 
   return (
     <View className="bg-secondary h-full flex p-2">

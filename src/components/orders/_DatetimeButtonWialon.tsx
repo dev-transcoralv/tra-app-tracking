@@ -2,7 +2,7 @@ import { useState } from "react";
 import { TouchableOpacity, Text, View, ActivityIndicator } from "react-native";
 import Toast from "react-native-toast-message";
 import { updateHours } from "../../services/odoo/order";
-import { usePlateGeofenceStatus } from "../../utils/wialon";
+// TODO import { usePlateGeofenceStatus } from "../../utils/wialon";
 
 type DatetimeField =
   | "arrival_point_charge_time"
@@ -34,21 +34,25 @@ export function DatetimeButtonWialon({
   const [isLoading, setIsLoading] = useState(false);
 
   // Initialize hook with configuration
+  /**
   const { checkPlate, isInside, loading, error } = usePlateGeofenceStatus({
     sid: "YOUR_VALID_WIALON_SID", // Ideally from context/auth provider
     resourceId: vehicleName, // Replace with your Resource ID
     geofenceId: geocercaId || 1, // Replace with your Geofence ID
   });
+   */
 
   const handleUpdate = async () => {
     try {
       setIsLoading(true);
+      /**
       checkPlate(vehicleName);
 
       if (error) {
         throw new Error(`Wialon Error: ${error}`);
       }
-      if (isInside) {
+      */
+      if (true /*isInside*/) {
         const order = await updateHours(orderId, field);
         onChange(String(order[field]));
       } else {
@@ -78,7 +82,7 @@ export function DatetimeButtonWialon({
       <View className="flex-row justify-between items-center">
         {/* 3. Conditional styling for placeholder vs real data */}
         <Text
-          className={`text-basae ${datetime ? "text-gray-900" : "text-gray-400"}`}
+          className={`text-base ${datetime ? "text-gray-900" : "text-gray-400"}`}
         >
           {datetime || "Sin registrar"}
         </Text>
@@ -86,12 +90,12 @@ export function DatetimeButtonWialon({
         {!orderFinished && !datetime && (
           <TouchableOpacity
             // 4. Removed fixed width, added rounded corners, added opacity on loading
-            className={`px-4 py-2 bg-blue-900 rounded-md min-w-[100px] items-center justify-center ${loading ? "opacity-60" : "opacity-100"}`}
+            className={`px-4 py-2 bg-blue-900 rounded-md min-w-[100px] items-center justify-center ${isLoading ? "opacity-60" : "opacity-100"}`}
             onPress={handleUpdate}
             disabled={isLoading}
             activeOpacity={0.7} // Better tap feedback
           >
-            {loading ? (
+            {isLoading ? (
               // Ensure spinner size matches text size generally
               <ActivityIndicator size="small" color="#fff" />
             ) : (

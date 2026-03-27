@@ -25,6 +25,10 @@ export async function getListOrders({
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as ResponseListOrder;
   } catch (error) {
     // Throw error
@@ -37,6 +41,10 @@ export async function getOrder(id: number): Promise<Order> {
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as Order;
   } catch (error) {
     // Throw error
@@ -77,6 +85,10 @@ export async function stopTrip(id: number): Promise<Order> {
   try {
     const response = await fetch(URL, options);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as Order;
   } catch (error) {
     // Throw error
@@ -146,6 +158,10 @@ export async function getListUbications(): Promise<ResponseListUbication> {
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as ResponseListUbication;
   } catch (error) {
     // Throw error
@@ -158,6 +174,10 @@ export async function getListGeocercas(): Promise<ResponseListGeocerca> {
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as ResponseListGeocerca;
   } catch (error) {
     // Throw error

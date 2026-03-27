@@ -15,6 +15,10 @@ export async function getListLeaveTypes(): Promise<ResponseListLeaveType> {
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as ResponseListLeaveType;
   } catch (error) {
     // Throw error
@@ -31,6 +35,10 @@ export async function getListLeaves({
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as ResponseListLeave;
   } catch (error) {
     // Throw error

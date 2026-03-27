@@ -1,0 +1,15 @@
+# Auto-detect text files and ensure they are stored as LF in the repo
+# On Windows, they will be checked out as CRLF. On Mac/Linux, they stay LF.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized
+*.js text
+*.css text
+*.html text
+
+# Declare files that will always be CRLF (e.g., Windows batch files)
+*.bat text eol=crlf
+
+# Declare binary files so Git doesn't touch them
+*.png binary
+*.jpg binary

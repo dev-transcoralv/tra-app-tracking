@@ -29,8 +29,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
       const user = await AsyncStorage.getItem("driver");
       if (token && user) {
         setDriver(JSON.parse(user));
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
       }
-      setIsLoggedIn(false);
     };
     loadDriver();
   }, []);
@@ -46,7 +48,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error?.message || String(error),
       });
       throw error;
     }

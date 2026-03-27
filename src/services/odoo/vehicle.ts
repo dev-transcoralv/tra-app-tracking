@@ -7,6 +7,10 @@ export async function getListChassis(
   try {
     const response = await fetch(URL);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as ResponseListVehicle;
   } catch (error) {
     // Throw error

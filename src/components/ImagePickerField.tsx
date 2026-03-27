@@ -136,11 +136,7 @@ export function ImagePickerField({
                       disabled={disabled}
                       className="flex-1 py-3 bg-blue-900 items-center justify-center rounded-lg"
                       onPress={() =>
-                        !disabled &&
-                        handlePickImage((uri) => {
-                          setImageUri(uri);
-                          onChange(uri);
-                        }, true)
+                        !disabled && handlePickImage(onChange, true)
                       }
                     >
                       <Text className="text-white font-medium">📷 Cámara</Text>
@@ -150,11 +146,7 @@ export function ImagePickerField({
                       disabled={disabled}
                       className="flex-1 py-3 bg-gray-500 items-center justify-center rounded-lg"
                       onPress={() =>
-                        !disabled &&
-                        handlePickImage((uri) => {
-                          setImageUri(uri);
-                          onChange(uri);
-                        }, false)
+                        !disabled && handlePickImage(onChange, false)
                       }
                     >
                       <Text className="text-white font-medium">🖼 Galería</Text>

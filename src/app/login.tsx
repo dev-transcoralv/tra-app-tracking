@@ -1,16 +1,15 @@
-import { Dimensions, View, Image, ImageBackground } from "react-native";
+import { View, Image, ImageBackground, useWindowDimensions } from "react-native";
 import LoginForm from "../components/LoginForm";
 import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 
-const { width, height } = Dimensions.get("window");
-
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const { width, height } = useWindowDimensions();
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
-  });
+  }, [navigation]);
 
   return (
     <ImageBackground

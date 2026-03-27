@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import Toast from "react-native-toast-message";
 import {
   View,
   ActivityIndicator,
@@ -7,7 +8,7 @@ import {
   Dimensions,
   Button,
 } from "react-native";
-import { getDashboard } from "../../../services/odoo/dasbhoard";
+import { getDashboard } from "../../../services/odoo/dashboard";
 import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "../../../utils/authContext";
 import { Dashboard, Driver } from "../../../shared.types";
@@ -46,7 +47,10 @@ export default function DashboardScreen() {
           const data = await getDashboard(driverId, rangeDate);
           if (isActive) setDashboard(data);
         } catch (error: any) {
-          throw error;
+          Toast.show({
+            type: "error",
+            text1: error?.message || String(error),
+          });
         } finally {
           if (isActive) setLoading(false);
         }

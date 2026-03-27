@@ -62,7 +62,7 @@ export function DatetimeButton({
       <View className="flex-row justify-between items-center">
         {/* 3. Conditional styling for placeholder vs real data */}
         <Text
-          className={`text-basae ${datetime ? "text-gray-900" : "text-gray-400"}`}
+          className={`text-base ${datetime ? "text-gray-900" : "text-gray-400"}`}
         >
           {datetime || "Sin registrar"}
         </Text>

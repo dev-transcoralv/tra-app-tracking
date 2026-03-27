@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function RouteMapView({ origin, destination, width, height }: Props) {
-  const GOOGLE_MAPS_APIKEY = "AIzaSyD39z0hIN3gG8W7HB1CnL0jsLuvZrhoJDA"; // process.env.GOOGLE_MAPS_API_KEY;
+  const GOOGLE_MAPS_APIKEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef<MapView>(null);
 
   return (
@@ -29,7 +29,7 @@ export function RouteMapView({ origin, destination, width, height }: Props) {
       }}
       provider={PROVIDER_GOOGLE}
     >
-      <Marker coordinate={origin} title="Origen" identifier="{origin}" />
+      <Marker coordinate={origin} title="Origen" identifier="origin" />
       <Marker coordinate={destination} title="Destino" />
 
       <MapViewRoute
