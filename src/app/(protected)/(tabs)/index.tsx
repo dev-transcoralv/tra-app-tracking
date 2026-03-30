@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Toast from "react-native-toast-message";
 import {
   View,
   ActivityIndicator,
   Text,
   ScrollView,
-  Dimensions,
-  Button,
+  useWindowDimensions,
 } from "react-native";
 import { getDashboard } from "../../../services/odoo/dashboard";
 import { useContext, useEffect, useState, useCallback } from "react";
@@ -19,15 +17,16 @@ import { useFocusEffect } from "@react-navigation/native";
 import { BarChart } from "react-native-gifted-charts";
 import { OrderCardSummary } from "../../../components/orders/_CardSummary";
 
+type RangeDate = "today" | "week" | "month";
+
 export default function DashboardScreen() {
   const authContext = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
-  const [rangeDate, setRangeDate] = useState("today");
+  const [rangeDate, setRangeDate] = useState<RangeDate>("today");
 
   const driver: Driver | null = authContext.driver;
-
-  const screenWidth = Dimensions.get("window").width;
+  const { width: screenWidth } = useWindowDimensions();
 
   const options = [
     { label: "Hoy", value: "today" },
@@ -40,11 +39,11 @@ export default function DashboardScreen() {
       let isActive = true;
       const loadDashboard = async (
         driverId: number | undefined,
-        rangeDate: string,
+        currentRange: RangeDate,
       ) => {
         try {
           setLoading(true);
-          const data = await getDashboard(driverId, rangeDate);
+          const data = await getDashboard(driverId, currentRange);
           if (isActive) setDashboard(data);
         } catch (error: any) {
           Toast.show({
@@ -69,41 +68,47 @@ export default function DashboardScreen() {
   }, []);
 
   return (
-    <ScrollView className="bg-secondary h-screen flex p-2">
+    <View className="bg-secondary flex-1 p-2">
       <FilterSelection
         options={options}
-        onSelect={(value) => setRangeDate(value)}
+        onSelect={(value: string) => setRangeDate(value as RangeDate)}
       />
       {loading ? (
-        <ActivityIndicator color={"#fff"} size={"large"} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={"#fff"} size={"large"} />
+        </View>
       ) : (
-        <ScrollView>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
           <DashboardCard count={dashboard?.finished_trips} status="finished" />
           <DashboardCard count={dashboard?.pending_trips} status="pending" />
           <View className="flex-row justify-between gap-x-2">
-            <View className="gap-2">
-              <DashboardCardInformation
-                label="Distancia Recorrida"
-                title={`${dashboard?.kilometers_traveled} Kms`}
-                icon="route"
-              />
-              <DashboardCardInformation
-                label="Mantenimientos"
-                title={`1`}
-                icon="maintenance"
-              />
-            </View>
-            {dashboard?.trip_in_progress && (
-              <OrderCardSummary order={dashboard.trip_in_progress} />
-            )}
+            <DashboardCardInformation
+              label="Distancia Recorrida"
+              title={`${dashboard?.kilometers_traveled ?? 0} Kms`}
+              icon="route"
+            />
+            <DashboardCardInformation
+              label="Mantenimientos"
+              title={`1`}
+              icon="maintenance"
+            />
           </View>
 
-          {dashboard && dashboard.road_trips.length > 0 && (
+          {dashboard?.trip_in_progress && (
+            <View className="flex-1 mt-4">
+              <OrderCardSummary order={dashboard.trip_in_progress} />
+            </View>
+          )}
+
+          {!!dashboard?.road_trips?.length && (
             <View>
               <Text className="font-extrabold my-2 text-2xl color-white">
                 Productividad
               </Text>
-              <View className="mb-4 items-center bg-secondary-complementary">
+              <View className="mb-4 items-center bg-secondary-complementary rounded-xl py-2">
                 <BarChart
                   data={dashboard.road_trips}
                   barWidth={30}
@@ -111,13 +116,13 @@ export default function DashboardScreen() {
                   yAxisThickness={0}
                   xAxisThickness={0}
                   showLine
-                  width={screenWidth - 34} // adjust for padding/margin if needed
+                  width={screenWidth - 50}
                 />
               </View>
             </View>
           )}
         </ScrollView>
       )}
-    </ScrollView>
+    </View>
   );
 }
