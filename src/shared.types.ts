@@ -57,7 +57,7 @@ export const ResponseLoginSchema = z.object({
 export const GeolocationSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
-  wialon_id: z.number().nullable(),
+  // wialon_id: z.number().nullable(),
 });
 
 export const GuideSchema = z.object({

@@ -23,18 +23,32 @@ export function RouteMapView({ origin, destination, width, height }: Props) {
         height: height,
       }}
       initialRegion={{
-        ...origin,
+        latitude: origin.latitude,
+        longitude: origin.longitude,
         latitudeDelta: 5,
         longitudeDelta: 5,
       }}
       provider={PROVIDER_GOOGLE}
     >
-      <Marker coordinate={origin} title="Origen" identifier="origin" />
-      <Marker coordinate={destination} title="Destino" />
+      <Marker
+        coordinate={{ latitude: origin.latitude, longitude: origin.longitude }}
+        title="Origen"
+        identifier="origin"
+      />
+      <Marker
+        coordinate={{
+          latitude: destination.latitude,
+          longitude: destination.longitude,
+        }}
+        title="Destino"
+      />
 
       <MapViewRoute
-        origin={origin}
-        destination={destination}
+        origin={{ latitude: origin.latitude, longitude: origin.longitude }}
+        destination={{
+          latitude: destination.latitude,
+          longitude: destination.longitude,
+        }}
         apiKey={GOOGLE_MAPS_APIKEY}
         strokeWidth={4}
         strokeColor="blue"

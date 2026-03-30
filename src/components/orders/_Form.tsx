@@ -976,14 +976,12 @@ export function OrderForm({ order }: { order: Order }) {
               </Text>
               {/* The dot marking button depends on the property type */}
               {currentOrder.type_property === "own" && (
-                <DatetimeButtonWialon
+                <DatetimeButton
                   orderId={currentOrder.id}
                   field="arrival_point_charge_time"
                   datetime={currentOrder.arrival_point_charge_time}
                   title="Llegada Punto C."
                   orderFinished={currentOrder.trip_status === "finished"}
-                  vehicleName={currentOrder.vehicle_name}
-                  geocercaId={currentOrder.route_geolocation_origin.wialon_id}
                   onChange={(value) =>
                     updateOrderField("arrival_point_charge_time", value)
                   }
