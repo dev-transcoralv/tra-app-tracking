@@ -28,7 +28,7 @@ export function ListOrders({ loading, orders, handleLoadMore }: Props) {
       ListEmptyComponent={
         !loading ? (
           <View className="py-8 items-center">
-            <Text className="color-white">No se encontraron ordenes.</Text>
+            <Text className="color-white">No se encontraron viajes.</Text>
           </View>
         ) : null
       }

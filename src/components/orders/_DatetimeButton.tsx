@@ -52,17 +52,17 @@ export function DatetimeButton({
   };
 
   return (
-    <View className="my-1 bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
+    <View className="mb-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mx-1">
       {/* 1. Label with spacing */}
-      <Text className="font-bold text-gray-800 mb-2">
+      <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 pl-1">
         {`Fecha/Hora ${title}`}
       </Text>
 
       {/* 2. Row with explicit vertical alignment (items-center) */}
-      <View className="flex-row justify-between items-center">
+      <View className="flex-row justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100">
         {/* 3. Conditional styling for placeholder vs real data */}
         <Text
-          className={`text-base ${datetime ? "text-gray-900" : "text-gray-400"}`}
+          className={`text-sm font-semibold pl-2 ${datetime ? "text-gray-900" : "text-gray-400 italic"}`}
         >
           {datetime || "Sin registrar"}
         </Text>
@@ -70,17 +70,17 @@ export function DatetimeButton({
         {!orderFinished && !datetime && (
           <TouchableOpacity
             // 4. Removed fixed width, added rounded corners, added opacity on loading
-            className={`px-4 py-2 bg-blue-900 rounded-md min-w-[100px] items-center justify-center ${loading ? "opacity-60" : "opacity-100"}`}
+            className={`px-5 py-2.5 bg-blue-50 rounded-xl border border-blue-100 items-center justify-center ${loading ? "opacity-60" : "active:bg-blue-100"}`}
             onPress={handleUpdate}
             disabled={loading}
             activeOpacity={0.7} // Better tap feedback
           >
             {loading ? (
               // Ensure spinner size matches text size generally
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color="#3b82f6" />
             ) : (
               // Dropped extra-bold for better balance
-              <Text className="color-white font-bold text-center">{title}</Text>
+              <Text className="color-blue-600 font-bold text-center text-xs tracking-widest uppercase">{title}</Text>
             )}
           </TouchableOpacity>
         )}

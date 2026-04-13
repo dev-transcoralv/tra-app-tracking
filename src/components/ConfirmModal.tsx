@@ -34,28 +34,28 @@ export function ConfirmModal({
       visible={visible}
       onRequestClose={onCancel}
     >
-      <StyledView className="flex-1 bg-black/75 justify-center items-center">
-        <StyledView className="bg-white w-11/12 max-w-md rounded-xl p-6">
-          <StyledText className="text-center text-lg mb-5">
+      <StyledView className="flex-1 bg-black/60 justify-center items-center px-4">
+        <StyledView className="bg-white w-full max-w-sm rounded-[24px] p-6 shadow-lg">
+          <StyledText className="text-center text-lg font-bold text-gray-800 mb-6">
             {message}
           </StyledText>
 
-          <StyledView className="flex-row justify-center gap-2">
+          <StyledView className="flex-col gap-3">
             <StyledTouchableOpacity
-              className="bg-secondary px-4 py-2"
-              onPress={onCancel}
+              className="bg-primary py-3.5 rounded-xl items-center"
+              onPress={onConfirm}
             >
-              <StyledText className="color-white font-bold">
-                Cancelar
+              <StyledText className="color-white font-black uppercase tracking-widest text-sm">
+                Confirmar
               </StyledText>
             </StyledTouchableOpacity>
 
             <StyledTouchableOpacity
-              className="bg-primary px-4 py-2"
-              onPress={onConfirm}
+              className="bg-gray-100 py-3.5 rounded-xl items-center border border-gray-200"
+              onPress={onCancel}
             >
-              <StyledText className="color-white font-bold">
-                Confirmar
+              <StyledText className="text-gray-600 font-black uppercase tracking-widest text-sm">
+                Cancelar
               </StyledText>
             </StyledTouchableOpacity>
           </StyledView>

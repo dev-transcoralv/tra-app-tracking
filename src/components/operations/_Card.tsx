@@ -20,7 +20,7 @@ export function GrainOperationCard({
 }) {
   return (
     <Link
-      className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative"
+      className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-3 mx-1"
       href={{
         pathname: `operations/${grainOperation.id}`,
         params: { reference: grainOperation.name },
@@ -28,26 +28,28 @@ export function GrainOperationCard({
       asChild
     >
       <StyledPressable>
-        <StyledText className="text-l text-primary font-bold">
+        <StyledText className="text-xl text-gray-900 font-extrabold tracking-tight mb-3">
           {grainOperation.name}
         </StyledText>
-        <StyledView className="flex-row">
-          <StyledText className="font-bold text-sm">Placa:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {grainOperation.vehicle_name}
-          </StyledText>
-        </StyledView>
-        <StyledView className="flex-row">
-          <StyledText className="font-bold text-sm">Operación:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {grainOperation.operation_name}
-          </StyledText>
-        </StyledView>
-        <StyledView className="flex-row">
-          <StyledText className="font-bold text-sm">Material:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {grainOperation.material_name}
-          </StyledText>
+        <StyledView className="flex-col gap-y-2.5">
+          <StyledView className="flex-row justify-between items-center">
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Placa</StyledText>
+            <StyledText className="text-gray-900 font-semibold text-sm">
+              {grainOperation.vehicle_name}
+            </StyledText>
+          </StyledView>
+          <StyledView className="flex-row justify-between items-center">
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Operación</StyledText>
+            <StyledText className="text-gray-900 font-semibold text-sm">
+              {grainOperation.operation_name}
+            </StyledText>
+          </StyledView>
+          <StyledView className="flex-row justify-between items-center">
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Material</StyledText>
+            <StyledText className="text-gray-900 font-semibold text-sm">
+              {grainOperation.material_name}
+            </StyledText>
+          </StyledView>
         </StyledView>
       </StyledPressable>
     </Link>

@@ -45,18 +45,18 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
 
     return (
       <View>
-        <View className="mx-2 my-2 px-1 py-1 bg-blue-200">
-          <View className="flex-row">
-            <Text className="font-bold">Cliente:</Text>
-            <Text className="ml-2">{item.partner_name}</Text>
+        <View className="mx-2 my-2.5 px-3 py-3 bg-blue-50 border border-blue-100 rounded-xl">
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="font-bold text-blue-600 uppercase text-[10px] tracking-widest">Cliente</Text>
+            <Text className="ml-2 color-gray-800 font-bold text-xs">{item.partner_name}</Text>
           </View>
-          <View className="flex-row">
-            <Text className="font-bold">Buque:</Text>
-            <Text className="ml-2">{item.ship_name}</Text>
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="font-bold text-blue-600 uppercase text-[10px] tracking-widest">Buque</Text>
+            <Text className="ml-2 color-gray-800 font-bold text-xs">{item.ship_name}</Text>
           </View>
-          <View className="flex-row">
-            <Text className="font-bold">Destino:</Text>
-            <Text className="ml-2">{item.recipient_name}</Text>
+          <View className="flex-row justify-between items-center">
+            <Text className="font-bold text-blue-600 uppercase text-[10px] tracking-widest">Destino</Text>
+            <Text className="ml-2 color-gray-800 font-bold text-xs">{item.recipient_name}</Text>
           </View>
         </View>
 
@@ -138,8 +138,9 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
   }, []);
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
-      <View style={{ padding: 20, flex: 1 }}>
+    <Modal visible={visible} animationType="slide" onRequestClose={handleClose} presentationStyle="pageSheet">
+      <View className="flex-1 bg-slate-50 pt-12 px-5">
+        <Text className="text-2xl font-extrabold color-slate-900 mb-6 text-center tracking-tight">Nueva Operación</Text>
         <View className="w-full flex flex-col gap-4">
           <View className="w-full flex items-center gap-2">
             <Controller
@@ -159,8 +160,8 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
                     setSelectedItem(item); // whole object
                     onChange(item.id);
                   }}
-                  className="w-full h-12 bg-secondary-complementary border border-gray-300 rounded-lg px-3"
-                  placeholderStyle={{ color: "#999" }}
+                  className="w-full h-14 bg-white border border-gray-200 shadow-sm rounded-2xl px-4"
+                  placeholderStyle={{ color: "#9ca3af", fontWeight: "bold" }}
                   renderItem={renderDropdownItem}
                 />
               )}
@@ -173,58 +174,60 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
           )}
 
           {selectedItem && (
-            <View>
-              <View className="flex-row">
-                <Text className="font-bold">Cliente:</Text>
-                <Text className="ml-2">{selectedItem.partner_name}</Text>
+            <View className="bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 mb-2">
+              <View className="flex-row justify-between items-center py-2.5 border-b border-gray-50">
+                <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Cliente</Text>
+                <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.partner_name}</Text>
               </View>
-              <View className="flex-row">
-                <Text className="font-bold">Buque:</Text>
-                <Text className="ml-2">{selectedItem.ship_name}</Text>
+              <View className="flex-row justify-between items-center py-2.5 border-b border-gray-50">
+                <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Buque</Text>
+                <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.ship_name}</Text>
               </View>
-              <View className="flex-row">
-                <Text className="font-bold">Destino:</Text>
-                <Text className="ml-2">{selectedItem.recipient_name}</Text>
+              <View className="flex-row justify-between items-center py-2.5 border-b border-gray-50">
+                <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Destino</Text>
+                <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.recipient_name}</Text>
               </View>
-              <View className="flex-row">
-                <Text className="font-bold">Placa:</Text>
-                <Text className="ml-2">{selectedItem.vehicle_name}</Text>
+              <View className="flex-row justify-between items-center py-2.5 border-b border-gray-50">
+                <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Placa</Text>
+                <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.vehicle_name}</Text>
               </View>
               {selectedItem.type_property === "third" && (
-                <View className="flex-row">
-                  <Text className="font-bold">Proveedor:</Text>
-                  <Text className="ml-2">{selectedItem.supplier_name}</Text>
+                <View className="flex-row justify-between items-center py-2.5 border-b border-gray-50">
+                  <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Proveedor</Text>
+                  <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.supplier_name}</Text>
                 </View>
               )}
-              <View className="flex-row">
-                <Text className="font-bold">Operación:</Text>
-                <Text className="ml-2">{selectedItem.operation_name}</Text>
+              <View className="flex-row justify-between items-center py-2.5 border-b border-gray-50">
+                <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Operación</Text>
+                <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.operation_name}</Text>
               </View>
-              <View className="flex-row">
-                <Text className="font-bold">Material:</Text>
-                <Text className="ml-2">{selectedItem.material_name}</Text>
+              <View className="flex-row justify-between items-center py-2.5">
+                <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Material</Text>
+                <Text className="ml-2 text-gray-900 font-semibold text-sm">{selectedItem.material_name}</Text>
               </View>
             </View>
           )}
 
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            className="bg-primary px-5 py-3 items-center"
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="color-white font-semibold">Enviar</Text>
-            )}
-          </TouchableOpacity>
+          <View className="gap-y-3 mt-4">
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              className="bg-blue-600 rounded-2xl py-4 items-center justify-center shadow-sm active:bg-blue-700"
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="color-white font-extrabold tracking-widest text-sm uppercase">Seleccionar Operación</Text>
+              )}
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={handleClose}
-            className="bg-secondary px-5 py-3 items-center"
-          >
-            <Text className="color-white font-semibold">Descartar</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleClose}
+              className="bg-white border border-gray-200 rounded-2xl py-4 items-center justify-center active:bg-gray-50 mb-10"
+            >
+              <Text className="color-gray-600 font-extrabold tracking-widest text-sm uppercase">Descartar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>

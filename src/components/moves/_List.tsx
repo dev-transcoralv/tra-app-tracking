@@ -46,47 +46,47 @@ export function ListMoves({ order, moves, onUpdate, orderFinished }: Props) {
 
   return (
     <View>
-      <View className="flex-row justify-between mb-2">
-        <Text className="font-extrabold text-lg color-primary underline align-middle">
-          Movimientos:
+      <View className="flex-row justify-between items-center mb-3 mt-1 mx-2">
+        <Text className="font-extrabold text-sm uppercase tracking-widest color-blue-900">
+          Movimientos
         </Text>
         {!orderFinished && (
           <TouchableOpacity
-            className="justify-center px-4 py-3 bg-secondary rounded-lg"
+            className="justify-center px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl active:bg-blue-100"
             onPress={() => openModal(null)}
           >
-            <Text className="color-white font">Añadir</Text>
+            <Text className="color-blue-600 font-bold text-xs uppercase tracking-widest">+ Añadir</Text>
           </TouchableOpacity>
         )}
       </View>
       {moves &&
         moves.map((item) => (
-          <View key={item.id} className="bg-white border rounded-xl p-2 mb-2">
+          <View key={item.id} className="mx-2 bg-slate-50 border border-slate-100 rounded-2xl p-3 mb-2 shadow-sm">
             <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="text-sm font-bold">
-                  {`${item.geocerca.name} - ${item.geocerca_destination.name}`}
+              <View className="flex-1 pr-2">
+                <Text className="text-sm font-bold color-gray-900 mb-1" numberOfLines={2}>
+                  {`${item.geocerca.name} ➔ ${item.geocerca_destination.name}`}
                 </Text>
-                <Text style={{ fontSize: 10 }}>
-                  {`${item.date_in} - ${item.date_out}`}
+                <Text className="text-[10px] font-semibold color-gray-500 tracking-wider">
+                  {`${item.date_in} al ${item.date_out}`}
                 </Text>
               </View>
               {!orderFinished && (
                 <View className="flex-row gap-x-2">
                   <TouchableOpacity
-                    className="justify-center bg-secondary px-5 py-4 rounded-lg"
+                    className="justify-center bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-sm"
                     onPress={() => openModal(item)}
                   >
-                    <FontAwesomeEdit color="white" size={16} />
+                    <FontAwesomeEdit color="#4b5563" size={16} />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className="justify-center bg-primary px-5 py-4 rounded-lg"
+                    className="justify-center bg-red-50 border border-red-100 px-4 py-3 rounded-xl shadow-sm"
                     onPress={() => deleteItem(item.id)}
                   >
                     {loadingById === item.id ? (
-                      <ActivityIndicator color="#fff" size={"small"} />
+                      <ActivityIndicator color="#ef4444" size={"small"} />
                     ) : (
-                      <FontAwesomeTrash color="white" size={16} />
+                      <FontAwesomeTrash color="#ef4444" size={16} />
                     )}
                   </TouchableOpacity>
                 </View>

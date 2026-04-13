@@ -108,71 +108,72 @@ export function ImagePickerField({
         }
 
         return (
-          <View>
+          <View className="mb-2 mx-1 mt-1">
             <TouchableOpacity
-              className={`p-4 ${bg || "bg-white"} justify-between flex-row rounded-lg`}
+              className={`p-4 ${bg === "bg-secondary-complementary" ? "bg-white" : bg} border border-gray-100 shadow-sm flex-row justify-between items-center rounded-2xl active:bg-gray-50`}
               onPress={toggleExpand}
             >
-              <Text className="font-semibold">{label}</Text>
-              {expanded ? (
-                <FontAwesomeMinus color="grey" size={14} />
-              ) : (
-                <FontAwesomePlus color="grey" size={14} />
-              )}
+              <Text className="font-bold text-gray-700 tracking-wide text-sm">{label || "Imagen"}</Text>
+              <View className="w-8 h-8 rounded-full bg-gray-50 items-center justify-center border border-gray-100">
+                {expanded ? (
+                  <FontAwesomeMinus color="#6b7280" size={14} />
+                ) : (
+                  <FontAwesomePlus color="#6b7280" size={14} />
+                )}
+              </View>
             </TouchableOpacity>
 
             {expanded && (
-              <View className="mt-2">
+              <View className="mt-3 px-1">
                 {!displaySource && (
                   <View
                     style={{
                       flexDirection: "row",
-                      borderRadius: 8,
-                      overflow: "hidden",
-                      gap: 10,
+                      gap: 12,
                     }}
                   >
                     <TouchableOpacity
                       disabled={disabled}
-                      className="flex-1 py-3 bg-blue-900 items-center justify-center rounded-lg"
+                      className="flex-1 py-4 bg-primary items-center justify-center rounded-2xl shadow-sm active:opacity-80"
                       onPress={() =>
                         !disabled && handlePickImage(onChange, true)
                       }
                     >
-                      <Text className="text-white font-medium">📷 Cámara</Text>
+                      <Text className="text-white font-extrabold tracking-widest text-xs uppercase">📷 Cámara</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       disabled={disabled}
-                      className="flex-1 py-3 bg-gray-500 items-center justify-center rounded-lg"
+                      className="flex-1 py-4 bg-gray-800 items-center justify-center rounded-2xl shadow-sm active:opacity-80"
                       onPress={() =>
                         !disabled && handlePickImage(onChange, false)
                       }
                     >
-                      <Text className="text-white font-medium">🖼 Galería</Text>
+                      <Text className="text-white font-extrabold tracking-widest text-xs uppercase">🖼 Galería</Text>
                     </TouchableOpacity>
                   </View>
                 )}
 
                 {displaySource && (
-                  <View className="mt-2 items-center relative">
-                    <Image
-                      source={{ uri: displaySource }}
-                      style={{
-                        width: "100%",
-                        height: 250,
-                        borderRadius: 8,
-                        backgroundColor: "#f0f0f0",
-                      }}
-                      resizeMode="cover"
-                    />
+                  <View className="mt-1 items-center relative">
+                    <View className="shadow-sm w-full rounded-2xl overflow-hidden border border-gray-100">
+                      <Image
+                        source={{ uri: displaySource }}
+                        style={{
+                          width: "100%",
+                          height: 250,
+                          backgroundColor: "#f9fafb",
+                        }}
+                        resizeMode="cover"
+                      />
+                    </View>
 
                     {!readonly && (
                       <TouchableOpacity
-                        className="mt-2 p-3 bg-primary rounded-lg w-full"
+                        className="mt-3 py-3.5 bg-red-50 rounded-xl border border-red-100 w-full active:bg-red-100 flex-row justify-center items-center gap-2"
                         onPress={() => handleClear(onChange)}
                       >
-                        <Text className="text-center text-white font-bold">
+                        <Text className="text-center text-red-600 font-bold uppercase tracking-widest text-xs">
                           🗑️ Eliminar Foto
                         </Text>
                       </TouchableOpacity>
@@ -183,7 +184,9 @@ export function ImagePickerField({
             )}
 
             {error && (
-              <Text className="font-bold color-primary">{error.message}</Text>
+              <Text className="font-bold text-red-500 mt-2 px-2 text-xs tracking-wide">
+                {error.message}
+              </Text>
             )}
           </View>
         );

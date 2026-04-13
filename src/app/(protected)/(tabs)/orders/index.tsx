@@ -90,24 +90,24 @@ export default function IndexScreen() {
   return (
     <View className="bg-secondary h-full flex p-2">
       <FilterSelection options={options} onSelect={handleFilterChange} />
-      <View className="w-full flex-row items-center bg-white gap-2 relative rounded-lg mb-2">
+      <View className="flex-row items-center bg-white px-4 py-1.5 border border-gray-100 shadow-sm gap-2 relative rounded-2xl mb-4 mx-1">
         <TextInput
-          placeholder="p.e Número de orden | Cliente | Placa"
+          placeholder="Número de orden, cliente, placa..."
           value={query}
           onChangeText={(text) => {
             setQuery(text); // instant update
             handleSearch(text); // debounced side effect
           }}
-          placeholderTextColor="#211915"
-          className="color-secondary flex-1 bg-transparent border-0 w-full outline-none text-sm md:text-base px-2"
+          placeholderTextColor="#9ca3af"
+          className="color-gray-900 font-bold flex-1 bg-transparent border-0 outline-none text-base h-12"
         />
         <TouchableOpacity
           onPress={() => handleSearch(query)}
           accessible
           accessibilityLabel="Buscar"
-          className="p-2"
+          className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center active:bg-blue-100"
         >
-          <FontAwesomeSearch color="#211915" />
+          <FontAwesomeSearch color="#3b82f6" size={16} />
         </TouchableOpacity>
       </View>
       <ListOrders

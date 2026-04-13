@@ -28,67 +28,77 @@ export function LeaveCard({ leave }: { leave: Leave }) {
   };
 
   return (
-    <View className="bg-secondary-complementary rounded-xl p-4 shadow-md mb-4 relative">
+    <View className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-3 mx-1 mt-1 relative">
       <StyledPressable onPress={() => openModal(leave)}>
         {/* Badges */}
         {leave.state === "confirm" && (
-          <View>
-            <View className="absolute top-1 right-1 bg-blue-500 px-2 py-1 rounded-full z-10">
-              <Text className="color-white text-m font-bold">Por aprobar</Text>
+          <View className="self-end mb-2">
+            <View className="bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full flex-row items-center">
+              <View className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5" />
+              <Text className="color-blue-700 text-[10px] uppercase font-extrabold tracking-widest">Por aprobar</Text>
             </View>
           </View>
         )}
 
         {leave.state === "validate1" && (
-          <View className="absolute top-2 right-2 bg-green-300 px-2 py-1 rounded-full z-10">
-            <Text className="color-white text-m font-bold">
-              Segunda aprobación
-            </Text>
+          <View className="self-end mb-2">
+            <View className="bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full flex-row items-center">
+              <View className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5" />
+              <Text className="color-emerald-700 text-[10px] uppercase font-extrabold tracking-widest">Segunda aprobación</Text>
+            </View>
           </View>
         )}
 
         {leave.state === "validate" && (
-          <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
-            <Text className="color-white text-m font-bold">Aprobado</Text>
+          <View className="self-end mb-2">
+            <View className="bg-green-50 border border-green-100 px-3 py-1.5 rounded-full flex-row items-center">
+              <View className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5" />
+              <Text className="color-green-700 text-[10px] uppercase font-extrabold tracking-widest">Aprobado</Text>
+            </View>
           </View>
         )}
 
         {leave.state === "refuse" && (
-          <View className="absolute top-2 right-2 bg-red-500 px-2 py-1 rounded-full z-10">
-            <Text className="color-white text-m font-bold">Rechazada</Text>
+          <View className="self-end mb-2">
+            <View className="bg-red-50 border border-red-100 px-3 py-1.5 rounded-full flex-row items-center">
+              <View className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5" />
+              <Text className="color-red-700 text-[10px] uppercase font-extrabold tracking-widest">Rechazada</Text>
+            </View>
           </View>
         )}
 
-        <StyledView className="flex-row items-center">
-          <StyledText className="font-bold text-sm">Creado el:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {leave.create_date}
-          </StyledText>
-        </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="font-bold text-sm">Tipo:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {leave.holiday_status.name}
-          </StyledText>
-        </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="font-bold text-sm">
-            Fecha Solicitada:
-          </StyledText>
-          <Text className="mx-1 font-bold text-sm color-blue-500">del</Text>
-          <StyledText className=" text-gray-800 font-semibold text-sm">
-            {leave.request_date_from}
-          </StyledText>
-          <Text className="mx-1 font-bold text-sm color-blue-500">al</Text>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {leave.request_date_to}
-          </StyledText>
-        </StyledView>
-        <StyledView className="flex-row items-center">
-          <StyledText className="font-bold text-sm">Descripción:</StyledText>
-          <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
-            {leave.name}
-          </StyledText>
+        <StyledView className="flex-col gap-y-3 mt-1 pt-3 border-t border-gray-50">
+          <StyledView className="flex-row justify-between items-center">
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Creado el</StyledText>
+            <StyledText className="text-gray-900 font-bold text-sm">
+              {leave.create_date}
+            </StyledText>
+          </StyledView>
+          <StyledView className="flex-row justify-between items-center">
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Tipo</StyledText>
+            <StyledText className="text-gray-900 font-bold text-sm">
+              {leave.holiday_status.name}
+            </StyledText>
+          </StyledView>
+          <StyledView className="flex-row justify-between items-center">
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">
+              Fechas
+            </StyledText>
+            <StyledView className="flex-row items-center">
+              <StyledText className=" text-gray-900 font-semibold text-sm">
+                {leave.request_date_from}
+              </StyledText>
+              <Text className="mx-1.5 font-bold text-xs color-gray-400">→</Text>
+              <StyledText className=" text-gray-900 font-semibold text-sm">
+                {leave.request_date_to}
+              </StyledText>
+            </StyledView>
+          </StyledView>
+          <StyledView className="flex-row justify-between items-start mt-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <StyledText className="text-gray-700 font-medium text-sm leading-tight text-center w-full">
+              {leave.name}
+            </StyledText>
+          </StyledView>
         </StyledView>
       </StyledPressable>
 

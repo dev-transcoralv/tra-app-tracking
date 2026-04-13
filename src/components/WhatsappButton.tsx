@@ -24,10 +24,11 @@ const WhatsAppButton = ({ phone, message }: WhatsAppButtonProps) => {
 
   return (
     <TouchableOpacity
-      className="bg-green-500 py-3 px-4 rounded-xl items-center"
+      className="bg-emerald-500 py-3.5 px-5 rounded-2xl items-center shadow-sm active:opacity-80 flex-row justify-center gap-2 m-1"
       onPress={openWhatsApp}
     >
-      <FontAwesome name="whatsapp" size={24} color="#fff" />
+      <FontAwesome name="whatsapp" size={20} color="#fff" />
+      <Text className="text-white font-bold tracking-widest text-sm uppercase">Contactar</Text>
     </TouchableOpacity>
   );
 };

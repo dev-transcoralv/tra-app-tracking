@@ -32,8 +32,11 @@ export function CountdownCard({ targetDate }: CountdownCardProps) {
   const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
   const seconds = Math.floor((timeLeft / 1000) % 60);
   return (
-    <StyledView className="bg-blue-100 rounded-xl p-4 w-full items-center">
-      <StyledText className="text-2xl font-bold text-blue-800">
+    <StyledView className="bg-blue-50 border border-blue-100 rounded-2xl p-5 w-full items-center shadow-sm my-2">
+      <StyledText className="text-[10px] uppercase font-bold tracking-widest text-blue-400 mb-1">
+        Tiempo En Progreso
+      </StyledText>
+      <StyledText className="text-4xl font-black text-blue-900 tracking-widest">
         {hours.toString().padStart(2, "0")}:
         {minutes.toString().padStart(2, "0")}:
         {seconds.toString().padStart(2, "0")}

@@ -50,11 +50,13 @@ export default function LoginForm() {
   };
 
   return (
-    <View className="w-full flex flex-col gap-4">
+    <View className="w-full flex-col gap-4">
       {/* --- CAMPO USUARIO --- */}
       <View className="w-full">
         <View
-          className={`w-full flex-row items-center bg-secondary-complementary p-3 rounded-md ${errors.username ? "border border-red-500" : ""}`}
+          className={`w-full flex-row items-center bg-white py-1 px-4 rounded-2xl border ${
+            errors.username ? "border-red-500 bg-red-50" : "border-gray-200"
+          } shadow-sm h-14`}
         >
           <Controller
             control={control}
@@ -63,21 +65,22 @@ export default function LoginForm() {
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 placeholder="Usuario"
-                placeholderTextColor="#5c5c5c" // Color más suave
-                autoCapitalize="none" // Importante para logins
+                placeholderTextColor="#9ca3af" // gris más suave y moderno
+                autoCapitalize="none"
                 autoCorrect={false}
+                autoFocus={true}
                 returnKeyType="next"
-                onSubmitEditing={() => passwordInputRef.current?.focus()} // Salta al siguiente campo
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                className="flex-1 color-secondary bg-transparent text-sm md:text-base"
+                className="flex-1 color-gray-900 bg-transparent text-base font-medium h-full"
               />
             )}
           />
         </View>
         {errors.username && (
-          <Text className="text-primary text-xs mt-1 font-bold">
+          <Text className="text-red-500 text-xs mt-1 ml-2 font-bold tracking-wide">
             {errors.username.message}
           </Text>
         )}
@@ -86,7 +89,9 @@ export default function LoginForm() {
       {/* --- CAMPO CONTRASEÑA --- */}
       <View className="w-full">
         <View
-          className={`w-full flex-row items-center bg-secondary-complementary p-3 rounded-md relative ${errors.password ? "border border-red-500" : ""}`}
+          className={`w-full flex-row items-center bg-white py-1 px-4 rounded-2xl border relative ${
+            errors.password ? "border-red-500 bg-red-50" : "border-gray-200"
+          } shadow-sm h-14`}
         >
           <Controller
             control={control}
@@ -94,36 +99,35 @@ export default function LoginForm() {
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                ref={passwordInputRef} // Asignamos la referencia
+                ref={passwordInputRef}
                 placeholder="Contraseña"
-                placeholderTextColor="#5c5c5c"
+                placeholderTextColor="#9ca3af"
                 autoCapitalize="none"
                 returnKeyType="done"
                 secureTextEntry={!showPassword}
-                onSubmitEditing={handleSubmit(onSubmit)} // Envía el form al dar Enter
+                onSubmitEditing={handleSubmit(onSubmit)}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                className="flex-1 color-secondary bg-transparent text-sm md:text-base pr-8"
+                className="flex-1 color-gray-900 bg-transparent text-base font-medium pr-10 h-full"
               />
             )}
           />
 
-          {/* Botón Ojo: Absolute position para que no mueva el input */}
           <TouchableOpacity
             onPress={togglePasswordView}
-            className="absolute right-3 p-2"
+            className="absolute right-3 p-2 items-center justify-center h-full"
             activeOpacity={0.7}
           >
             {showPassword ? (
-              <FontAwesomeEyeOff props={{ size: 20, color: "#211915" }} />
+              <FontAwesomeEyeOff props={{ size: 18, color: "#9ca3af" }} />
             ) : (
-              <FontAwesomeEye props={{ size: 20, color: "#211915" }} />
+              <FontAwesomeEye props={{ size: 18, color: "#9ca3af" }} />
             )}
           </TouchableOpacity>
         </View>
         {errors.password && (
-          <Text className="text-red-500 text-xs mt-1 ml-1">
+          <Text className="text-red-500 text-xs mt-1 ml-2 font-bold tracking-wide">
             {errors.password.message}
           </Text>
         )}
@@ -131,15 +135,17 @@ export default function LoginForm() {
 
       {/* --- BOTÓN INGRESAR --- */}
       <TouchableOpacity
-        className={`mt-2 px-5 py-3 items-center justify-center bg-primary rounded-md ${loading ? "opacity-70" : ""}`}
+        className={`mt-4 w-full h-14 flex-row items-center justify-center bg-primary rounded-2xl shadow-sm ${
+          loading ? "opacity-70" : "active:opacity-80"
+        }`}
         onPress={handleSubmit(onSubmit)}
         disabled={loading}
       >
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text className="font-bold color-white text-lg text-center">
-            INGRESAR
+          <Text className="font-extrabold color-white text-lg text-center tracking-widest uppercase">
+            Ingresar
           </Text>
         )}
       </TouchableOpacity>

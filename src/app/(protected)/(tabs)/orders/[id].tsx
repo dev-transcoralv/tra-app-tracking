@@ -33,7 +33,7 @@ export default function OrderId() {
 
   useEffect(() => {
     if (reference) {
-      navigation.setOptions({ title: `Orden: ${reference}` });
+      navigation.setOptions({ title: `Viaje: ${reference}` });
     }
   }, [reference, navigation]);
 

@@ -154,7 +154,7 @@ export const OrderSchema = z.object({
   container: z.string().nullable(),
   information: z.string().nullable(),
   operation_name: z.string(),
-  material_name: z.string().nullable(),
+  material_name: z.string(),
   burden_kg: z.number(),
   tara_kg: z.number(),
   final_burden_kg: z.number(),

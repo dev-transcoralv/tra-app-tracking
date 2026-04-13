@@ -32,6 +32,7 @@ export default function DashboardScreen() {
     { label: "Hoy", value: "today" },
     { label: "Semana", value: "week" },
     { label: "Mes", value: "month" },
+    { label: "Año", value: "year" },
   ];
 
   useFocusEffect(

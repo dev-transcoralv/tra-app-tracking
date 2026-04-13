@@ -65,18 +65,22 @@ export default function IndexScreen() {
   const closeModal = () => setVisible(false);
 
   return (
-    <View className="bg-secondary h-full flex p-2">
+    <View className="bg-slate-50 h-full flex pt-4 px-2">
       <TouchableOpacity
-        className="items-center justify-center bg-blue-900 px-5 py-4 rounded-lg mb-2"
+        className="flex-row items-center justify-center bg-blue-600 px-5 py-4 rounded-2xl shadow-sm active:bg-blue-700 mb-3 mx-1"
         onPress={() => openModal()}
       >
-        <Text className="text-white text-lg font-extrabold">Procesar</Text>
+        <Text className="text-white text-sm font-extrabold uppercase tracking-widest">+ Procesar Operación</Text>
       </TouchableOpacity>
-      <ListGrainOperations
-        grainOperations={grainOperations}
-        loading={loading}
-        handleLoadMore={handleLoadMore}
-      />
+      
+      <View className="flex-1 mt-1">
+        <ListGrainOperations
+          grainOperations={grainOperations}
+          loading={loading}
+          handleLoadMore={handleLoadMore}
+        />
+      </View>
+
       <GrainOperationModalForm visible={visible} onClose={closeModal} />
     </View>
   );

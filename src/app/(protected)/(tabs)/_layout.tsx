@@ -17,24 +17,45 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveBackgroundColor: "#e10718",
-        tabBarActiveTintColor: "white",
+        tabBarActiveTintColor: "#e10718",
+        tabBarInactiveTintColor: "#94a3b8",
         headerTitleAlign: "center",
+        headerShadowVisible: false,
+        headerStyle: {
+          backgroundColor: "#f8fafc",
+        },
+        headerTitleStyle: {
+          fontWeight: "900",
+          color: "#0f172a",
+          textTransform: "uppercase",
+          letterSpacing: 2,
+          fontSize: 14,
+        },
+        tabBarStyle: {
+          backgroundColor: "white",
+          borderTopColor: "#f1f5f9",
+          borderTopWidth: 1,
+          elevation: 10,
+          zIndex: 100,
+          shadowOpacity: 0.05,
+          shadowOffset: { width: 0, height: -2 },
+          shadowRadius: 5,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
+          title: "Inicio",
           tabBarIcon: ({ focused }) => (
-            <FontAwesomeDashboard color={focused ? "white" : "#211915"} />
+            <FontAwesomeDashboard color={focused ? "#e10718" : "#94a3b8"} />
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold"
-              style={{ color: focused ? "white" : "#211915" }}
+              className="text-xs font-bold uppercase tracking-wider"
+              style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
-              Dashboard
+              Inicio
             </StyledText>
           ),
         }}
@@ -42,16 +63,16 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="orders/index"
         options={{
-          title: "Ordenes",
+          title: "Viajes",
           tabBarIcon: ({ focused }) => (
-            <FontAwesomeList color={focused ? "white" : "#211915"} />
+            <FontAwesomeList color={focused ? "#e10718" : "#94a3b8"} />
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold"
-              style={{ color: focused ? "white" : "#211915" }}
+              className="text-xs font-bold uppercase tracking-wider"
+              style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
-              Ordenes
+              Viajes
             </StyledText>
           ),
         }}
@@ -59,16 +80,16 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="operations/index"
         options={{
-          title: "Operativos",
+          title: "Cargas",
           tabBarIcon: ({ focused }) => (
-            <FontAwesomeOperative color={focused ? "white" : "#211915"} />
+            <FontAwesomeOperative color={focused ? "#e10718" : "#94a3b8"} />
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold"
-              style={{ color: focused ? "white" : "#211915" }}
+              className="text-xs font-bold uppercase tracking-wider"
+              style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
-              Operativos
+              Cargas
             </StyledText>
           ),
         }}
@@ -78,12 +99,12 @@ export default function TabsLayout() {
         options={{
           title: "Ausencias",
           tabBarIcon: ({ focused }) => (
-            <FontAwesomeUmbrellaBeach color={focused ? "white" : "#211915"} />
+            <FontAwesomeUmbrellaBeach color={focused ? "#e10718" : "#94a3b8"} />
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold"
-              style={{ color: focused ? "white" : "#211915" }}
+              className="text-xs font-bold uppercase tracking-wider"
+              style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
               Ausencias
             </StyledText>
@@ -95,12 +116,12 @@ export default function TabsLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ focused }) => (
-            <FontAwesomeUser color={focused ? "white" : "#211915"} />
+            <FontAwesomeUser color={focused ? "#e10718" : "#94a3b8"} />
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold"
-              style={{ color: focused ? "white" : "#211915" }}
+              className="text-xs font-bold uppercase tracking-wider"
+              style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
               Perfil
             </StyledText>

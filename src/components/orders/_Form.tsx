@@ -49,13 +49,6 @@ const StyledPicker = cssInterop(Picker, {
   className: "style",
 });
 
-type GrainData = {
-  burden_kg: number;
-  tara_kg: number;
-  final_burden_kg: number;
-  final_tara_kg: number;
-};
-
 const StyledDropdown = cssInterop(Dropdown, {
   className: "style",
 });
@@ -405,26 +398,29 @@ export function OrderForm({ order }: { order: Order }) {
   };
 
   const Separator = () => {
-    return <View className="my-1 bg-secondary mx-2" style={{ height: 2 }} />;
+    return <View className="my-4 bg-gray-100 mx-2" style={{ height: 1 }} />;
   };
 
   const ListItem = ({ label }: { label: string }) => {
     return (
-      <View className="flex-row items-start">
-        {/* Punto estilo bullet */}
-        <View className="w-2 h-2 rounded-full bg-gray-700 mt-2 mr-2" />
-
-        {/* Texto */}
-        <Text className="text-base flex-1">{label}</Text>
+      <View className="flex-row items-start bg-slate-50 py-2 px-3 rounded-xl mb-1.5 mx-2">
+        <View className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 mr-2.5" />
+        <Text className="text-sm font-semibold color-gray-800 flex-1">
+          {label}
+        </Text>
       </View>
     );
   };
 
   const RowDetail = ({ label, value }: { label: string; value?: string }) => {
     return (
-      <View className="flex-row">
-        <Text className="font-bold">{label}</Text>
-        <Text className="ml-2">{value}</Text>
+      <View className="flex-row items-start justify-between py-2.5 border-b border-gray-100 mx-2">
+        <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest w-5/12 pt-0.5">
+          {label}
+        </Text>
+        <Text className="text-gray-900 font-semibold text-sm w-7/12 text-right">
+          {value}
+        </Text>
       </View>
     );
   };
@@ -501,7 +497,7 @@ export function OrderForm({ order }: { order: Order }) {
 
   // Main
   return (
-    <View className="w-full flex gap-1 bg-secondary-complementary p-2 rounded-xl">
+    <View className="w-full flex gap-1 bg-white p-2 rounded-[32px] shadow-sm mb-4">
       {/* Confirm Modal */}
       <ConfirmModal
         visible={visibleConfirmModal}
@@ -512,28 +508,34 @@ export function OrderForm({ order }: { order: Order }) {
 
       {currentOrder.trip_status !== "finished" && (
         <TouchableOpacity
-          className={`flex-1 px-5 py-2 items-center ${
+          className={`flex-1 px-5 py-4 items-center justify-center rounded-2xl mx-2 shadow-sm ${
             (currentOrder.trip_status as string) === "initiated"
-              ? "bg-primary"
-              : "bg-green-500"
+              ? "bg-red-50 border border-red-100"
+              : "bg-emerald-500"
           }`}
           onPress={() => changeInitiated()}
         >
           {loadingChangeInitiated ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator
+              color={
+                (currentOrder.trip_status as string) === "initiated"
+                  ? "#ef4444"
+                  : "#ffffff"
+              }
+            />
           ) : (
-            <View className="items-center">
+            <View className="items-center flex-row gap-2">
               {(currentOrder.trip_status as string) === "initiated" ? (
-                <FontAwesomeStop />
+                <FontAwesomeStop color="#ef4444" size={18} />
               ) : (
-                <FontAwesomePlay color="white" />
+                <FontAwesomePlay color="white" size={18} />
               )}
               <Text
-                className={`items-center font-extrabold ${(currentOrder.trip_status as string) === "finished" ? "color-black" : "color-white"}`}
+                className={`font-extrabold uppercase tracking-widest text-sm ${(currentOrder.trip_status as string) === "initiated" ? "color-red-600" : "color-white"}`}
               >
                 {(currentOrder.trip_status as string) === "initiated"
-                  ? "DETENER"
-                  : "INICIAR"}
+                  ? "DETENER EL VIAJE"
+                  : "INICIAR EL VIAJE"}
               </Text>
             </View>
           )}
@@ -541,8 +543,13 @@ export function OrderForm({ order }: { order: Order }) {
       )}
 
       {currentOrder.trip_status === "finished" && (
-        <View className="absolute top-2 right-2 bg-green-500 px-2 py-1 rounded-full z-10">
-          <Text className="color-white text-m font-bold">Finalizado</Text>
+        <View className="flex-row justify-end mx-2 mt-2">
+          <View className="bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full z-10 shadow-sm flex-row items-center">
+            <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
+            <Text className="color-emerald-700 text-[10px] uppercase tracking-widest font-bold">
+              Finalizado
+            </Text>
+          </View>
         </View>
       )}
 
@@ -565,13 +572,13 @@ export function OrderForm({ order }: { order: Order }) {
       {order.information && (
         <RowDetail label="Información:" value={order.information} />
       )}
-      <View>
+      <View className="mt-2 mx-2">
         <TouchableOpacity
-          className="bg-blue-900 py-3 px-4 rounded-xl items-center"
+          className="bg-blue-50 border border-blue-100 py-3.5 px-4 rounded-xl items-center active:bg-blue-100"
           onPress={() => setIsMapModalVisible(true)}
         >
-          <Text className="items-center font-extrabold color-white">
-            Ver Ruta
+          <Text className="items-center font-bold uppercase tracking-widest text-xs color-blue-600">
+            📍 Ver Mapa de Ruta
           </Text>
         </TouchableOpacity>
       </View>
@@ -1163,7 +1170,7 @@ export function OrderForm({ order }: { order: Order }) {
             )}
         </View>
       )}
-      <Separator />
+      {(currentOrder.trip_status as string) === "initiated" && <Separator />}
 
       {/* Moves - Only in export */}
       {(currentOrder.trip_status as string) === "initiated" &&
@@ -1220,45 +1227,49 @@ export function OrderForm({ order }: { order: Order }) {
 
       {/* Button Save trip */}
       {["initiated", null].includes(currentOrder.trip_status) && (
-        <TouchableOpacity
-          className="flex-1 mb-2 px-5 py-2 items-center bg-green-500"
-          onPress={handleSubmitOrder(handleSaveOrder)}
-        >
-          {loadingSave ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <View className="items-center">
-              <FontAwesomeSave />
-              <Text className="items-center font-extrabold color-white">
-                GUARDAR
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        <View className="mx-2 mb-3">
+          <TouchableOpacity
+            className="w-full flex-row px-5 py-4 items-center justify-center bg-emerald-50 border border-emerald-100 rounded-2xl active:bg-emerald-100"
+            onPress={handleSubmitOrder(handleSaveOrder)}
+          >
+            {loadingSave ? (
+              <ActivityIndicator color="#10b981" />
+            ) : (
+              <View className="items-center flex-row gap-2">
+                <FontAwesomeSave color="#10b981" size={18} />
+                <Text className="font-extrabold uppercase tracking-widest text-sm color-emerald-600">
+                  GUARDAR CAMBIOS
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Button End trip */}
       {["initiated", null].includes(currentOrder.trip_status) && (
-        <TouchableOpacity
-          className="flex-1 mb-2 px-5 py-2 items-center bg-blue-900"
-          onPress={() =>
-            openConfirmModal("¿Quieres finalizar el viaje?", () => {
-              handleTripFinished();
-              setVisibleConfirmModal(false);
-            })
-          }
-        >
-          {loadingTripFinished ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <View className="items-center">
-              <FontAwesomeStop />
-              <Text className="items-center font-extrabold color-white">
-                FINALIZAR
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        <View className="mx-2 mb-4">
+          <TouchableOpacity
+            className="w-full flex-row px-5 py-4 items-center justify-center bg-slate-900 border border-slate-800 rounded-2xl shadow-sm active:bg-slate-800"
+            onPress={() =>
+              openConfirmModal("¿Quieres finalizar el viaje?", () => {
+                handleTripFinished();
+                setVisibleConfirmModal(false);
+              })
+            }
+          >
+            {loadingTripFinished ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <View className="items-center flex-row gap-2">
+                <FontAwesomeStop color="white" size={18} />
+                <Text className="font-extrabold uppercase tracking-widest text-sm color-white">
+                  FINALIZAR VIAJE
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Map Modal */}
@@ -1269,12 +1280,21 @@ export function OrderForm({ order }: { order: Order }) {
         onRequestClose={() => setIsMapModalVisible(false)}
       >
         <View style={{ flex: 1, backgroundColor: "#fff" }}>
-          <TouchableOpacity
-            onPress={() => setIsMapModalVisible(false)}
-            className="bg-secondary px-5 py-3 items-center"
-          >
-            <Text className="color-white font-semibold">Cerrar</Text>
-          </TouchableOpacity>
+          <View className="bg-slate-900 pt-12 pb-4 px-5 flex-row sticky top-0 z-50 rounded-b-3xl">
+            <TouchableOpacity
+              onPress={() => setIsMapModalVisible(false)}
+              className="bg-slate-800 px-5 py-2.5 rounded-xl border border-slate-700"
+            >
+              <Text className="color-white font-bold tracking-wider text-xs uppercase">
+                ← Volver
+              </Text>
+            </TouchableOpacity>
+            <View className="flex-1 justify-center items-center pr-10">
+              <Text className="color-white font-extrabold text-base">
+                Ruta Asignada
+              </Text>
+            </View>
+          </View>
 
           <RouteMapView
             origin={order.route_geolocation_origin}
