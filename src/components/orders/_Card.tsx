@@ -107,6 +107,22 @@ export function OrderCard({ order }: { order: Order }) {
             {order.eta_charge}
           </StyledText>
         </StyledView>
+        {order.business_code === "grain" && (
+          <StyledView className="flex-row">
+            <StyledText className="font-bold text-sm">Material:</StyledText>
+            <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
+              {order.material_name}
+            </StyledText>
+          </StyledView>
+        )}
+        {order.information && (
+          <StyledView className="flex-row">
+            <StyledText className="font-bold text-sm">Información:</StyledText>
+            <StyledText className="ml-1 text-gray-800 font-semibold text-sm">
+              {order.information}
+            </StyledText>
+          </StyledView>
+        )}
       </StyledPressable>
     </Link>
   );

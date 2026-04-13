@@ -562,6 +562,9 @@ export function OrderForm({ order }: { order: Order }) {
       )}
       <RowDetail label="Fecha/Hora ETA Carga:" value={order.eta_charge} />
       <RowDetail label="Fecha/Hora ETA Descarga" value={order.eta_download} />
+      {order.information && (
+        <RowDetail label="Información:" value={order.information} />
+      )}
       <View>
         <TouchableOpacity
           className="bg-blue-900 py-3 px-4 rounded-xl items-center"
@@ -965,7 +968,7 @@ export function OrderForm({ order }: { order: Order }) {
       )}
 
       {/* Data by business (Hours) */}
-      {currentOrder.trip_status && (
+      {(currentOrder.trip_status as string) === "initiated" && (
         <View className="flex">
           {/* Buttons Hours */}
           {currentOrder.business_code !== "containers" && (
@@ -1163,7 +1166,8 @@ export function OrderForm({ order }: { order: Order }) {
       <Separator />
 
       {/* Moves - Only in export */}
-      {currentOrder.business_code === "containers" &&
+      {(currentOrder.trip_status as string) === "initiated" &&
+        currentOrder.business_code === "containers" &&
         currentOrder.container_type === "export" && (
           <View>
             <ListMoves
@@ -1176,18 +1180,20 @@ export function OrderForm({ order }: { order: Order }) {
           </View>
         )}
       {/*Guides*/}
-      {currentOrder.business_code !== "containers" && (
-        <View>
-          <ListGuides
-            guides={currentOrder.guides}
-            order={currentOrder}
-            onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
-            orderFinished={currentOrder.trip_status === "finished"}
-          />
-          <Separator />
-        </View>
-      )}
-      {currentOrder.business_code === "containers" &&
+      {(currentOrder.trip_status as string) === "initiated" &&
+        currentOrder.business_code !== "containers" && (
+          <View>
+            <ListGuides
+              guides={currentOrder.guides}
+              order={currentOrder}
+              onUpdate={(newGuides) => updateOrderField("guides", newGuides)}
+              orderFinished={currentOrder.trip_status === "finished"}
+            />
+            <Separator />
+          </View>
+        )}
+      {(currentOrder.trip_status as string) === "initiated" &&
+        currentOrder.business_code === "containers" &&
         currentOrder.container_workflow === "1" && (
           <View>
             <ListGuides
@@ -1201,14 +1207,16 @@ export function OrderForm({ order }: { order: Order }) {
         )}
 
       {/*Observations*/}
-      <ListObservations
-        observations={currentOrder.observations}
-        order={currentOrder}
-        onUpdate={(newObservations) =>
-          updateOrderField("observations", newObservations)
-        }
-        orderFinished={currentOrder.trip_status === "finished"}
-      />
+      {(currentOrder.trip_status as string) === "initiated" && (
+        <ListObservations
+          observations={currentOrder.observations}
+          order={currentOrder}
+          onUpdate={(newObservations) =>
+            updateOrderField("observations", newObservations)
+          }
+          orderFinished={currentOrder.trip_status === "finished"}
+        />
+      )}
 
       {/* Button Save trip */}
       {["initiated", null].includes(currentOrder.trip_status) && (
