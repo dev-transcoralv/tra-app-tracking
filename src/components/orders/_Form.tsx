@@ -609,7 +609,7 @@ export function OrderForm({ order }: { order: Order }) {
             )}
           />
           {errorsOrder.chassis_id && (
-            <Text style={styles.error}>Este campo es requerido.</Text>
+            <Text style={styles.error}>ESTE CAMPO ES REQUERIDO.</Text>
           )}
         </View>
       )}
@@ -653,7 +653,7 @@ export function OrderForm({ order }: { order: Order }) {
                 )}
               />
               {errorsOrder.reason_fake_freight_id && (
-                <Text style={styles.error}>Este campo es requerido.</Text>
+                <Text style={styles.error}>ESTE CAMPO ES REQUERIDO.</Text>
               )}
             </View>
           )}
@@ -695,7 +695,7 @@ export function OrderForm({ order }: { order: Order }) {
                 )}
               />
               {errorsOrder.reason_return_id && (
-                <Text style={styles.error}>Este campo es requerido.</Text>
+                <Text style={styles.error}>ESTE CAMPO ES REQUERIDO.</Text>
               )}
             </View>
           )}
@@ -759,7 +759,7 @@ export function OrderForm({ order }: { order: Order }) {
                 </View>
               )}
               {errorsOrder.return_burden_sacks && (
-                <Text style={styles.error}>Este campo es requerido.</Text>
+                <Text style={styles.error}>ESTE CAMPO ES REQUERIDO.</Text>
               )}
             </View>
           )}
@@ -931,7 +931,7 @@ export function OrderForm({ order }: { order: Order }) {
                     )}
                   />
                   {errorsOrder.adjustment_sacks && (
-                    <Text style={styles.error}>Este campo es requerido.</Text>
+                    <Text style={styles.error}>ESTE CAMPO ES REQUERIDO.</Text>
                   )}
                 </View>
               )}
@@ -1145,7 +1145,7 @@ export function OrderForm({ order }: { order: Order }) {
                     )}
                   />
                   {errorsOrder.container && (
-                    <Text style={styles.error}>Este campo es requerido.</Text>
+                    <Text style={styles.error}>ESTE CAMPO ES REQUERIDO.</Text>
                   )}
                 </View>
                 {currentOrder.has_generator && (

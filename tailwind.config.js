@@ -9,6 +9,9 @@ module.exports = {
         secondary: "#211915",
         "secondary-complementary": "#DEE6EA",
       },
+      fontSize: {
+        xxs: "0.625rem", // 10px
+      },
     },
   },
   plugins: [],

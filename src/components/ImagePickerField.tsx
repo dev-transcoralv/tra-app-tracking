@@ -86,7 +86,7 @@ export function ImagePickerField({
       control={control}
       name={name}
       defaultValue={defaultValue}
-      rules={{ required: required ? "Este campo es obligatorio." : false }}
+      rules={{ required: required ? "ESTE CAMPO ES REQUERIDO." : false }}
       render={({ field: { onChange, value }, fieldState: { error } }) => {
         let displaySource = null;
 
@@ -113,7 +113,9 @@ export function ImagePickerField({
               className={`p-4 ${bg === "bg-secondary-complementary" ? "bg-white" : bg} border border-gray-100 shadow-sm flex-row justify-between items-center rounded-2xl active:bg-gray-50`}
               onPress={toggleExpand}
             >
-              <Text className="font-bold text-gray-700 tracking-wide text-sm">{label || "Imagen"}</Text>
+              <Text className="font-bold text-gray-700 tracking-wide text-sm">
+                {label || "Imagen"}
+              </Text>
               <View className="w-8 h-8 rounded-full bg-gray-50 items-center justify-center border border-gray-100">
                 {expanded ? (
                   <FontAwesomeMinus color="#6b7280" size={14} />
@@ -139,7 +141,9 @@ export function ImagePickerField({
                         !disabled && handlePickImage(onChange, true)
                       }
                     >
-                      <Text className="text-white font-extrabold tracking-widest text-xs uppercase">📷 Cámara</Text>
+                      <Text className="text-white font-extrabold tracking-widest text-xs uppercase">
+                        📷 Cámara
+                      </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -149,7 +153,9 @@ export function ImagePickerField({
                         !disabled && handlePickImage(onChange, false)
                       }
                     >
-                      <Text className="text-white font-extrabold tracking-widest text-xs uppercase">🖼 Galería</Text>
+                      <Text className="text-white font-extrabold tracking-widest text-xs uppercase">
+                        🖼 Galería
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 )}

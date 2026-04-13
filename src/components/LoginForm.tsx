@@ -54,9 +54,9 @@ export default function LoginForm() {
       {/* --- CAMPO USUARIO --- */}
       <View className="w-full">
         <View
-          className={`w-full flex-row items-center bg-white py-1 px-4 rounded-2xl border ${
-            errors.username ? "border-red-500 bg-red-50" : "border-gray-200"
-          } shadow-sm h-14`}
+          className={`w-full flex-row items-center py-2 px-5 rounded-[24px] border-2 ${
+            errors.username ? "border-red-400 bg-red-50" : "border-slate-100 bg-slate-50"
+          } h-16`}
         >
           <Controller
             control={control}
@@ -74,13 +74,13 @@ export default function LoginForm() {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                className="flex-1 color-gray-900 bg-transparent text-base font-medium h-full"
+                className="flex-1 color-slate-900 bg-transparent text-lg font-bold h-full tracking-wide"
               />
             )}
           />
         </View>
         {errors.username && (
-          <Text className="text-red-500 text-xs mt-1 ml-2 font-bold tracking-wide">
+          <Text className="text-red-500 text-xs mt-2 ml-4 font-bold tracking-widest uppercase">
             {errors.username.message}
           </Text>
         )}
@@ -89,9 +89,9 @@ export default function LoginForm() {
       {/* --- CAMPO CONTRASEÑA --- */}
       <View className="w-full">
         <View
-          className={`w-full flex-row items-center bg-white py-1 px-4 rounded-2xl border relative ${
-            errors.password ? "border-red-500 bg-red-50" : "border-gray-200"
-          } shadow-sm h-14`}
+          className={`w-full flex-row items-center py-2 px-5 rounded-[24px] border-2 relative ${
+            errors.password ? "border-red-400 bg-red-50" : "border-slate-100 bg-slate-50"
+          } h-16`}
         >
           <Controller
             control={control}
@@ -109,25 +109,25 @@ export default function LoginForm() {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                className="flex-1 color-gray-900 bg-transparent text-base font-medium pr-10 h-full"
+                className="flex-1 color-slate-900 bg-transparent text-lg font-bold pr-12 h-full tracking-wide"
               />
             )}
           />
 
           <TouchableOpacity
             onPress={togglePasswordView}
-            className="absolute right-3 p-2 items-center justify-center h-full"
+            className="absolute right-4 p-2 items-center justify-center h-full"
             activeOpacity={0.7}
           >
             {showPassword ? (
-              <FontAwesomeEyeOff props={{ size: 18, color: "#9ca3af" }} />
+              <FontAwesomeEyeOff props={{ size: 20, color: "#64748b" }} />
             ) : (
-              <FontAwesomeEye props={{ size: 18, color: "#9ca3af" }} />
+              <FontAwesomeEye props={{ size: 20, color: "#64748b" }} />
             )}
           </TouchableOpacity>
         </View>
         {errors.password && (
-          <Text className="text-red-500 text-xs mt-1 ml-2 font-bold tracking-wide">
+          <Text className="text-red-500 text-xs mt-2 ml-4 font-bold tracking-widest uppercase">
             {errors.password.message}
           </Text>
         )}
@@ -135,17 +135,17 @@ export default function LoginForm() {
 
       {/* --- BOTÓN INGRESAR --- */}
       <TouchableOpacity
-        className={`mt-4 w-full h-14 flex-row items-center justify-center bg-primary rounded-2xl shadow-sm ${
-          loading ? "opacity-70" : "active:opacity-80"
+        className={`mt-6 w-full h-16 flex-row items-center justify-center bg-primary rounded-[24px] shadow-sm ${
+          loading ? "opacity-70" : "active:bg-red-800"
         }`}
         onPress={handleSubmit(onSubmit)}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color="#fff" size="small" />
         ) : (
-          <Text className="font-extrabold color-white text-lg text-center tracking-widest uppercase">
-            Ingresar
+          <Text className="font-black color-white text-base text-center tracking-[3px] uppercase">
+            Iniciar Sesión
           </Text>
         )}
       </TouchableOpacity>

@@ -52,7 +52,7 @@ export default function TabsLayout() {
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold uppercase tracking-wider"
+              className="text-xxs font-bold uppercase tracking-wider"
               style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
               Inicio
@@ -69,7 +69,7 @@ export default function TabsLayout() {
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold uppercase tracking-wider"
+              className="text-xxs font-bold uppercase tracking-wider"
               style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
               Viajes
@@ -80,16 +80,16 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="operations/index"
         options={{
-          title: "Cargas",
+          title: "Operativos",
           tabBarIcon: ({ focused }) => (
             <FontAwesomeOperative color={focused ? "#e10718" : "#94a3b8"} />
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold uppercase tracking-wider"
+              className="text-xxs font-bold uppercase tracking-wider"
               style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
-              Cargas
+              Operativos
             </StyledText>
           ),
         }}
@@ -103,7 +103,7 @@ export default function TabsLayout() {
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold uppercase tracking-wider"
+              className="text-xxs font-bold uppercase tracking-wider"
               style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
               Ausencias
@@ -120,7 +120,7 @@ export default function TabsLayout() {
           ),
           tabBarLabel: ({ focused }) => (
             <StyledText
-              className="text-xs font-bold uppercase tracking-wider"
+              className="text-xxs font-bold uppercase tracking-wider"
               style={{ color: focused ? "#e10718" : "#94a3b8" }}
             >
               Perfil

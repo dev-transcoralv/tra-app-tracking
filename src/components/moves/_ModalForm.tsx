@@ -122,21 +122,27 @@ export function MoveModalForm({
       rules={{ required: true }}
       render={({ field: { value, onChange } }) => (
         <View className="mb-2">
-          <Text className="font-semibold mb-1">{label}</Text>
-          <StyledDropdown
-            data={items}
-            labelField="name"
-            valueField="id"
-            value={value}
-            placeholder={placeholder}
-            search
-            onChange={(item) => onChange(item.id)}
-            className="w-full h-12 bg-secondary-complementary border border-gray-300 rounded-lg px-3"
-            placeholderStyle={{ color: "#999" }}
-            inputSearchStyle={{ height: 40, fontSize: 16 }}
-          />
+          <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+            {label}
+          </Text>
+          <View className="bg-white border border-slate-100 shadow-sm rounded-[24px] overflow-hidden h-14 justify-center">
+            <StyledDropdown
+              data={items}
+              labelField="name"
+              valueField="id"
+              value={value}
+              placeholder={placeholder}
+              search
+              onChange={(item) => onChange(item.id)}
+              className="w-full text-slate-900 font-bold px-4"
+              placeholderStyle={{ color: "#9ca3af" }}
+              inputSearchStyle={{ height: 40, fontSize: 16 }}
+            />
+          </View>
           {errors[name] && (
-            <Text style={styles.error}>Este campo es requerido.</Text>
+            <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+              ESTE CAMPO ES REQUERIDO.
+            </Text>
           )}
         </View>
       )}
@@ -144,69 +150,90 @@ export function MoveModalForm({
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex p-4">
-        <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
-          {(move && "*** EDITAR MOVIMIENTO ***") || "*** CREAR MOVIMIENTO ***"}
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      presentationStyle="pageSheet"
+    >
+      <View className="flex-1 bg-slate-50 pt-10 px-5">
+        <Text className="text-2xl font-extrabold color-slate-900 mb-6 text-center tracking-tight">
+          {(move && "Editar Movimiento") || "Nuevo Movimiento"}
         </Text>
 
-        {renderDropdown("origin_id", "* Ruta Origen:", ubications, "p.e DURÁN")}
+        {renderDropdown("origin_id", "Ruta Origen", ubications, "Ej: DURÁN")}
         {renderDropdown(
           "destination_id",
-          "* Ruta Destino:",
+          "Ruta Destino",
           ubications,
-          "p.e DURÁN",
+          "Ej: DURÁN",
         )}
-        {renderDropdown("geocerca_id", "* Origen:", geocercas, "p.e AYALAN")}
+        {renderDropdown("geocerca_id", "Origen", geocercas, "Ej: AYALAN")}
         {renderDropdown(
           "geocerca_destination_id",
-          "* Destino:",
+          "Destino",
           geocercas,
-          "p.e AYALAN",
+          "Ej: AYALAN",
         )}
 
-        <View className="mb-2">
-          <Text className="font-semibold mb-1">* Ingreso:</Text>
-          <InputDatetimePicker
-            control={control}
-            name="date_in"
-            label="Ingreso"
-          />
+        <View className="mb-2 w-full">
+          <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+            Ingreso
+          </Text>
+          <View className="bg-white border border-slate-100 shadow-sm rounded-[24px] overflow-hidden py-1 h-14 justify-center">
+            <InputDatetimePicker
+              control={control}
+              name="date_in"
+              label="Ingreso"
+            />
+          </View>
           {errors.date_in && (
-            <Text style={styles.error}>Este campo es requerido.</Text>
+            <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+              ESTE CAMPO ES REQUERIDO.
+            </Text>
           )}
         </View>
 
-        <View className="mb-4">
-          <Text className="font-semibold mb-1">* Salida:</Text>
-          <InputDatetimePicker
-            control={control}
-            name="date_out"
-            label="Salida"
-          />
+        <View className="mb-4 w-full">
+          <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+            Salida
+          </Text>
+          <View className="bg-white border border-slate-100 shadow-sm rounded-[24px] overflow-hidden py-1 h-14 justify-center">
+            <InputDatetimePicker
+              control={control}
+              name="date_out"
+              label="Salida"
+            />
+          </View>
           {errors.date_out && (
-            <Text style={styles.error}>Este campo es requerido.</Text>
+            <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+              ESTE CAMPO ES REQUERIDO.
+            </Text>
           )}
         </View>
 
-        <View className="flex-row gap-x-2">
+        <View className="gap-y-3 mt-4">
           <TouchableOpacity
             onPress={handleSubmit(onSubmit)}
-            className="flex-1 bg-primary px-5 py-3 items-center"
+            className="bg-primary rounded-[24px] py-4 items-center justify-center shadow-sm active:bg-red-800"
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text className="color-white font-semibold">GUARDAR</Text>
+              <Text className="color-white font-extrabold tracking-widest text-sm uppercase">
+                Guardar Movimiento
+              </Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={onClose}
-            className="flex-1 bg-secondary px-5 py-3 items-center"
+            className="bg-white border border-gray-200 rounded-[24px] py-4 items-center justify-center active:bg-gray-50 mb-10"
           >
-            <Text className="color-white font-semibold">DESCARTAR</Text>
+            <Text className="color-gray-600 font-extrabold tracking-widest text-sm uppercase">
+              Descartar
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

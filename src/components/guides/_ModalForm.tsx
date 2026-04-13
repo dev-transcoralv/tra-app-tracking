@@ -119,10 +119,15 @@ export function GuideModalForm({
   };
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
-      <View className="flex p-4">
-        <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
-          {guide ? "*** EDITAR GUÍA ***" : "*** CREAR GUÍA ***"}
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={handleClose}
+      presentationStyle="pageSheet"
+    >
+      <View className="flex-1 bg-slate-50 pt-10 px-5">
+        <Text className="text-2xl font-extrabold color-slate-900 mb-6 text-center tracking-tight">
+          {guide ? "Editar Guía" : "Nueva Guía"}
         </Text>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
@@ -130,48 +135,52 @@ export function GuideModalForm({
             control={control}
             name="image"
             label="Foto de Guía"
-            // defaultValue is handled by useForm/Controller now, but keeping prop is fine
             defaultValue={guide?.image || ""}
             required={true}
           />
 
           <View>
-            <Text className="font-semibold mb-1">Tipo:</Text>
-            <Controller
-              control={control}
-              rules={{
-                required: "Este campo es requerido.",
-              }}
-              name="type"
-              render={({ field: { onChange, value } }) => (
-                <StyledPicker
-                  selectedValue={value}
-                  onValueChange={(itemValue) => onChange(itemValue)}
-                  className="bg-secondary-complementary"
-                >
-                  <Picker.Item label="Cliente" value="third" />
-                  <Picker.Item label="Propia" value="own" />
-                </StyledPicker>
-              )}
-            />
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+              Tipo de Guía
+            </Text>
+            <View className="bg-white border border-slate-100 shadow-sm rounded-[24px] overflow-hidden h-14 justify-center">
+              <Controller
+                control={control}
+                rules={{
+                  required: "ESTE CAMPO ES REQUERIDO.",
+                }}
+                name="type"
+                render={({ field: { onChange, value } }) => (
+                  <StyledPicker
+                    selectedValue={value}
+                    onValueChange={(itemValue) => onChange(itemValue)}
+                    className="w-full text-slate-900 font-bold"
+                  >
+                    <Picker.Item label="Guía de Cliente" value="third" />
+                    <Picker.Item label="Guía Propia" value="own" />
+                  </StyledPicker>
+                )}
+              />
+            </View>
           </View>
 
-          <View className="w-full flex gap-2">
-            <Text className="font-semibold mb-1">No. de Guía:</Text>
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+              No. de Guía
+            </Text>
             <Controller
               control={control}
               rules={{
-                required: "Este campo es requerido.",
+                required: "ESTE CAMPO ES REQUERIDO.",
                 pattern: {
-                  value: /^[0-9]{9}$/, // solo 9 dígitos
-                  message:
-                    "No. de documento incorrecto (debe tener 9 dígitos).",
+                  value: /^[0-9]{9}$/,
+                  message: "Debe contener 9 dígitos.",
                 },
               }}
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  placeholder="p.e 000000001"
+                  placeholder="Ej: 000000001"
                   onChangeText={(text) => onChange(text)}
                   onBlur={() => {
                     onBlur();
@@ -181,21 +190,23 @@ export function GuideModalForm({
                   }}
                   value={value}
                   maxLength={9}
-                  placeholderTextColor="#211915"
-                  className="color-secondary bg-secondary-complementary p-2 rounded-xl border-0 w-full outline-none text-sm md:text-base"
+                  placeholderTextColor="#9ca3af"
+                  className="color-slate-900 bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm w-full outline-none text-base font-bold h-14"
                   keyboardType="numeric"
                 />
               )}
             />
           </View>
           {errors.name && (
-            <Text className="font-bold color-primary">
+            <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1">
               {errors.name.message as string}
             </Text>
           )}
 
-          <View className="w-full flex gap-2">
-            <Text className="font-semibold mb-1">Comentario:</Text>
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+              Comentario
+            </Text>
             <Controller
               control={control}
               name="comment"
@@ -204,34 +215,38 @@ export function GuideModalForm({
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  placeholderTextColor="#211915"
-                  className="color-secondary bg-secondary-complementary p-2 rounded-xl border-0 w-full outline-none text-sm md:text-base"
+                  placeholderTextColor="#9ca3af"
+                  className="color-slate-900 bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm w-full outline-none text-base h-24"
                   multiline
-                  numberOfLines={4}
+                  numberOfLines={3}
                   textAlignVertical="top"
                 />
               )}
             />
           </View>
 
-          <View className="flex-row gap-x-2">
+          <View className="gap-y-3 mt-4">
             <TouchableOpacity
               onPress={handleSubmit(onSubmit)}
-              className="flex-1 bg-primary px-5 py-3 items-center"
+              className="bg-primary rounded-[24px] py-4 items-center justify-center shadow-sm active:bg-red-800"
               disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text className="color-white font-semibold">GUARDAR</Text>
+                <Text className="color-white font-extrabold tracking-widest text-sm uppercase">
+                  Guardar Guía
+                </Text>
               )}
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleClose}
-              className="flex-1 bg-secondary px-5 py-3 items-center"
+              className="bg-white border border-gray-200 rounded-[24px] py-4 items-center justify-center active:bg-gray-50 mb-10"
             >
-              <Text className="color-white font-semibold">DESCARTAR</Text>
+              <Text className="color-gray-600 font-extrabold tracking-widest text-sm uppercase">
+                Descartar
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

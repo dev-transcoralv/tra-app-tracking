@@ -144,10 +144,15 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex p-4">
-        <Text className="font-extrabold text-lg color-blue-900 text-center mb-4">
-          {(leave && "*** EDITAR AUSENCIA ***") || "*** CREAR AUSENCIA ***"}
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      presentationStyle="pageSheet"
+    >
+      <View className="flex-1 bg-slate-50 pt-10 px-5">
+        <Text className="text-2xl font-extrabold color-slate-900 mb-6 text-center tracking-tight">
+          {(leave && "Editar Ausencia") || "Nueva Ausencia"}
         </Text>
         <View className="w-full flex flex-col gap-4">
           {/* Image */}
@@ -164,109 +169,129 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
                 width: "100%",
                 height: 200,
                 marginBottom: 10,
-                borderRadius: 10,
+                borderRadius: 24,
               }}
               source={{ uri: imageUri }}
             />
           )}
-          <View className="w-full flex items-center gap-2">
-            <Controller
-              control={control}
-              name="holiday_status_id"
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <StyledDropdown
-                  data={leaveTypes}
-                  labelField="name"
-                  valueField="id"
-                  placeholder="p.e Tipo"
-                  disable={canEdit}
-                  value={value}
-                  search
-                  inputSearchStyle={{ height: 40, fontSize: 16 }}
-                  onChange={(item) => onChange(item.id)}
-                  className="w-full h-12 bg-secondary-complementary border border-gray-300 rounded-lg px-3"
-                  placeholderStyle={{ color: "#999" }}
-                />
-              )}
-            />
-          </View>
-          {errors.holiday_status_id && (
-            <Text className="font-bold text-primary">
-              Este campo es requerido.
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+              Tipo de Ausencia
             </Text>
-          )}
+            <View className="bg-white border border-slate-100 shadow-sm rounded-[24px] overflow-hidden h-14 justify-center">
+              <Controller
+                control={control}
+                name="holiday_status_id"
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <StyledDropdown
+                    data={leaveTypes}
+                    labelField="name"
+                    valueField="id"
+                    placeholder="Seleccionar..."
+                    disable={canEdit}
+                    value={value}
+                    search
+                    inputSearchStyle={{ height: 40, fontSize: 16 }}
+                    onChange={(item) => onChange(item.id)}
+                    className="w-full text-slate-900 font-bold px-4"
+                    placeholderStyle={{ color: "#9ca3af" }}
+                  />
+                )}
+              />
+            </View>
+            {errors.holiday_status_id && (
+              <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+                ESTE CAMPO ES REQUERIDO.
+              </Text>
+            )}
+          </View>
 
-          <View className="w-full flex items-center gap-2">
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-1 ml-1">
+              Fecha de Inicio
+            </Text>
             <InputDatePicker
               control={control}
               name="request_date_from"
               label="Fecha inicio"
               disabled={canEdit}
             />
+            {errors.request_date_from && (
+              <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+                ESTE CAMPO ES REQUERIDO.
+              </Text>
+            )}
           </View>
-          {errors.request_date_from && (
-            <Text className="font-bold text-primary">
-              Este campo es requerido.
-            </Text>
-          )}
 
-          <View className="w-full flex items-center gap-2">
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-1 ml-1">
+              Fecha de Fin
+            </Text>
             <InputDatePicker
               control={control}
               name="request_date_to"
               label="Fecha fin"
               disabled={canEdit}
             />
+            {errors.request_date_to && (
+              <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+                ESTE CAMPO ES REQUERIDO.
+              </Text>
+            )}
           </View>
-          {errors.request_date_to && (
-            <Text className="font-bold text-primary">
-              Este campo es requerido.
-            </Text>
-          )}
 
-          <View className="w-full flex items-center gap-2 bg-secondary-complementary p-2 rounded-xl">
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+              Descripción de la ausencia
+            </Text>
             <Controller
               control={control}
               rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  placeholder="p.e. Descripción de la ausencia"
+                  placeholder="Ej: Trámite personal"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   readOnly={canEdit}
-                  placeholderTextColor="#211915"
-                  className="color-secondary bg-transparent border-0 w-full outline-none text-sm md:text-base"
+                  placeholderTextColor="#9ca3af"
+                  className="color-slate-900 p-4 rounded-[24px] bg-white border border-slate-100 shadow-sm w-full outline-none text-base font-medium h-24"
                   multiline
+                  textAlignVertical="top"
                 />
               )}
               name="name"
             />
+            {errors.name && (
+              <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1 mt-1">
+                ESTE CAMPO ES REQUERIDO.
+              </Text>
+            )}
           </View>
-          {errors.name && (
-            <Text className="font-bold text-primary">
-              Este campo es requerido.
-            </Text>
-          )}
-          <View className="flex-row gap-x-2">
+
+          <View className="gap-y-3 mt-4">
             <TouchableOpacity
               onPress={handleSubmit(onSubmit)}
-              className="flex-1 bg-primary px-5 py-3 items-center"
+              className="bg-primary rounded-[24px] py-4 items-center justify-center shadow-sm active:bg-red-800"
               disabled={loading || canEdit}
             >
               {loading ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text className="color-white font-semibold">GUARDAR</Text>
+                <Text className="color-white font-extrabold tracking-widest text-sm uppercase">
+                  Guardar Ausencia
+                </Text>
               )}
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={onClose}
-              className="flex-1 bg-secondary px-5 py-3 items-center"
+              className="bg-white border border-gray-200 rounded-[24px] py-4 items-center justify-center active:bg-gray-50 mb-10"
             >
-              <Text className="color-white font-semibold">DESCARTAR</Text>
+              <Text className="color-gray-600 font-extrabold tracking-widest text-sm uppercase">
+                Descartar
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
