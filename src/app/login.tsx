@@ -12,7 +12,7 @@ import { Stack } from "expo-router";
 export default function LoginScreen() {
   return (
     <ImageBackground
-      source={require("../../assets/bg-login.png")}
+      source={require("../../assets/login.jpg")}
       resizeMode="cover"
       style={{ flex: 1 }}
     >
