@@ -58,18 +58,23 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
             className="justify-center px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl active:bg-blue-100"
             onPress={() => openModal(null)}
           >
-            <Text className="color-blue-600 font-bold text-xs uppercase tracking-widest">+ Añadir</Text>
+            <Text className="color-blue-600 font-bold text-xs uppercase tracking-widest">
+              + Añadir
+            </Text>
           </TouchableOpacity>
         )}
       </View>
       {guides &&
         guides.map((item) => (
-          <View key={item.id} className="mx-2 bg-slate-50 border border-slate-100 rounded-2xl p-3 mb-2 shadow-sm">
+          <View
+            key={item.id}
+            className="mx-2 bg-slate-50 border border-slate-100 rounded-2xl p-3 mb-2 shadow-sm"
+          >
             <View className="flex-row justify-between items-center">
               <View className="flex-1">
-                 <Text className="text-gray-900 font-bold text-sm">
-                   {TYPES[item.type]} No. {item.name}
-                 </Text>
+                <Text className="text-gray-900 font-bold text-sm">
+                  {TYPES[item.type]} No. {item.name}
+                </Text>
               </View>
               {!orderFinished && (
                 <View className="flex-row gap-x-2">

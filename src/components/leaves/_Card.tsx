@@ -35,7 +35,9 @@ export function LeaveCard({ leave }: { leave: Leave }) {
           <View className="self-end mb-2">
             <View className="bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full flex-row items-center">
               <View className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5" />
-              <Text className="color-blue-700 text-[10px] uppercase font-extrabold tracking-widest">Por aprobar</Text>
+              <Text className="color-blue-700 text-[10px] uppercase font-extrabold tracking-widest">
+                Por aprobar
+              </Text>
             </View>
           </View>
         )}
@@ -44,7 +46,9 @@ export function LeaveCard({ leave }: { leave: Leave }) {
           <View className="self-end mb-2">
             <View className="bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full flex-row items-center">
               <View className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5" />
-              <Text className="color-emerald-700 text-[10px] uppercase font-extrabold tracking-widest">Segunda aprobación</Text>
+              <Text className="color-emerald-700 text-[10px] uppercase font-extrabold tracking-widest">
+                Segunda aprobación
+              </Text>
             </View>
           </View>
         )}
@@ -53,7 +57,9 @@ export function LeaveCard({ leave }: { leave: Leave }) {
           <View className="self-end mb-2">
             <View className="bg-green-50 border border-green-100 px-3 py-1.5 rounded-full flex-row items-center">
               <View className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5" />
-              <Text className="color-green-700 text-[10px] uppercase font-extrabold tracking-widest">Aprobado</Text>
+              <Text className="color-green-700 text-[10px] uppercase font-extrabold tracking-widest">
+                Aprobado
+              </Text>
             </View>
           </View>
         )}
@@ -62,20 +68,26 @@ export function LeaveCard({ leave }: { leave: Leave }) {
           <View className="self-end mb-2">
             <View className="bg-red-50 border border-red-100 px-3 py-1.5 rounded-full flex-row items-center">
               <View className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5" />
-              <Text className="color-red-700 text-[10px] uppercase font-extrabold tracking-widest">Rechazada</Text>
+              <Text className="color-red-700 text-[10px] uppercase font-extrabold tracking-widest">
+                Rechazada
+              </Text>
             </View>
           </View>
         )}
 
         <StyledView className="flex-col gap-y-3 mt-1 pt-3 border-t border-gray-50">
           <StyledView className="flex-row justify-between items-center">
-            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Creado el</StyledText>
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">
+              Creado el
+            </StyledText>
             <StyledText className="text-gray-900 font-bold text-sm">
               {leave.create_date}
             </StyledText>
           </StyledView>
           <StyledView className="flex-row justify-between items-center">
-            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Tipo</StyledText>
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">
+              Tipo
+            </StyledText>
             <StyledText className="text-gray-900 font-bold text-sm">
               {leave.holiday_status.name}
             </StyledText>

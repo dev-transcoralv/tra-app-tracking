@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Modal,
   ActivityIndicator,
-  StyleSheet,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Move, Order, Ubication, Geocerca } from "../../shared.types";
@@ -240,7 +239,3 @@ export function MoveModalForm({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  error: { color: "#e10718" },
-});

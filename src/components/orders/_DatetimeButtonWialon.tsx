@@ -100,7 +100,9 @@ export function DatetimeButtonWialon({
               <ActivityIndicator size="small" color="#3b82f6" />
             ) : (
               // Dropped extra-bold for better balance
-              <Text className="color-blue-600 font-bold text-center text-xs tracking-widest uppercase">{title}</Text>
+              <Text className="color-blue-600 font-bold text-center text-xs tracking-widest uppercase">
+                {title}
+              </Text>
             )}
           </TouchableOpacity>
         )}

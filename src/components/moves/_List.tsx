@@ -55,16 +55,24 @@ export function ListMoves({ order, moves, onUpdate, orderFinished }: Props) {
             className="justify-center px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl active:bg-blue-100"
             onPress={() => openModal(null)}
           >
-            <Text className="color-blue-600 font-bold text-xs uppercase tracking-widest">+ Añadir</Text>
+            <Text className="color-blue-600 font-bold text-xs uppercase tracking-widest">
+              + Añadir
+            </Text>
           </TouchableOpacity>
         )}
       </View>
       {moves &&
         moves.map((item) => (
-          <View key={item.id} className="mx-2 bg-slate-50 border border-slate-100 rounded-2xl p-3 mb-2 shadow-sm">
+          <View
+            key={item.id}
+            className="mx-2 bg-slate-50 border border-slate-100 rounded-2xl p-3 mb-2 shadow-sm"
+          >
             <View className="flex-row justify-between items-center">
               <View className="flex-1 pr-2">
-                <Text className="text-sm font-bold color-gray-900 mb-1" numberOfLines={2}>
+                <Text
+                  className="text-sm font-bold color-gray-900 mb-1"
+                  numberOfLines={2}
+                >
                   {`${item.geocerca.name} ➔ ${item.geocerca_destination.name}`}
                 </Text>
                 <Text className="text-[10px] font-semibold color-gray-500 tracking-wider">

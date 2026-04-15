@@ -79,7 +79,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("Tapped notification:", response);
         const action = response.actionIdentifier;
-        if (action === Notifications.DEFAULT_ACTION_IDENTIFIER || action === "open_link") {
+        if (
+          action === Notifications.DEFAULT_ACTION_IDENTIFIER ||
+          action === "open_link"
+        ) {
           const data = response.notification.request.content
             .data as NotificationData;
           if (data) {

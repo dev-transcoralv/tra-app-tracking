@@ -70,9 +70,11 @@ export default function IndexScreen() {
         className="flex-row items-center justify-center bg-blue-600 px-5 py-4 rounded-2xl shadow-sm active:bg-blue-700 mb-3 mx-1"
         onPress={() => openModal()}
       >
-        <Text className="text-white text-sm font-extrabold uppercase tracking-widest">+ Procesar Operativo</Text>
+        <Text className="text-white text-sm font-extrabold uppercase tracking-widest">
+          + Procesar Operativo
+        </Text>
       </TouchableOpacity>
-      
+
       <View className="flex-1 mt-1">
         <ListGrainOperations
           grainOperations={grainOperations}

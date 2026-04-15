@@ -35,7 +35,7 @@ export function OrderCardSummary({ order }: { order: Order }) {
           </StyledText>
         </View>
         {order.start_of_trip_iso_format && (
-          <CountdownCard targetDate={order.start_of_trip_iso_format} />
+          <CountdownCard startDate={order.start_of_trip_iso_format} />
         )}
       </StyledPressable>
     </Link>

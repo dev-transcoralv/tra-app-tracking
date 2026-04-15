@@ -11,7 +11,14 @@ export default function Avatar({ uri, size }: Props) {
       {uri ? (
         <View
           className="rounded-full bg-white items-center justify-center shadow-md border-4 border-white"
-          style={{ width: size, height: size, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10 }}
+          style={{
+            width: size,
+            height: size,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+          }}
         >
           <Image
             source={{

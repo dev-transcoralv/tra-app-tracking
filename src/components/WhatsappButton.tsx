@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Alert, Linking } from "react-native";
+import { TouchableOpacity, Alert, Linking, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // WhatsApp icon
 
 type WhatsAppButtonProps = {
@@ -28,7 +28,9 @@ const WhatsAppButton = ({ phone, message }: WhatsAppButtonProps) => {
       onPress={openWhatsApp}
     >
       <FontAwesome name="whatsapp" size={20} color="#fff" />
-      <Text className="text-white font-bold tracking-widest text-sm uppercase">Contactar</Text>
+      <Text className="text-white font-bold tracking-widest text-sm uppercase">
+        Contactar
+      </Text>
     </TouchableOpacity>
   );
 };

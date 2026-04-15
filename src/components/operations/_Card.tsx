@@ -33,19 +33,25 @@ export function GrainOperationCard({
         </StyledText>
         <StyledView className="flex-col gap-y-2.5">
           <StyledView className="flex-row justify-between items-center">
-            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Placa</StyledText>
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">
+              Placa
+            </StyledText>
             <StyledText className="text-gray-900 font-semibold text-sm">
               {grainOperation.vehicle_name}
             </StyledText>
           </StyledView>
           <StyledView className="flex-row justify-between items-center">
-            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Operación</StyledText>
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">
+              Operación
+            </StyledText>
             <StyledText className="text-gray-900 font-semibold text-sm">
               {grainOperation.operation_name}
             </StyledText>
           </StyledView>
           <StyledView className="flex-row justify-between items-center">
-            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">Material</StyledText>
+            <StyledText className="font-bold text-gray-400 uppercase text-[10px] tracking-widest">
+              Material
+            </StyledText>
             <StyledText className="text-gray-900 font-semibold text-sm">
               {grainOperation.material_name}
             </StyledText>

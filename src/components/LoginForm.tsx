@@ -55,7 +55,9 @@ export default function LoginForm() {
       <View className="w-full">
         <View
           className={`w-full flex-row items-center py-2 px-5 rounded-[24px] border-2 ${
-            errors.username ? "border-red-400 bg-red-50" : "border-slate-100 bg-slate-50"
+            errors.username
+              ? "border-red-400 bg-red-50"
+              : "border-slate-100 bg-slate-50"
           } h-16`}
         >
           <Controller
@@ -90,7 +92,9 @@ export default function LoginForm() {
       <View className="w-full">
         <View
           className={`w-full flex-row items-center py-2 px-5 rounded-[24px] border-2 relative ${
-            errors.password ? "border-red-400 bg-red-50" : "border-slate-100 bg-slate-50"
+            errors.password
+              ? "border-red-400 bg-red-50"
+              : "border-slate-100 bg-slate-50"
           } h-16`}
         >
           <Controller

@@ -8,9 +8,6 @@ import StatusCircle from "../StatusCircle";
 const StyledPressable = cssInterop(Pressable, {
   className: "style",
 });
-const StyledView = cssInterop(View, {
-  className: "style",
-});
 const StyledText = cssInterop(Text, {
   className: "style",
 });

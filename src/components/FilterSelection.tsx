@@ -37,15 +37,26 @@ export default function FilterSelection({ options, onSelect }: Props) {
           selectedValue={selected}
           onValueChange={handleValueChange}
           className="color-gray-800 font-bold text-lg"
-          style={{ height: 55, justifyContent: 'center', backgroundColor: 'transparent', margin: 0, padding: 0 }}
-          itemStyle={{ fontSize: 18, color: '#1f2937', fontWeight: 'bold', height: 55 }}
+          style={{
+            height: 55,
+            justifyContent: "center",
+            backgroundColor: "transparent",
+            margin: 0,
+            padding: 0,
+          }}
+          itemStyle={{
+            fontSize: 18,
+            color: "#1f2937",
+            fontWeight: "bold",
+            height: 55,
+          }}
         >
           {options.map((option) => (
             <Picker.Item
               label={option.label}
               value={option.value}
               key={option.value}
-              style={{ fontSize: 16, fontWeight: 'bold' }} // Reduced slightly on Android to avoid getting cut
+              style={{ fontSize: 16, fontWeight: "bold" }} // Reduced slightly on Android to avoid getting cut
             />
           ))}
         </StyledPicker>

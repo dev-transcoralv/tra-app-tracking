@@ -1,46 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { cssInterop } from "nativewind";
 
-const StyledText = cssInterop(Text, {
-  className: "style",
-});
-const StyledView = cssInterop(View, {
-  className: "style",
-});
+// Eliminamos cssInterop si da problemas, ya que NativeWind v4+
+// suele manejar View y Text automáticamente.
 
-type CountdownCardProps = {
-  targetDate: string; // ISO string e.g. "2025-08-26T12:00:00Z"
+type JourneyTimerProps = {
+  startDate: string;
 };
 
-export function CountdownCard({ targetDate }: CountdownCardProps) {
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+export function CountdownCard({ startDate }: JourneyTimerProps) {
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   useEffect(() => {
-    const target = new Date(targetDate).getTime();
+    const start = new Date(startDate).getTime();
 
-    const interval = setInterval(() => {
+    if (isNaN(start)) return; // Evita errores si la fecha es inválida
+
+    const updateTimer = () => {
       const now = Date.now();
-      const diff = now - target;
-      setTimeLeft(diff > 0 ? diff : 0);
-    }, 1000);
+      // DIFERENCIA POSITIVA: El ahora (más grande) menos el inicio (más pequeño)
+      const diff = now - start;
+      setElapsedTime(diff > 0 ? diff : 0);
+    };
 
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [startDate]);
 
-  const hours = Math.floor(timeLeft / 1000 / 60 / 60);
-  const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
-  const seconds = Math.floor((timeLeft / 1000) % 60);
+  const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+  const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+  const seconds = Math.floor((elapsedTime / 1000) % 60);
+
+  const format = (num: number) => num.toString().padStart(2, "0");
+
   return (
-    <StyledView className="bg-blue-50 border border-blue-100 rounded-2xl p-5 w-full items-center shadow-sm my-2">
-      <StyledText className="text-[10px] uppercase font-bold tracking-widest text-blue-400 mb-1">
-        Tiempo En Progreso
-      </StyledText>
-      <StyledText className="text-4xl font-black text-blue-900 tracking-widest">
-        {hours.toString().padStart(2, "0")}:
-        {minutes.toString().padStart(2, "0")}:
-        {seconds.toString().padStart(2, "0")}
-      </StyledText>
-    </StyledView>
+    <View className="bg-blue-50 border border-blue-100 rounded-2xl p-5 w-full items-center shadow-sm my-2">
+      <Text className="text-[10px] uppercase font-bold tracking-widest text-blue-400 mb-1">
+        Tiempo de Viaje
+      </Text>
+      <Text className="text-4xl font-black text-blue-900">
+        {format(hours)}:{format(minutes)}:{format(seconds)}
+      </Text>
+    </View>
   );
 }
