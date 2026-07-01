@@ -173,26 +173,37 @@ export function GuideModalForm({
               rules={{
                 required: "ESTE CAMPO ES REQUERIDO.",
                 pattern: {
-                  value: /^[0-9]{9}$/,
-                  message: "Debe contener 9 dígitos.",
+                  value: /^(?:[0-9]{9}|[0-9]{3}-[0-9]{3}-[0-9]{9})$/,
+                  message:
+                    "Debe contener 9 dígitos o formato 001-001-000000001.",
                 },
               }}
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  placeholder="Ej: 000000001"
+                  placeholder="Ej: 000000001 o 001-001-000000001"
                   onChangeText={(text) => onChange(text)}
                   onBlur={() => {
                     onBlur();
                     if (value && value.length > 0) {
-                      onChange(value.padStart(9, "0"));
+                      if (/^[0-9]+$/.test(value)) {
+                        onChange(value.padStart(9, "0"));
+                      } else if (/^[0-9]+-[0-9]+-[0-9]+$/.test(value)) {
+                        const parts = value.split("-");
+                        if (parts.length === 3) {
+                          const p1 = parts[0].padStart(3, "0");
+                          const p2 = parts[1].padStart(3, "0");
+                          const p3 = parts[2].padStart(9, "0");
+                          onChange(`${p1}-${p2}-${p3}`);
+                        }
+                      }
                     }
                   }}
                   value={value}
-                  maxLength={9}
+                  maxLength={17}
                   placeholderTextColor="#9ca3af"
                   className="color-slate-900 bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm w-full outline-none text-base font-bold h-14"
-                  keyboardType="numeric"
+                  keyboardType="default"
                 />
               )}
             />

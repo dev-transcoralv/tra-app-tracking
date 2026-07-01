@@ -1187,7 +1187,7 @@ export function OrderForm({ order }: { order: Order }) {
           </View>
         )}
       {/*Guides*/}
-      {(currentOrder.trip_status as string) === "initiated" &&
+      {["initiated", "finished"].includes(currentOrder.trip_status as string) &&
         currentOrder.business_code !== "containers" && (
           <View>
             <ListGuides
@@ -1199,7 +1199,7 @@ export function OrderForm({ order }: { order: Order }) {
             <Separator />
           </View>
         )}
-      {(currentOrder.trip_status as string) === "initiated" &&
+      {["initiated", "finished"].includes(currentOrder.trip_status as string) &&
         currentOrder.business_code === "containers" &&
         currentOrder.container_workflow === "1" && (
           <View>

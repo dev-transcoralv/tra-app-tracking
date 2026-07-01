@@ -67,3 +67,27 @@ export async function deleteGuide(id: number): Promise<string> {
     throw error;
   }
 }
+
+export async function printGuide(id: number): Promise<string> {
+  const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/guides/${id}/report`;
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    } else {
+      const base64Data = (json as { pdf_base64: string }).pdf_base64;
+      return base64Data;
+    }
+  } catch (error) {
+    throw error;
+  }
+}

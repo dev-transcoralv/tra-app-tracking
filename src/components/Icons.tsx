@@ -166,3 +166,13 @@ export const FontAwesomeMinus = ({
 }): ReactNode => {
   return <FontAwesome name="minus" color={color} size={size} />;
 };
+
+export const FontAwesomePrint = ({
+  color = "white",
+  size = 24,
+}: {
+  color?: string;
+  size?: number;
+}): ReactNode => {
+  return <FontAwesome name="print" color={color} size={size} />;
+};

@@ -66,6 +66,7 @@ export const GuideSchema = z.object({
   type: z.enum(["own", "third"]),
   comment: z.string().optional(),
   image: z.string().optional(),
+  picking_id: z.number().nullable(),
 });
 
 export const UbicationSchema = z.object({

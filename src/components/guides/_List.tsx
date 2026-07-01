@@ -1,10 +1,11 @@
 import { useState } from "react";
+// TODO: import * as Print from "expo-print";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Guide, Order } from "../../shared.types";
 import { GuideModalForm } from "./_ModalForm";
-import { FontAwesomeEdit, FontAwesomeTrash } from "../Icons";
+import { FontAwesomeEdit, FontAwesomeTrash, FontAwesomePrint } from "../Icons";
 import Toast from "react-native-toast-message";
-import { deleteGuide } from "../../services/odoo/guide";
+import { deleteGuide, printGuide } from "../../services/odoo/guide";
 
 interface Props {
   order: Order;
@@ -22,6 +23,7 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
   const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null);
   const [visible, setVisible] = useState(false);
   const [loadingById, setLoadingById] = useState<number | null>(null);
+  const [loadingPrintById, setLoadingPrintById] = useState<number | null>(null);
 
   const openModal = (item: Guide | null) => {
     setSelectedGuide(item);
@@ -44,6 +46,24 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
       throw error;
     } finally {
       setLoadingById(null);
+    }
+  };
+
+  const printItem = async (id: number) => {
+    try {
+      setLoadingPrintById(id);
+      const pdfBase64 = await printGuide(id);
+      console.log(pdfBase64);
+      const pdfUri = `data:application/pdf;base64,${pdfBase64}`;
+      // await Print.printAsync({ uri: pdfUri });
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error,
+      });
+      throw error;
+    } finally {
+      setLoadingPrintById(null);
     }
   };
 
@@ -76,7 +96,19 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
                   {TYPES[item.type]} No. {item.name}
                 </Text>
               </View>
-              {!orderFinished && (
+              {item.picking_id && (
+                <TouchableOpacity
+                  className="justify-center bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-sm"
+                  onPress={() => printItem(item.id)}
+                >
+                  {loadingPrintById === item.id ? (
+                    <ActivityIndicator color="#000000" size={"small"} />
+                  ) : (
+                    <FontAwesomePrint color="black" size={16} />
+                  )}
+                </TouchableOpacity>
+              )}
+              {!orderFinished && !item.picking_id && (
                 <View className="flex-row gap-x-2">
                   <TouchableOpacity
                     className="justify-center bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-sm"
