@@ -1,5 +1,6 @@
 import { useState } from "react";
-// TODO: import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Guide, Order } from "../../shared.types";
 import { GuideModalForm } from "./_ModalForm";
@@ -49,17 +50,33 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
     }
   };
 
-  const printItem = async (id: number) => {
+  const printItem = async (item: Guide) => {
     try {
-      setLoadingPrintById(id);
-      const pdfBase64 = await printGuide(id);
-      console.log(pdfBase64);
-      const pdfUri = `data:application/pdf;base64,${pdfBase64}`;
-      // await Print.printAsync({ uri: pdfUri });
+      setLoadingPrintById(item.id);
+      const pdfBase64 = await printGuide(item.id);
+      const sanitizedName = item.name.replace(/[^a-zA-Z0-9-_]/g, "_");
+      const fileUri = `${FileSystem.documentDirectory}Guia_${sanitizedName}.pdf`;
+
+      await FileSystem.writeAsStringAsync(fileUri, pdfBase64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: "application/pdf",
+          dialogTitle: `Descargar guía ${item.name}`,
+          UTI: "com.adobe.pdf",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Compartir no está disponible en este dispositivo",
+        });
+      }
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: error.message || error,
       });
       throw error;
     } finally {
@@ -99,7 +116,7 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
               {item.picking_id && (
                 <TouchableOpacity
                   className="justify-center bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-sm"
-                  onPress={() => printItem(item.id)}
+                  onPress={() => printItem(item)}
                 >
                   {loadingPrintById === item.id ? (
                     <ActivityIndicator color="#000000" size={"small"} />

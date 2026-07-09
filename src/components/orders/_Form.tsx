@@ -1107,14 +1107,26 @@ export function OrderForm({ order }: { order: Order }) {
                 </Text>
                 <DatetimeButton
                   orderId={currentOrder.id}
-                  field="arrival_charge_time"
-                  datetime={currentOrder.arrival_charge_time}
-                  title="Llegada Carga"
+                  field="arrival_point_charge_time"
+                  datetime={currentOrder.arrival_point_charge_time}
+                  title="Llegada Punto Carga"
                   orderFinished={currentOrder.trip_status === "finished"}
                   onChange={(value) =>
-                    updateOrderField("arrival_charge_time", value)
+                    updateOrderField("arrival_point_charge_time", value)
                   }
                 />
+                {currentOrder.arrival_point_charge_time && (
+                  <DatetimeButton
+                    orderId={currentOrder.id}
+                    field="arrival_charge_time"
+                    datetime={currentOrder.arrival_charge_time}
+                    title="Llegada Carga"
+                    orderFinished={currentOrder.trip_status === "finished"}
+                    onChange={(value) =>
+                      updateOrderField("arrival_charge_time", value)
+                    }
+                  />
+                )}
                 {currentOrder.arrival_charge_time && (
                   <DatetimeButton
                     orderId={currentOrder.id}
