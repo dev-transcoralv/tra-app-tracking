@@ -17,6 +17,7 @@ import {
   ReasonFakeFreight,
   ReasonReturn,
   Vehicle,
+  Guide,
 } from "../../shared.types";
 import { ListGuides } from "../../components/guides/_List";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,11 +26,13 @@ import Toast from "react-native-toast-message";
 import {
   getListReasonFakeFreight,
   getListReasonReturn,
+  getOrder,
   startTrip,
   stopTrip,
   tripFinished,
   updateTrip,
 } from "../../services/odoo/order";
+import { createOrUpdateGuide } from "../../services/odoo/guide";
 import { DatetimeButton } from "./_DatetimeButton";
 import { ListObservations } from "../observations/_List";
 import WhatsAppButton from "../WhatsappButton";
@@ -53,11 +56,20 @@ const StyledDropdown = cssInterop(Dropdown, {
   className: "style",
 });
 
+type guideData = {
+  id: number | null;
+  name: string;
+  type: "own" | "third";
+  comment: string;
+  image: string;
+};
+
 export function OrderForm({ order }: { order: Order }) {
   const [currentOrder, setCurrentOrder] = useState<Order>(order);
   const [orderIdStarted, setOrderIdStarted] = useState<number | null>(null);
   const [loadingChangeInitiated, setLoadingChangeInitiated] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingSaveGuide, setLoadingSaveGuide] = useState(false);
   const [loadingTripFinished, setLoadingTripFinished] = useState(false);
   const [chassis, setChassis] = useState<Vehicle[]>([]);
   const [reasonFakeFreight, setReasonFakeFreight] = useState<
@@ -285,6 +297,35 @@ export function OrderForm({ order }: { order: Order }) {
       }
     }
   };
+
+  const handleSaveGuide = async (data: guideData) => {
+    try {
+      setLoadingSaveGuide(true);
+      const guide = await createOrUpdateGuide(currentOrder.id, data);
+      const order = await getOrder(currentOrder.id);
+      setCurrentOrder(order);
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error?.message || String(error),
+      });
+      throw error;
+    } finally {
+      setLoadingSaveGuide(false);
+    }
+  };
+
+  const {
+    control: controlGuide,
+    handleSubmit: handleSubmitGuide,
+    formState: { errors: errorsGuide },
+    reset: resetGuide,
+  } = useForm<guideData>({
+    defaultValues: {
+      name: "",
+      type: "own",
+    },
+  });
 
   // Submit - Save
   const handleSaveOrder = async (data: orderData) => {
@@ -1180,6 +1221,77 @@ export function OrderForm({ order }: { order: Order }) {
                 )}
               </View>
             )}
+        </View>
+      )}
+
+      {currentOrder.guides.length === 0 && (
+        <View>
+          <View className="w-full flex">
+            <Text className="font-bold text-gray-400 uppercase text-[10px] tracking-widest mb-2 ml-1">
+              No. de Guía
+            </Text>
+            <Controller
+              control={controlGuide}
+              rules={{
+                required: "ESTE CAMPO ES REQUERIDO.",
+                pattern: {
+                  value: /^(?:[0-9]{9}|[0-9]{3}-[0-9]{3}-[0-9]{9})$/,
+                  message:
+                    "Debe contener 9 dígitos o formato 001-001-000000001.",
+                },
+              }}
+              name="name"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="Ej: 000000001 o 001-001-000000001"
+                  onChangeText={(text) => onChange(text)}
+                  onBlur={() => {
+                    onBlur();
+                    if (value && value.length > 0) {
+                      if (/^[0-9]+$/.test(value)) {
+                        onChange(value.padStart(9, "0"));
+                      } else if (/^[0-9]+-[0-9]+-[0-9]+$/.test(value)) {
+                        const parts = value.split("-");
+                        if (parts.length === 3) {
+                          const p1 = parts[0].padStart(3, "0");
+                          const p2 = parts[1].padStart(3, "0");
+                          const p3 = parts[2].padStart(9, "0");
+                          onChange(`${p1}-${p2}-${p3}`);
+                        }
+                      }
+                    }
+                  }}
+                  value={value}
+                  maxLength={17}
+                  placeholderTextColor="#9ca3af"
+                  className="color-slate-900 bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm w-full outline-none text-base font-bold h-14"
+                  keyboardType="default"
+                />
+              )}
+            />
+          </View>
+          {errorsGuide.name && (
+            <Text className="font-bold text-red-500 uppercase tracking-widest text-[10px] ml-1">
+              {errorsGuide.name.message as string}
+            </Text>
+          )}
+          <View className="mx-2 mt-2 mb-3">
+            <TouchableOpacity
+              className="w-full flex-row px-5 py-4 items-center justify-center bg-emerald-50 border border-emerald-100 rounded-2xl active:bg-emerald-100"
+              onPress={handleSubmitGuide(handleSaveGuide)}
+            >
+              {loadingSaveGuide ? (
+                <ActivityIndicator color="#10b981" />
+              ) : (
+                <View className="items-center flex-row gap-2">
+                  <FontAwesomeSave color="#10b981" size={18} />
+                  <Text className="font-extrabold uppercase tracking-widest text-sm color-emerald-600">
+                    Crear Guía
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
       )}
       {(currentOrder.trip_status as string) === "initiated" && <Separator />}
