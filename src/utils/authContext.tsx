@@ -7,6 +7,8 @@ import Toast from "react-native-toast-message";
 
 type AuthState = {
   driver: Driver | null;
+  /** true mientras se restaura la sesión guardada en AsyncStorage (QA-07). */
+  isLoading: boolean;
   isLoggedIn: boolean;
   logIn: (username: string, password: string) => void;
   logOut: () => void;
@@ -14,6 +16,7 @@ type AuthState = {
 
 export const AuthContext = createContext<AuthState>({
   driver: null,
+  isLoading: true,
   isLoggedIn: false,
   logIn: (username: string, password: string) => {},
   logOut: () => {},
@@ -22,16 +25,25 @@ export const AuthContext = createContext<AuthState>({
 export function AuthProvider({ children }: PropsWithChildren) {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadDriver = async () => {
-      const token = await AsyncStorage.getItem("token");
-      const user = await AsyncStorage.getItem("driver");
-      if (token && user) {
-        setDriver(JSON.parse(user));
-        setIsLoggedIn(true);
-      } else {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const user = await AsyncStorage.getItem("driver");
+        if (token && user) {
+          setDriver(JSON.parse(user));
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch {
+        // Storage ilegible o driver corrupto: se trata como sin sesión.
+        setDriver(null);
         setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadDriver();
@@ -40,10 +52,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const logIn = async (username: string, password: string) => {
     try {
       const data: ResponseLogin = await login(username, password);
-      setIsLoggedIn(true);
       await AsyncStorage.setItem("token", data.token);
       await AsyncStorage.setItem("driver", JSON.stringify(data.employee));
+      // driver antes que isLoggedIn: las pantallas protegidas usan driver.id
       setDriver(data.employee);
+      setIsLoggedIn(true);
       router.replace("/");
     } catch (error: any) {
       Toast.show({
@@ -63,7 +76,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   return (
-    <AuthContext.Provider value={{ driver, isLoggedIn, logIn, logOut }}>
+    <AuthContext.Provider
+      value={{ driver, isLoading, isLoggedIn, logIn, logOut }}
+    >
       {children}
     </AuthContext.Provider>
   );
