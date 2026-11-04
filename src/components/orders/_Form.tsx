@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -71,6 +71,11 @@ export function OrderForm({ order }: { order: Order }) {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingSaveGuide, setLoadingSaveGuide] = useState(false);
   const [loadingTripFinished, setLoadingTripFinished] = useState(false);
+  // Evita peticiones duplicadas por doble tap: el estado de React no se
+  // actualiza entre dos taps del mismo frame, un ref sí (QA-06).
+  const tripActionInFlight = useRef(false);
+  const tripActionBusy =
+    loadingChangeInitiated || loadingSave || loadingTripFinished;
   const [chassis, setChassis] = useState<Vehicle[]>([]);
   const [reasonFakeFreight, setReasonFakeFreight] = useState<
     ReasonFakeFreight[]
@@ -196,6 +201,8 @@ export function OrderForm({ order }: { order: Order }) {
   };
 
   const changeInitiated = async () => {
+    if (tripActionInFlight.current) return;
+    tripActionInFlight.current = true;
     try {
       setLoadingChangeInitiated(true);
       if (currentOrder.trip_status !== "initiated") {
@@ -210,8 +217,8 @@ export function OrderForm({ order }: { order: Order }) {
         type: "error",
         text1: error?.message || String(error),
       });
-      throw error;
     } finally {
+      tripActionInFlight.current = false;
       setLoadingChangeInitiated(false);
     }
   };
@@ -329,6 +336,8 @@ export function OrderForm({ order }: { order: Order }) {
 
   // Submit - Save
   const handleSaveOrder = async (data: orderData) => {
+    if (tripActionInFlight.current) return;
+    tripActionInFlight.current = true;
     try {
       setLoadingSave(true);
       const order = await updateTrip(currentOrder.id, data);
@@ -338,8 +347,8 @@ export function OrderForm({ order }: { order: Order }) {
         type: "error",
         text1: error?.message || String(error),
       });
-      throw error;
     } finally {
+      tripActionInFlight.current = false;
       setLoadingSave(false);
     }
   };
@@ -402,6 +411,8 @@ export function OrderForm({ order }: { order: Order }) {
 
   // Submit - TripFinished
   const handleTripFinished = async () => {
+    if (tripActionInFlight.current) return;
+    tripActionInFlight.current = true;
     try {
       if (!currentOrder.fake_freight && !currentOrder.is_return) {
         validateFieldsTripCompleted();
@@ -409,15 +420,15 @@ export function OrderForm({ order }: { order: Order }) {
       setLoadingTripFinished(true);
       const order = await tripFinished(currentOrder.id);
       setCurrentOrder(order);
+      removeOrderIdStarted();
     } catch (error: any) {
       Toast.show({
         type: "error",
         text1: error?.message || String(error),
       });
-      throw error;
     } finally {
+      tripActionInFlight.current = false;
       setLoadingTripFinished(false);
-      removeOrderIdStarted();
     }
   };
 
@@ -554,6 +565,8 @@ export function OrderForm({ order }: { order: Order }) {
               ? "bg-red-50 border border-red-100"
               : "bg-emerald-500"
           }`}
+          testID="btn-toggle-trip"
+          disabled={tripActionBusy}
           onPress={() => changeInitiated()}
         >
           {loadingChangeInitiated ? (
@@ -1354,6 +1367,8 @@ export function OrderForm({ order }: { order: Order }) {
         <View className="mx-2 mb-3">
           <TouchableOpacity
             className="w-full flex-row px-5 py-4 items-center justify-center bg-emerald-50 border border-emerald-100 rounded-2xl active:bg-emerald-100"
+            testID="btn-save-order"
+            disabled={tripActionBusy}
             onPress={handleSubmitOrder(handleSaveOrder)}
           >
             {loadingSave ? (
@@ -1375,6 +1390,8 @@ export function OrderForm({ order }: { order: Order }) {
         <View className="mx-2 mb-4">
           <TouchableOpacity
             className="w-full flex-row px-5 py-4 items-center justify-center bg-slate-900 border border-slate-800 rounded-2xl shadow-sm active:bg-slate-800"
+            testID="btn-finish-trip"
+            disabled={tripActionBusy}
             onPress={() =>
               openConfirmModal("¿Quieres finalizar el viaje?", () => {
                 handleTripFinished();
