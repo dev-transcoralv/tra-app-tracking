@@ -7,9 +7,16 @@ import {
   ScrollView,
 } from "react-native";
 import LoginForm from "../components/LoginForm";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
+import { useContext } from "react";
+import { AuthContext } from "../utils/authContext";
 
 export default function LoginScreen() {
+  const { isLoading, isLoggedIn } = useContext(AuthContext);
+  // Con sesión restaurada no tiene sentido mostrar el login (QA-07).
+  if (!isLoading && isLoggedIn) {
+    return <Redirect href="/" />;
+  }
   return (
     <ImageBackground
       source={require("../../assets/login.jpg")}

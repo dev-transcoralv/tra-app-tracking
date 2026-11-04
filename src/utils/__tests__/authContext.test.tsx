@@ -33,9 +33,11 @@ const DRIVER = {
 };
 
 function Probe() {
-  const { isLoggedIn, driver, logIn, logOut } = useContext(AuthContext);
+  const { isLoading, isLoggedIn, driver, logIn, logOut } =
+    useContext(AuthContext);
   return (
     <>
+      <Text testID="loading">{isLoading ? "loading" : "done"}</Text>
       <Text testID="status">{isLoggedIn ? "in" : "out"}</Text>
       <Text testID="driver">{driver?.name ?? "-"}</Text>
       <Pressable
@@ -142,26 +144,46 @@ describe("AuthProvider", () => {
     ]);
   });
 
-  // DEFECTO QA-07: isLoggedIn arranca en false mientras se lee AsyncStorage.
-  // El layout protegido redirige a /login en ese primer render, aunque haya
-  // una sesión válida guardada. No existe un estado "cargando".
-  test.failing(
-    "QA-07 con sesión guardada nunca debe reportar isLoggedIn=false durante la restauración",
-    async () => {
-      await AsyncStorage.setItem("token", "tok-test");
-      await AsyncStorage.setItem("driver", JSON.stringify(DRIVER));
-      const seen: boolean[] = [];
-      function Recorder() {
-        seen.push(useContext(AuthContext).isLoggedIn);
-        return null;
-      }
-      await render(
-        <AuthProvider>
-          <Recorder />
-        </AuthProvider>,
-      );
-      await waitFor(() => expect(seen).toContain(true));
-      expect(seen).not.toContain(false);
-    },
-  );
+  // Regresión QA-07: mientras se leía AsyncStorage el contexto decía
+  // "deslogueado" (isLoggedIn=false) sin forma de distinguirlo de "cargando",
+  // y el layout protegido redirigía a /login con una sesión válida guardada.
+  // Requisito: con sesión guardada, nunca exponer el estado
+  // "carga terminada y deslogueado".
+  test("QA-07 con sesión guardada nunca expone 'carga terminada y deslogueado'", async () => {
+    await AsyncStorage.setItem("token", "tok-test");
+    await AsyncStorage.setItem("driver", JSON.stringify(DRIVER));
+    const seen: { isLoading: boolean; isLoggedIn: boolean }[] = [];
+    function Recorder() {
+      const { isLoading, isLoggedIn } = useContext(AuthContext);
+      seen.push({ isLoading, isLoggedIn });
+      return null;
+    }
+    await render(
+      <AuthProvider>
+        <Recorder />
+      </AuthProvider>,
+    );
+    await waitFor(() =>
+      expect(seen).toContainEqual({ isLoading: false, isLoggedIn: true }),
+    );
+    expect(seen).not.toContainEqual({ isLoading: false, isLoggedIn: false });
+  });
+
+  test("QA-07 sin sesión guardada termina la carga como deslogueado", async () => {
+    await renderAuth();
+    await waitFor(() =>
+      expect(screen.getByTestId("loading")).toHaveTextContent("done"),
+    );
+    expect(screen.getByTestId("status")).toHaveTextContent("out");
+  });
+
+  test("driver corrupto en storage no rompe el arranque: termina deslogueado", async () => {
+    await AsyncStorage.setItem("token", "tok-test");
+    await AsyncStorage.setItem("driver", "{no-es-json");
+    await renderAuth();
+    await waitFor(() =>
+      expect(screen.getByTestId("loading")).toHaveTextContent("done"),
+    );
+    expect(screen.getByTestId("status")).toHaveTextContent("out");
+  });
 });
