@@ -10,9 +10,8 @@ import {
 /**
  * Tests del cliente HTTP de órdenes (endpoints /tra/orders/* de Odoo).
  *
- * Los casos marcados con `test.failing` documentan DEFECTOS CONOCIDOS:
- * describen el comportamiento esperado y hoy fallan. Cuando se corrija el
- * defecto, Jest avisará ("test.failing passed") y hay que cambiarlos a `test`.
+ * Los casos de defectos aún abiertos se marcan con `test.failing`: describen
+ * el comportamiento esperado y hoy fallan. Al corregir el defecto, pasarlos a `test`.
  */
 
 const BASE = "https://odoo.test";
@@ -80,32 +79,21 @@ describe("order service: escrituras críticas", () => {
     );
   });
 
-  // DEFECTO QA-04: tripFinished/updateTrip/updateHours no revisan response.ok.
-  // Un error del backend se devuelve como si fuera una Order válida y la UI
-  // lo muestra como guardado exitoso.
-  test.failing(
-    "QA-04 tripFinished debe lanzar error cuando el backend responde 4xx/5xx",
-    async () => {
-      respond(400, { error: "Faltan campos obligatorios" });
-      await expect(tripFinished(42)).rejects.toBe("Faltan campos obligatorios");
-    },
-  );
+  // Regresión QA-04: tripFinished/updateTrip/updateHours ignoraban response.ok
+  // y un error del backend se devolvía como una Order válida (la UI mostraba
+  // un guardado exitoso).
+  test("QA-04 tripFinished debe lanzar error cuando el backend responde 4xx/5xx", async () => {
+    respond(400, { error: "Faltan campos obligatorios" });
+    await expect(tripFinished(42)).rejects.toBe("Faltan campos obligatorios");
+  });
 
-  test.failing(
-    "QA-04 updateTrip debe lanzar error cuando el backend responde 4xx/5xx",
-    async () => {
-      respond(500, { error: "Error interno" });
-      await expect(updateTrip(42, {} as any)).rejects.toBe("Error interno");
-    },
-  );
+  test("QA-04 updateTrip debe lanzar error cuando el backend responde 4xx/5xx", async () => {
+    respond(500, { error: "Error interno" });
+    await expect(updateTrip(42, {} as any)).rejects.toBe("Error interno");
+  });
 
-  test.failing(
-    "QA-04 updateHours debe lanzar error cuando el backend responde 4xx/5xx",
-    async () => {
-      respond(500, { error: "Error interno" });
-      await expect(updateHours(42, "arrival_date")).rejects.toBe(
-        "Error interno",
-      );
-    },
-  );
+  test("QA-04 updateHours debe lanzar error cuando el backend responde 4xx/5xx", async () => {
+    respond(500, { error: "Error interno" });
+    await expect(updateHours(42, "arrival_date")).rejects.toBe("Error interno");
+  });
 });

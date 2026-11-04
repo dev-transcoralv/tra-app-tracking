@@ -108,6 +108,10 @@ export async function updateHours(id: number, field: string): Promise<Order> {
   try {
     const response = await fetch(URL, options);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as Order;
   } catch (error) {
     // Throw error
@@ -126,6 +130,10 @@ export async function tripFinished(id: number): Promise<Order> {
   try {
     const response = await fetch(URL, options);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as Order;
   } catch (error) {
     // Throw error
@@ -145,6 +153,10 @@ export async function updateTrip(id: number, data: orderData): Promise<Order> {
   try {
     const response = await fetch(URL, options);
     const json = await response.json();
+    if (!response.ok) {
+      const error = (json as { error: string }).error;
+      throw error;
+    }
     return json as Order;
   } catch (error) {
     // Throw error
