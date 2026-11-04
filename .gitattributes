@@ -1,6 +1,7 @@
-# Auto-detect text files and ensure they are stored as LF in the repo
-# On Windows, they will be checked out as CRLF. On Mac/Linux, they stay LF.
-* text=auto
+# Auto-detect text files, store them as LF and also check them out as LF on
+# every OS (including Windows with core.autocrlf=true). Prettier enforces
+# "endOfLine": "lf", so CRLF checkouts made `npm run lint` fail after a pull.
+* text=auto eol=lf
 
 # Explicitly declare text files you want to always be normalized
 *.js text
