@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { ResponseLogin } from "../../shared.types";
 
 export async function login(
@@ -19,7 +20,7 @@ export async function login(
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

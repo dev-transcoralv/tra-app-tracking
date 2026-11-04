@@ -32,7 +32,10 @@ describe("order service: lecturas", () => {
   test("getOrder devuelve la orden cuando la respuesta es 200", async () => {
     respond(200, ORDER);
     await expect(getOrder(42)).resolves.toEqual(ORDER);
-    expect(fetchMock).toHaveBeenCalledWith(`${BASE}/tra/orders/42`);
+    // Con timeout (QA-08) toda petición lleva un AbortSignal
+    expect(fetchMock).toHaveBeenCalledWith(`${BASE}/tra/orders/42`, {
+      signal: expect.any(Object),
+    });
   });
 
   test("getOrder lanza el mensaje de error del backend cuando la respuesta no es 2xx", async () => {

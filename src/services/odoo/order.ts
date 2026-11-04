@@ -1,3 +1,4 @@
+import { fetchWithTimeout, UPLOAD_TIMEOUT_MS } from "./http";
 import {
   Order,
   ResponseListOrder,
@@ -23,7 +24,7 @@ export async function getListOrders({
 }: IndexProps): Promise<ResponseListOrder> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders?page=${page}&employee_id=${driverId}&status=${status}&query=${query}`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -39,7 +40,7 @@ export async function getListOrders({
 export async function getOrder(id: number): Promise<Order> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -61,7 +62,7 @@ export async function startTrip(id: number): Promise<Order> {
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/start_trip`;
   try {
-    const response = await fetch(URL, options);
+    const response = await fetchWithTimeout(URL, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -83,7 +84,7 @@ export async function stopTrip(id: number): Promise<Order> {
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/stop_trip`;
   try {
-    const response = await fetch(URL, options);
+    const response = await fetchWithTimeout(URL, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -106,7 +107,7 @@ export async function updateHours(id: number, field: string): Promise<Order> {
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_hours`;
   try {
-    const response = await fetch(URL, options);
+    const response = await fetchWithTimeout(URL, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -128,7 +129,7 @@ export async function tripFinished(id: number): Promise<Order> {
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/trip_finished`;
   try {
-    const response = await fetch(URL, options);
+    const response = await fetchWithTimeout(URL, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -151,7 +152,7 @@ export async function updateTrip(id: number, data: orderData): Promise<Order> {
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/orders/${id}/update_order`;
   try {
-    const response = await fetch(URL, options);
+    const response = await fetchWithTimeout(URL, options, UPLOAD_TIMEOUT_MS);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -168,7 +169,7 @@ export async function updateTrip(id: number, data: orderData): Promise<Order> {
 export async function getListUbications(): Promise<ResponseListUbication> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/ubications`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -184,7 +185,7 @@ export async function getListUbications(): Promise<ResponseListUbication> {
 export async function getListGeocercas(): Promise<ResponseListGeocerca> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/geocercas`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -201,7 +202,7 @@ export async function getListGeocercas(): Promise<ResponseListGeocerca> {
 export async function getListReasonFakeFreight(): Promise<ResponseListReasonFakeFreight> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/reasons_fake_freight`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     return json as ResponseListReasonFakeFreight;
   } catch (error) {
@@ -213,7 +214,7 @@ export async function getListReasonFakeFreight(): Promise<ResponseListReasonFake
 export async function getListReasonReturn(): Promise<ResponseListReasonReturn> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/reasons_return`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     return json as ResponseListReasonReturn;
   } catch (error) {

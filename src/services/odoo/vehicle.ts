@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { ResponseListVehicle } from "../../shared.types";
 
 export async function getListChassis(
@@ -5,7 +6,7 @@ export async function getListChassis(
 ): Promise<ResponseListVehicle> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/vehicles/chassis?business_code=${businessCode}`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

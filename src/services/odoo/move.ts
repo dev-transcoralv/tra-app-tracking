@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { Move } from "../../shared.types";
 
 type FormData = {
@@ -42,7 +43,7 @@ export async function createOrUpdateMove(
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -65,7 +66,7 @@ export async function deleteMove(id: number): Promise<string> {
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

@@ -1,3 +1,4 @@
+import { fetchWithTimeout, UPLOAD_TIMEOUT_MS } from "./http";
 import {
   ResponseListLeaveType,
   ResponseListLeave,
@@ -13,7 +14,7 @@ interface Props {
 export async function getListLeaveTypes(): Promise<ResponseListLeaveType> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/holidays/leave_types`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -33,7 +34,7 @@ export async function getListLeaves({
 }: Props): Promise<ResponseListLeave> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/holidays/leaves?page=${page}&employee_id=${driverId}&state=${state}`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -75,7 +76,7 @@ export async function createOrUpdateLeave(
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options, UPLOAD_TIMEOUT_MS);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

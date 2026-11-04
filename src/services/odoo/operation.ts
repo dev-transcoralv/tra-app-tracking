@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { Order, ResponseListGrainOperation } from "./../../shared.types";
 
 interface Props {
@@ -13,7 +14,7 @@ export async function getListGrainOperations({
 }: Props): Promise<ResponseListGrainOperation> {
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/grain_operations?page=${page}&employee_id=${driverId}&state=${state}`;
   try {
-    const response = await fetch(URL);
+    const response = await fetchWithTimeout(URL);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -38,7 +39,7 @@ export async function processGrainOperation(id: number | null): Promise<Order> {
   };
   const URL = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/grain_operations/process`;
   try {
-    const response = await fetch(URL, options);
+    const response = await fetchWithTimeout(URL, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

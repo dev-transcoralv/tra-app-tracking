@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { Observation } from "../../shared.types";
 
 export async function createOrUpdateObservation(
@@ -21,7 +22,7 @@ export async function createOrUpdateObservation(
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -44,7 +45,7 @@ export async function deleteObservation(id: number): Promise<string> {
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
