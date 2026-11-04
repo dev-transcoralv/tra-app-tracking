@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { Driver } from "../../shared.types";
 
 export async function updatePushToken(
@@ -18,7 +19,7 @@ export async function updatePushToken(
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

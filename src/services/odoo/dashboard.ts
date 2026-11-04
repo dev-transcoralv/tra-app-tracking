@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "./http";
 import { Dashboard } from "../../shared.types";
 
 export async function getDashboard(
@@ -7,7 +8,7 @@ export async function getDashboard(
   const url = `${process.env.EXPO_PUBLIC_ODOO_URL}/tra/dashboard?employee_id=${driverId}&range_date=${rangeDate}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;

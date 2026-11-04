@@ -1,3 +1,4 @@
+import { fetchWithTimeout, UPLOAD_TIMEOUT_MS } from "./http";
 import { Guide } from "../../shared.types";
 
 type FormData = {
@@ -31,7 +32,7 @@ export async function createOrUpdateGuide(
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options, UPLOAD_TIMEOUT_MS);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -54,7 +55,7 @@ export async function deleteGuide(id: number): Promise<string> {
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
@@ -78,7 +79,7 @@ export async function printGuide(id: number): Promise<string> {
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithTimeout(url, options, UPLOAD_TIMEOUT_MS);
     const json = await response.json();
     if (!response.ok) {
       const error = (json as { error: string }).error;
