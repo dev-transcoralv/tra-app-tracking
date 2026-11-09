@@ -6,6 +6,7 @@ import { Guide, Order } from "../../shared.types";
 import { GuideModalForm } from "./_ModalForm";
 import { FontAwesomeEdit, FontAwesomeTrash, FontAwesomePrint } from "../Icons";
 import Toast from "react-native-toast-message";
+import { confirmDelete, errorMessage } from "../../utils/confirm";
 import { deleteGuide, printGuide } from "../../services/odoo/guide";
 
 interface Props {
@@ -34,17 +35,29 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
     setVisible(false);
   };
 
-  const deleteItem = async (id: number) => {
+  // QA-10: el borrado es irreversible en Odoo; se confirma antes y se
+  // bloquea un segundo borrado mientras hay uno en curso.
+  const deleteItem = async (item: Guide) => {
+    if (loadingById !== null) return;
+    const confirmed = await confirmDelete(
+      "Eliminar guía",
+      `¿Eliminar la guía ${item.name}? Esta acción no se puede deshacer.`,
+    );
+    if (!confirmed) return;
+    const id = item.id;
     try {
       setLoadingById(id);
       await deleteGuide(id);
       onUpdate(guides.filter((o) => o.id !== id));
-    } catch (error: any) {
+      Toast.show({
+        type: "success",
+        text1: "Guía eliminada correctamente.",
+      });
+    } catch (error) {
       Toast.show({
         type: "error",
-        text1: error,
+        text1: errorMessage(error),
       });
-      throw error;
     } finally {
       setLoadingById(null);
     }
@@ -135,7 +148,10 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
                   </TouchableOpacity>
                   <TouchableOpacity
                     className="justify-center bg-red-50 border border-red-100 px-4 py-3 rounded-xl shadow-sm"
-                    onPress={() => deleteItem(item.id)}
+                    onPress={() => deleteItem(item)}
+                    disabled={loadingById !== null}
+                    testID={`btn-delete-${item.id}`}
+                    accessibilityLabel="Eliminar"
                   >
                     {loadingById === item.id ? (
                       <ActivityIndicator color="#ef4444" size={"small"} />
