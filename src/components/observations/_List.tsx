@@ -5,6 +5,7 @@ import { FontAwesomeEdit, FontAwesomeTrash } from "../Icons";
 import { ObservationModalForm } from "./_ModalForm";
 import { deleteObservation } from "../../services/odoo/observation";
 import Toast from "react-native-toast-message";
+import { confirmDelete, errorMessage } from "../../utils/confirm";
 
 interface Props {
   order: Order;
@@ -30,23 +31,31 @@ export function ListObservations({
   const closeModal = () => setVisible(false);
   const [loadingById, setLoadingById] = useState<number | null>(null);
 
-  const deleteItem = async (id: number) => {
+  // QA-10: el borrado es irreversible en Odoo; se confirma antes y se
+  // bloquea un segundo borrado mientras hay uno en curso.
+  const deleteItem = async (item: Observation) => {
+    if (loadingById !== null) return;
+    const confirmed = await confirmDelete(
+      "Eliminar observación",
+      `¿Eliminar la observación "${item.name}"? Esta acción no se puede deshacer.`,
+    );
+    if (!confirmed) return;
+    const id = item.id;
     try {
       setLoadingById(id);
       await deleteObservation(id);
       onUpdate(observations.filter((o) => o.id !== id));
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: error,
-      });
-      throw error;
-    } finally {
-      setLoadingById(null);
       Toast.show({
         type: "success",
         text1: "Observación eliminada correctamente.",
       });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: errorMessage(error),
+      });
+    } finally {
+      setLoadingById(null);
     }
   };
 
@@ -93,7 +102,10 @@ export function ListObservations({
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="justify-center bg-red-50 border border-red-100 px-4 py-3 rounded-xl shadow-sm"
-                  onPress={() => deleteItem(item.id)}
+                  onPress={() => deleteItem(item)}
+                  disabled={loadingById !== null}
+                  testID={`btn-delete-${item.id}`}
+                  accessibilityLabel="Eliminar"
                 >
                   {loadingById === item.id ? (
                     <ActivityIndicator color="#ef4444" size={"small"} />
