@@ -7,6 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { AuthContext, AuthProvider } from "../authContext";
@@ -99,7 +100,9 @@ describe("AuthProvider", () => {
     await fireEvent.press(screen.getByTestId("login"));
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/"));
     expect(loginMock).toHaveBeenCalledWith("qa@example.com", "pass");
-    expect(await AsyncStorage.getItem("token")).toBe("tok-test");
+    // QA-09: el token va a SecureStore, nunca en texto plano a AsyncStorage
+    expect(await SecureStore.getItemAsync("token")).toBe("tok-test");
+    expect(await AsyncStorage.getItem("token")).toBeNull();
     expect(JSON.parse((await AsyncStorage.getItem("driver"))!)).toEqual(DRIVER);
     expect(screen.getByTestId("status")).toHaveTextContent("in");
   });
@@ -117,6 +120,7 @@ describe("AuthProvider", () => {
       ),
     );
     expect(await AsyncStorage.getItem("token")).toBeNull();
+    expect(await SecureStore.getItemAsync("token")).toBeNull();
     expect(router.replace).not.toHaveBeenCalled();
     expect(screen.getByTestId("status")).toHaveTextContent("out");
   });
@@ -142,6 +146,7 @@ describe("AuthProvider", () => {
       ["driver", null],
       ["orderIdStarted", null],
     ]);
+    expect(await SecureStore.getItemAsync("token")).toBeNull();
   });
 
   // Regresión QA-07: mientras se leía AsyncStorage el contexto decía
