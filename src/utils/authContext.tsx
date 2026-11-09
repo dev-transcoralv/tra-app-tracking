@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { createContext, PropsWithChildren, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/odoo/login";
+import { getToken, setToken, deleteToken } from "./secureToken";
 import { ResponseLogin, Driver } from "../shared.types";
 import Toast from "react-native-toast-message";
 
@@ -30,7 +31,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const loadDriver = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
+        const token = await getToken();
         const user = await AsyncStorage.getItem("driver");
         if (token && user) {
           setDriver(JSON.parse(user));
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const logIn = async (username: string, password: string) => {
     try {
       const data: ResponseLogin = await login(username, password);
-      await AsyncStorage.setItem("token", data.token);
+      await setToken(data.token);
       await AsyncStorage.setItem("driver", JSON.stringify(data.employee));
       // driver antes que isLoggedIn: las pantallas protegidas usan driver.id
       setDriver(data.employee);
@@ -68,7 +69,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const logOut = async () => {
-    await AsyncStorage.removeItem("token");
+    await deleteToken();
     await AsyncStorage.removeItem("driver");
     await AsyncStorage.removeItem("orderIdStarted");
     setDriver(null);
