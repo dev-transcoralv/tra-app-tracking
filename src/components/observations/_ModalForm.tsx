@@ -10,6 +10,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { Observation, Order } from "../../shared.types";
 import Toast from "react-native-toast-message";
+import { errorMessage } from "../../utils/confirm";
 import { createOrUpdateObservation } from "../../services/odoo/observation";
 
 type Props = {
@@ -55,22 +56,22 @@ export function ObservationModalForm({
         order.id,
       );
       onSave(observation);
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: error,
-      });
-      throw error;
-    } finally {
       Toast.show({
         type: "success",
         text1:
           (data.id && "Observación editada correctamente.") ||
           "Observación creada correctamente.",
       });
-      setLoading(false);
       reset();
       onClose();
+    } catch (error) {
+      // QA-11: si falla, el modal queda abierto con los datos para reintentar.
+      Toast.show({
+        type: "error",
+        text1: errorMessage(error),
+      });
+    } finally {
+      setLoading(false);
     }
   };
 

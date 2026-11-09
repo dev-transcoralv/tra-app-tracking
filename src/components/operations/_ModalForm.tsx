@@ -11,6 +11,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Dropdown } from "react-native-element-dropdown";
 import { GrainOperation, Order } from "../../shared.types";
 import Toast from "react-native-toast-message";
+import { errorMessage } from "../../utils/confirm";
 import {
   getListGrainOperations,
   processGrainOperation,
@@ -108,19 +109,19 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
       const order: Order = await processGrainOperation(
         data?.grain_operation_id,
       );
+      handleClose();
       router.push({
         pathname: `orders/${order.id}`,
         params: { reference: order.name },
       } as any);
-    } catch (error: any) {
+    } catch (error) {
+      // QA-11: si falla, el modal queda abierto con los datos para reintentar.
       Toast.show({
         type: "error",
-        text1: error,
+        text1: errorMessage(error),
       });
-      throw error;
     } finally {
       setLoading(false);
-      handleClose();
     }
   };
 

@@ -10,6 +10,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Move, Order, Ubication, Geocerca } from "../../shared.types";
 import { Dropdown } from "react-native-element-dropdown";
 import Toast from "react-native-toast-message";
+import { errorMessage } from "../../utils/confirm";
 import { getListUbications, getListGeocercas } from "../../services/odoo/order";
 import { createOrUpdateMove } from "../../services/odoo/move";
 import { cssInterop } from "nativewind";
@@ -94,18 +95,19 @@ export function MoveModalForm({
       setLoading(true);
       const savedMove = await createOrUpdateMove(data, order.id);
       onSave(savedMove);
-    } catch (error: any) {
-      Toast.show({ type: "error", text1: error });
-    } finally {
       Toast.show({
         type: "success",
         text1:
           (data.id && "Movimiento editado correctamente.") ||
           "Movimiento creado correctamente.",
       });
-      setLoading(false);
       reset();
       onClose();
+    } catch (error) {
+      // QA-11: si falla, el modal queda abierto con los datos para reintentar.
+      Toast.show({ type: "error", text1: errorMessage(error) });
+    } finally {
+      setLoading(false);
     }
   };
 

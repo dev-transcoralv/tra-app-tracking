@@ -86,12 +86,11 @@ export function ListGuides({ order, guides, onUpdate, orderFinished }: Props) {
           text1: "Compartir no está disponible en este dispositivo",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       Toast.show({
         type: "error",
-        text1: error.message || error,
+        text1: errorMessage(error),
       });
-      throw error;
     } finally {
       setLoadingPrintById(null);
     }
