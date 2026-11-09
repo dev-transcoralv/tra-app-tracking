@@ -47,6 +47,7 @@ import { getListChassis } from "../../services/odoo/vehicle";
 import { Picker } from "@react-native-picker/picker";
 import { ListMoves } from "../moves/_List";
 import { DatetimeButtonWialon } from "./_DatetimeButtonWialon";
+import { logError } from "../../utils/logger";
 
 const StyledPicker = cssInterop(Picker, {
   className: "style",
@@ -100,7 +101,7 @@ export function OrderForm({ order }: { order: Order }) {
         const fetchChassis = data.results ?? [];
         setChassis(fetchChassis);
       } catch (err) {
-        console.error(err);
+        logError("Cargar catálogo de orden", err);
       } finally {
       }
     };
@@ -115,7 +116,7 @@ export function OrderForm({ order }: { order: Order }) {
         const fetcheasonFakeFreight = data.results ?? [];
         setReasonFakeFreight(fetcheasonFakeFreight);
       } catch (err) {
-        console.error(err);
+        logError("Cargar catálogo de orden", err);
       } finally {
       }
     };
@@ -130,7 +131,7 @@ export function OrderForm({ order }: { order: Order }) {
         const fetchReasonReturn = data.results ?? [];
         setReasonReturn(fetchReasonReturn);
       } catch (err) {
-        console.error(err);
+        logError("Cargar catálogo de orden", err);
       } finally {
       }
     };

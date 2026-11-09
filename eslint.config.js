@@ -9,4 +9,11 @@ module.exports = defineConfig([
   {
     ignores: ["dist/*"],
   },
+  {
+    // QA-12: en release console.* va al log del sistema (logcat). Usar
+    // logError de src/utils/logger.ts, que no imprime datos sensibles.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/**/__tests__/**"],
+    rules: { "no-console": "error" },
+  },
 ]);

@@ -2,6 +2,7 @@ import { Geolocation } from "../shared.types";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapViewRoute } from "react-native-maps-routes";
 import { useRef } from "react";
+import { logError } from "../utils/logger";
 
 type Props = {
   origin: Geolocation;
@@ -65,9 +66,7 @@ export function RouteMapView({ origin, destination, width, height }: Props) {
             animated: true,
           });
         }}
-        onError={(errorMessage) =>
-          console.error("Directions error:", errorMessage)
-        }
+        onError={(errorMessage) => logError("Directions", errorMessage)}
       />
     </MapView>
   );

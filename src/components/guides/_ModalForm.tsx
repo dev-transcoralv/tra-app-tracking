@@ -15,6 +15,7 @@ import { createOrUpdateGuide } from "../../services/odoo/guide";
 import { ImagePickerField } from "../ImagePickerField";
 import { Picker } from "@react-native-picker/picker";
 import { cssInterop } from "nativewind";
+import { logError } from "../../utils/logger";
 
 const StyledPicker = cssInterop(Picker, {
   className: "style",
@@ -112,8 +113,7 @@ export function GuideModalForm({
         type: "error",
         text1: errorMessage(error),
       });
-      // Do not throw error here unless you want to crash the app or catch it higher up
-      console.error(error);
+      logError("Guardar guía", error);
     } finally {
       setLoading(false);
     }

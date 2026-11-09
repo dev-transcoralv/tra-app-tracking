@@ -70,14 +70,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     const notificationListener = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log("Received notification:", notification);
         setNotification(notification);
       },
     );
 
     const responseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Tapped notification:", response);
         const action = response.actionIdentifier;
         if (
           action === Notifications.DEFAULT_ACTION_IDENTIFIER ||

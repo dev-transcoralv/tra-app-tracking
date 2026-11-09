@@ -6,6 +6,7 @@ import { AuthContext } from "../../../../utils/authContext";
 import { GrainOperation } from "../../../../shared.types";
 import { ListGrainOperations } from "../../../../components/operations/_List";
 import { GrainOperationModalForm } from "../../../../components/operations/_ModalForm";
+import { logError } from "../../../../utils/logger";
 
 export default function IndexScreen() {
   const { driver } = useContext(AuthContext);
@@ -39,7 +40,7 @@ export default function IndexScreen() {
             setHasMore(fetchedGrainOperations.length > 0);
           }
         } catch (err) {
-          console.error(err);
+          logError("Cargar operaciones", err);
         } finally {
           if (isActive) setLoading(false);
         }

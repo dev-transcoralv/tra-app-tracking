@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState, useCallback } from "react";
+import { logError } from "./logger";
 
 // 1. Define the Interface (it was missing in your snippet)
 export interface LatLng {
@@ -52,12 +53,12 @@ export const login = async (): Promise<string | null> => {
     });
     // Wialon returns 200 OK even on errors, check for specific error field
     if (authResponse.data.error) {
-      console.error("Wialon Auth Error Code:", authResponse.data.error);
+      logError("Wialon auth, código", authResponse.data.error);
       return null;
     }
     return authResponse.data.eid || null;
   } catch (error) {
-    console.error("Login network error:", error);
+    logError("Wialon login", error);
     return null;
   }
 };
@@ -98,7 +99,7 @@ export const getUnitLastPosition = async (
     // Check if unit.pos exists (it might be null if the unit has never sent data)
     return unit?.pos ? { latitude: unit.pos.y, longitude: unit.pos.x } : null;
   } catch (error) {
-    console.error("Error fetching unit position:", error);
+    logError("Wialon posición de unidad", error);
     return null;
   }
 };
@@ -133,7 +134,7 @@ export const getRoute = async (
     // Map Wialon's {lat, lon} to your App's {latitude, longitude}
     return coords.map((p: any) => ({ latitude: p.lat, longitude: p.lon }));
   } catch (error) {
-    console.error("Error fetching route:", error);
+    logError("Wialon ruta", error);
     return [];
   }
 };
@@ -168,7 +169,7 @@ export const getGeogercaByID = async (
     // Map Wialon's {lat, lon} to your App's {latitude, longitude}
     return coords.map((p: any) => ({ latitude: p.lat, longitude: p.lon }));
   } catch (error) {
-    console.error("Error fetching route:", error);
+    logError("Wialon ruta", error);
     return [];
   }
 };
