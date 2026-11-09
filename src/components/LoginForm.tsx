@@ -10,6 +10,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { AuthContext } from "../utils/authContext";
 import { FontAwesomeEye, FontAwesomeEyeOff } from "../components/Icons";
+import { logError } from "../utils/logger";
 
 // Tipado para los datos del formulario
 type FormData = {
@@ -42,7 +43,8 @@ export default function LoginForm() {
       // Es importante usar await si logIn retorna una Promesa
       await authContext?.logIn(data.username, data.password);
     } catch (error) {
-      console.log(error);
+      // logIn ya muestra el error al usuario.
+      logError("Login", error);
     } finally {
       // Esto asegura que el loading se quite sin importar si hubo éxito o error
       setLoading(false);

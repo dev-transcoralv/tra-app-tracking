@@ -24,6 +24,7 @@ import { cssInterop } from "nativewind";
 import { AuthContext } from "../../utils/authContext";
 import { useRouter } from "expo-router";
 import { ImagePickerField } from "../ImagePickerField";
+import { logError } from "../../utils/logger";
 
 const StyledDropdown = cssInterop(Dropdown, {
   className: "style",
@@ -107,7 +108,7 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
         const fetchLeaveTypes = data.results ?? [];
         setLeaveTypes(fetchLeaveTypes);
       } catch (err) {
-        console.error(err);
+        logError("Cargar tipos de permiso", err);
       } finally {
       }
     };

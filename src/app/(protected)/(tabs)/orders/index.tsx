@@ -8,6 +8,7 @@ import { Order } from "../../../../shared.types";
 import FilterSelection from "../../../..//components/FilterSelection";
 import debounce from "lodash.debounce";
 import { FontAwesomeSearch } from "../../../../components/Icons";
+import { logError } from "../../../../utils/logger";
 
 export default function IndexScreen() {
   const { driver } = useContext(AuthContext);
@@ -47,7 +48,7 @@ export default function IndexScreen() {
             setHasMore(fetchedOrders.length > 0);
           }
         } catch (err) {
-          console.error(err);
+          logError("Cargar órdenes", err);
         } finally {
           if (isActive) setLoading(false);
         }

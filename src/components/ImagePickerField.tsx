@@ -9,6 +9,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Controller } from "react-hook-form";
 import { FontAwesomeMinus, FontAwesomePlus } from "./Icons";
+import { logError } from "../utils/logger";
 
 type Props = {
   control: any;
@@ -48,7 +49,7 @@ export function ImagePickerField({
         await ImagePicker.requestCameraPermissionsAsync();
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       } catch (error) {
-        console.warn("Permission request failed", error);
+        logError("Permisos de cámara/galería", error);
       }
     })();
   }, []);

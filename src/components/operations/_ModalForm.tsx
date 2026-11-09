@@ -20,6 +20,7 @@ import { cssInterop } from "nativewind";
 import { AuthContext } from "../../utils/authContext";
 
 import { useRouter } from "expo-router";
+import { logError } from "../../utils/logger";
 
 const StyledDropdown = cssInterop(Dropdown, {
   className: "style",
@@ -136,7 +137,7 @@ export function GrainOperationModalForm({ visible, onClose }: Props) {
         const fetchgrainOperations = data.results ?? [];
         setGrainOperations(fetchgrainOperations);
       } catch (err) {
-        console.error(err);
+        logError("Cargar operaciones de grano", err);
       } finally {
       }
     };

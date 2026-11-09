@@ -7,6 +7,7 @@ import { Leave } from "../../../../shared.types";
 import FilterSelection from "../../../../components/FilterSelection";
 import { ListLeaves } from "../../../../components/leaves/_List";
 import { LeaveModalForm } from "../../../../components/leaves/_ModalForm";
+import { logError } from "../../../../utils/logger";
 
 export default function IndexScreen() {
   const { driver } = useContext(AuthContext);
@@ -47,7 +48,7 @@ export default function IndexScreen() {
             setHasMore(fetchedLeaves.length > 0);
           }
         } catch (err) {
-          console.error(err);
+          logError("Cargar permisos", err);
         } finally {
           if (isActive) setLoading(false);
         }

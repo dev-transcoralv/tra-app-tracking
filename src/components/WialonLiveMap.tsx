@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, ActivityIndicator, Text, Animated } from "react-native";
 import MapView, { Marker, Polyline, LatLng } from "react-native-maps";
 import axios from "axios";
+import { logError } from "../utils/logger";
 
 const WIALON_API_URL =
   process.env.EXPO_PUBLIC_WIALON_API_URL ??
@@ -41,7 +42,7 @@ const WialonLiveMap: React.FC<WialonLiveProps> = ({
       });
       return authResponse.data.eid || null;
     } catch (error) {
-      console.error("Login error:", error);
+      logError("Wialon login", error);
       return null;
     }
   };
@@ -72,10 +73,9 @@ const WialonLiveMap: React.FC<WialonLiveProps> = ({
       const units = searchRes.data.items || [];
       if (!units.length) return null;
       const unit = units[0];
-      console.log(unit?.pos);
       return unit?.pos ? { latitude: unit.pos.y, longitude: unit.pos.x } : null;
     } catch (error) {
-      console.error("Error fetching unit position:", error);
+      logError("Wialon posición de unidad", error);
       return null;
     }
   };
@@ -102,10 +102,9 @@ const WialonLiveMap: React.FC<WialonLiveProps> = ({
       });
 
       const coords = routeRes.data.route || [];
-      console.log(coords);
       return coords.map((p: any) => ({ latitude: p.lat, longitude: p.lon }));
     } catch (error) {
-      console.error("Error fetching route:", error);
+      logError("Wialon ruta", error);
       return [];
     }
   };
@@ -116,7 +115,7 @@ const WialonLiveMap: React.FC<WialonLiveProps> = ({
       setLoading(true);
       const sid = await wialonLogin();
       if (!sid) {
-        console.error("No se pudo autenticar en Wialon.");
+        logError("No se pudo autenticar en Wialon.");
         setLoading(false);
         return;
       }
