@@ -10,6 +10,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { Guide, Order } from "../../shared.types";
 import Toast from "react-native-toast-message";
+import { errorMessage } from "../../utils/confirm";
 import { createOrUpdateGuide } from "../../services/odoo/guide";
 import { ImagePickerField } from "../ImagePickerField";
 import { Picker } from "@react-native-picker/picker";
@@ -106,10 +107,10 @@ export function GuideModalForm({
 
       reset(defaultValues);
       onClose(); // Use prop onClose here as reset is done
-    } catch (error: any) {
+    } catch (error) {
       Toast.show({
         type: "error",
-        text1: error.message || "Error al guardar",
+        text1: errorMessage(error),
       });
       // Do not throw error here unless you want to crash the app or catch it higher up
       console.error(error);

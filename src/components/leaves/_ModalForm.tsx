@@ -14,6 +14,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { useForm, Controller } from "react-hook-form";
 import { Leave, LeaveType } from "../../shared.types";
 import Toast from "react-native-toast-message";
+import { errorMessage } from "../../utils/confirm";
 import {
   createOrUpdateLeave,
   getListLeaveTypes,
@@ -79,14 +80,6 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
         data.image,
       );
       setImageUri(null);
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: error,
-      });
-      throw error;
-    } finally {
-      setLoading(false);
       reset();
       onClose();
       setTimeout(() => {
@@ -95,6 +88,15 @@ export function LeaveModalForm({ leave, visible, onClose }: Props) {
           params: { refresh: Date.now() },
         });
       }, 300);
+    } catch (error) {
+      // QA-11: si falla, el modal queda abierto con los datos y la foto
+      // adjunta para reintentar.
+      Toast.show({
+        type: "error",
+        text1: errorMessage(error),
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
